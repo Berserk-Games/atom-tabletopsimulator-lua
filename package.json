@@ -1,10 +1,9 @@
 {
   "name": "tabletopsimulator-lua",
   "main": "./lib/tabletopsimulator-lua",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Official plugin for Tabletop Simulator's Lua Scripting.",
-  "keywords": [
-  ],
+  "keywords": [],
   "repository": "https://github.com/Knils/atom-tabletopsimulator-lua",
   "license": "MIT",
   "engines": {
