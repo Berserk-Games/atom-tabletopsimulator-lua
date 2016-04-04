@@ -1,0 +1,15 @@
+###
+'comment': 'Lua Syntax: version 0.8'
+'fileTypes': [
+  'lua'
+]
+'firstLineMatch': '\\A#!.*?\\A#!.*?\\blua\\b'
+'name': 'Lua'
+'patterns': [
+    {
+      'match': '(?<=[^.]\\.|:)\\b([A-Za-z_]\\w*)'
+      'name': 'variable.other.tts.lua'
+    }
+  ]
+'scopeName': 'source.tts.lua'
+###

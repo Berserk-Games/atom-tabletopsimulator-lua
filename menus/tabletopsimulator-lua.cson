@@ -1,0 +1,30 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'TTS:Get Lua Scripts'
+      'command': 'tabletopsimulator-lua:getObjects'
+    },
+    {
+      'label': 'TTS:Save And Play'
+      'command': 'tabletopsimulator-lua:saveAndPlay'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Tabletop Simulator'
+      'submenu': [
+        {
+          'label': 'TTS:Get Lua Scripts'
+          'command': 'tabletopsimulator-lua:getObjects'
+        },
+        {
+          'label': 'TTS:Save And Play'
+          'command': 'tabletopsimulator-lua:saveAndPlay'
+        }
+      ]
+    ]
+  }
+]
