@@ -1,5 +1,7 @@
 # tabletopsimulator-lua package
 
-A short description of your package.
+The official plugin for the Atom text editor to make writing Lua scripts for Tabletop Simulator super easy and fun!
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+![A screenshot of your package](http://i.imgur.com/7ejlE99.png)
+
+Learn more on our [Official Knowledgebase](http://berserk-games.com/knowledgebase/atom-editor-plugin/)!
