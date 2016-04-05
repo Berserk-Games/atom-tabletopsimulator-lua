@@ -1,4 +1,5 @@
 {CompositeDisposable} = require 'atom'
+{BufferedProcess} = require 'atom'
 
 net = require 'net'
 fs = require 'fs'
@@ -83,6 +84,9 @@ module.exports = TabletopsimulatorLua =
   subscriptions: null
 
   activate: (state) ->
+    # See if there are any Updates
+    @updatePackage()
+
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
@@ -204,3 +208,18 @@ module.exports = TabletopsimulatorLua =
 
   parse_line: (line) ->
     @file.append(line)
+
+  updatePackage: (isAutoUpdate = true) ->
+    @runApmUpgrade()
+
+  runApmUpgrade: (callback) ->
+    command = atom.packages.getApmPath()
+    args = ['upgrade', '--no-confirm', '--no-color', 'tabletopsimulator-lua']
+
+    stdout = (data) ->
+      console.log "Checking for tabletopsimulator-lua updates:\n" + data
+
+    exit = (exitCode) ->
+      # Call callback here
+
+    new BufferedProcess({command, args, stdout, exit})

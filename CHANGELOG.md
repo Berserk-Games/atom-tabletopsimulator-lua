@@ -1,3 +1,9 @@
+## 1.0.3
+* Added autoupdater
+
+## 1.0.2
+* Test
+
 ## 1.0.1
 * Added script_code to Object autocomplete
 
