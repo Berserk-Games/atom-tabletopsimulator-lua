@@ -1,3 +1,6 @@
+## 1.0.4
+* Test autoupdater
+
 ## 1.0.3
 * Added autoupdater
 
