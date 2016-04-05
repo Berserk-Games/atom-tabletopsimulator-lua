@@ -1,3 +1,6 @@
+## 1.0.6
+* Test autoupdater
+
 ## 1.0.5
 * Autoupdater reloads plugin after update
 
