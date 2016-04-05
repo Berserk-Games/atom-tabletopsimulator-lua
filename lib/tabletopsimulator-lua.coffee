@@ -13,6 +13,8 @@ port = 39999
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
 
+checkedForUpdate = false;
+
 # Ping function not used at the moment
 ping = (socket, delay) ->
   console.log "Pinging server"
@@ -85,7 +87,8 @@ module.exports = TabletopsimulatorLua =
 
   activate: (state) ->
     # See if there are any Updates
-    @updatePackage()
+    if not checkedForUpdate
+      @updatePackage()
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -108,6 +111,30 @@ module.exports = TabletopsimulatorLua =
   serialize: ->
 
   getProvider: -> provider
+
+  # Adapted from https://github.com/yujinakayama/atom-auto-update-packages
+  updatePackage: (isAutoUpdate = true) ->
+    @runApmUpgrade()
+
+  runApmUpgrade: (callback) ->
+    command = atom.packages.getApmPath()
+    args = ['upgrade', '--no-confirm', '--no-color', 'tabletopsimulator-lua']
+
+    stdout = (data) ->
+      console.log "Checking for tabletopsimulator-lua updates:\n" + data
+
+    exit = (exitCode) ->
+      # Reload package
+      pkgModel = atom.packages.getLoadedPackage('tabletopsimulator-lua')
+      pkgModel.deactivate()
+      pkgModel.mainModule = null
+      pkgModel.mainModuleRequired = false
+      pkgModel.reset()
+      pkgModel.load()
+      checkedForUpdate = true
+      pkgModel.activate()
+
+    new BufferedProcess({command, args, stdout, exit})
 
   getObjects: ->
     # Confirm just in case they misclicked Save & Play
@@ -208,18 +235,3 @@ module.exports = TabletopsimulatorLua =
 
   parse_line: (line) ->
     @file.append(line)
-
-  updatePackage: (isAutoUpdate = true) ->
-    @runApmUpgrade()
-
-  runApmUpgrade: (callback) ->
-    command = atom.packages.getApmPath()
-    args = ['upgrade', '--no-confirm', '--no-color', 'tabletopsimulator-lua']
-
-    stdout = (data) ->
-      console.log "Checking for tabletopsimulator-lua updates:\n" + data
-
-    exit = (exitCode) ->
-      # Call callback here
-
-    new BufferedProcess({command, args, stdout, exit})
