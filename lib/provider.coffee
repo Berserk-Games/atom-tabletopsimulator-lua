@@ -1072,6 +1072,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'script_code'
+            displayText: 'script_code' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Lua script on this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'static_friction'
             displayText: 'static_friction' # (optional)
             #replacementPrefix: 'so' # (optional)
