@@ -133,6 +133,8 @@ module.exports = TabletopsimulatorLua =
       pkgModel.activate()
       ###
 
+      #atom.reload()
+
     new BufferedProcess({command, args, stdout, exit})
 
   getObjects: ->
