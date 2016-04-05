@@ -1,3 +1,6 @@
+## 1.0.7
+* Reloading was reloading the old version, not the new one. Removed reloading code.
+
 ## 1.0.6
 * Test autoupdater
 

@@ -13,8 +13,6 @@ port = 39999
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
 
-checkedForUpdate = false;
-
 # Ping function not used at the moment
 ping = (socket, delay) ->
   console.log "Pinging server"
@@ -87,8 +85,7 @@ module.exports = TabletopsimulatorLua =
 
   activate: (state) ->
     # See if there are any Updates
-    if not checkedForUpdate
-      @updatePackage()
+    @updatePackage()
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -124,7 +121,8 @@ module.exports = TabletopsimulatorLua =
       console.log "Checking for tabletopsimulator-lua updates:\n" + data
 
     exit = (exitCode) ->
-      # Reload package
+      # Reload package - reloaded the old version, not the new updated one
+      ###
       pkgModel = atom.packages.getLoadedPackage('tabletopsimulator-lua')
       pkgModel.deactivate()
       pkgModel.mainModule = null
@@ -133,6 +131,7 @@ module.exports = TabletopsimulatorLua =
       pkgModel.load()
       checkedForUpdate = true
       pkgModel.activate()
+      ###
 
     new BufferedProcess({command, args, stdout, exit})
 
