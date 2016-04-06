@@ -1343,6 +1343,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'getCustomObject()'
+            displayText: 'getCustomObject()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the custom parameters on a Custom Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'getDescription()'
             displayText: 'getDescription()' # (optional)
             #replacementPrefix: 'so' # (optional)
