@@ -1,3 +1,6 @@
+## 1.1.0
+* Added pushing from Unity. Push new scripts, debug print messages, and error messages.
+
 ## 1.0.7
 * Reloading was reloading the old version, not the new one. Removed reloading code.
 

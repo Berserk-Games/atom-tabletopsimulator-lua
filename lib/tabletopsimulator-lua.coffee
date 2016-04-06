@@ -9,7 +9,8 @@ mkdirp = require 'mkdirp'
 provider = require './provider'
 
 domain = 'localhost'
-port = 39999
+clientport = 39999
+serverport = 39998
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
 
@@ -61,7 +62,7 @@ class FileHandler
             @ready = true
 
     open: ->
-        atom.focus()
+        #atom.focus()
         # register events
         atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
             @handle_connection(editor)
@@ -101,6 +102,9 @@ module.exports = TabletopsimulatorLua =
         @deletefile = path.join(ttsLuaDir, oldfile)
         fs.unlinkSync(@deletefile)
     catch error
+
+    # Start server to receive push information from Unity
+    @startServer()
 
   deactivate: ->
     @subscriptions.dispose()
@@ -189,9 +193,9 @@ module.exports = TabletopsimulatorLua =
     if @if_connected
       @stopConnection()
 
-    @connection = net.createConnection port, domain
+    @connection = net.createConnection clientport, domain
     @connection.tabletopsimulator = @
-    @connection.parse_line = @parse_line
+    #@connection.parse_line = @parse_line
     @connection.data_cache = ""
     @if_connected = true
 
@@ -216,13 +220,14 @@ module.exports = TabletopsimulatorLua =
           for line,i in lines
             if i < lines.length-1
               line = line + "\n"
-            @parse_line(line)
+            #@parse_line(line)
+            @file.append(line)
           @file.open()
           @file = null
 
       @data_cache = ""
 
-    @connection.on 'error', (e) =>
+    @connection.on 'error', (e) ->
       #console.log e
       @stopConnection()
 
@@ -234,5 +239,83 @@ module.exports = TabletopsimulatorLua =
     @connection.end()
     @if_connected = false
 
+  ###
   parse_line: (line) ->
     @file.append(line)
+  ###
+
+  startServer: ->
+    server = net.createServer (socket) ->
+      #console.log "New connection from #{socket.remoteAddress}"
+      socket.data_cache = ""
+      #socket.parse_line = @parse_line
+
+      socket.on 'data', (data) ->
+          #console.log "#{socket.remoteAddress} sent: #{data}"
+
+          try
+            @data = JSON.parse(@data_cache + data)
+          catch error
+            @data_cache = @data_cache + data
+            return
+
+          # Pushing new Object
+          if @data.messageID == 0
+            for f,i in @data.scriptStates
+              @file = new FileHandler()
+              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setDatasize(f.script.length)
+              @file.create()
+
+              lines = f.script.split "\n"
+              for line,i in lines
+                if i < lines.length-1
+                  line = line + "\n"
+                #@parse_line(line)
+                @file.append(line)
+              @file.open()
+              @file = null
+
+          # Loading a new game
+          else if @data.messageID == 1
+            # Delete any existing cached Lua files
+            try
+              @oldfiles = fs.readdirSync(ttsLuaDir)
+              for oldfile,i in @oldfiles
+                @deletefile = path.join(ttsLuaDir, oldfile)
+                fs.unlinkSync(@deletefile)
+            catch error
+
+            # Load scripts from new game
+            for f,i in @data.scriptStates
+              @file = new FileHandler()
+              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setDatasize(f.script.length)
+              @file.create()
+
+              lines = f.script.split "\n"
+              for line,i in lines
+                if i < lines.length-1
+                  line = line + "\n"
+                #@parse_line(line)
+                @file.append(line)
+              @file.open()
+              @file = null
+
+          # Print/Debug message
+          else if @data.messageID == 2
+            console.log @data.message
+
+          # Error message
+          # Might change this from a string to a struct with more info
+          else if @data.messageID == 3
+            console.error @data.errorMessagePrefix + @data.error
+            #console.error @data.message
+
+          @data_cache = ""
+
+      socket.on 'error', (e) ->
+        console.log e
+
+    console.log "Listening to #{domain}:#{serverport}"
+    server.listen serverport, domain
