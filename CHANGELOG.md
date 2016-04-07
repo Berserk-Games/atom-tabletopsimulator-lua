@@ -1,3 +1,10 @@
+## 1.1.1
+* Added getLuaScript()
+* Changed scaleAllAxes() to scale() overload
+* Cleaned up debug prints
+* Fixed Save & Play with a new tab open
+* Fixed reading in script/Object nicknames with special characters
+
 ## 1.1.0
 * Added pushing from Unity. Push new scripts, debug print messages, and error messages.
 
