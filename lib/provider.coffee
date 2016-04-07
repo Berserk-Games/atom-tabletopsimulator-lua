@@ -1388,6 +1388,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'getLuaScript()'
+            displayText: 'getLuaScript()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Lua script for this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLuaScript' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'getName()'
             displayText: 'getName()' # (optional)
             #replacementPrefix: 'so' # (optional)
