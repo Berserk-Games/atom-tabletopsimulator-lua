@@ -166,7 +166,9 @@ module.exports = TabletopsimulatorLua =
   saveAndPlay: ->
     # Save any open files
     for editor,i in atom.workspace.getTextEditors()
-      editor.save()
+      try
+        editor.save()
+      catch error
 
     # Read all files into JSON object
     @luaObjects = {}
