@@ -13,7 +13,6 @@ module.exports =
     new Promise (resolve) ->
       # Find your suggestions here
       #console.log "scopeDescriptor: " + scopeDescriptor
-      #console.log scopeDescriptor
       #console.log editor
       #console.log bufferPosition
       #console.log prefix
@@ -22,7 +21,7 @@ module.exports =
       #if bufferPosition.column >= 8
       #  console.log editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition])
 
-      if scopeDescriptor.scopes[1] == "keyword.operator.lua"
+      if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
         resolve([])
 
       # Substring up until this position
