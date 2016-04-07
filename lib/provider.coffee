@@ -1658,7 +1658,7 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'scaleAllAxes(${1:float})'
+            snippet: 'scale(${1:float})'
             displayText: 'scale(float scale)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
