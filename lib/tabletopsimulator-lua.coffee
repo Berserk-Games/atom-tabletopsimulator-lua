@@ -214,6 +214,7 @@ module.exports = TabletopsimulatorLua =
       if @data.messageID == 0
         for f,i in @data.scriptStates
           @file = new FileHandler()
+          f.name = f.name.replace(/([":<>/\\|?*])/g, "")
           @file.setBasename(f.name + "." + f.guid + ".lua")
           @file.setDatasize(f.script.length)
           @file.create()
@@ -265,6 +266,7 @@ module.exports = TabletopsimulatorLua =
           if @data.messageID == 0
             for f,i in @data.scriptStates
               @file = new FileHandler()
+              f.name = f.name.replace(/([":<>/\\|?*])/g, "")
               @file.setBasename(f.name + "." + f.guid + ".lua")
               @file.setDatasize(f.script.length)
               @file.create()
@@ -291,6 +293,7 @@ module.exports = TabletopsimulatorLua =
             # Load scripts from new game
             for f,i in @data.scriptStates
               @file = new FileHandler()
+              f.name = f.name.replace(/([":<>/\\|?*])/g, "")
               @file.setBasename(f.name + "." + f.guid + ".lua")
               @file.setDatasize(f.script.length)
               @file.create()
