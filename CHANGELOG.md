@@ -1,3 +1,6 @@
+## 1.1.2
+* Bumping to get Atom repo to recognize it
+
 ## 1.1.1
 * Added getLuaScript()
 * Changed scaleAllAxes() to scale() overload
