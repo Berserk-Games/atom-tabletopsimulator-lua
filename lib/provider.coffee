@@ -56,7 +56,7 @@ module.exports =
 
       # Global object
       if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
-        console.log "FOUND GLOBAL"
+        #console.log "FOUND GLOBAL"
         suggestions = [
           {
             #text: 'getObjectFromGUID()' # OR
@@ -121,7 +121,7 @@ module.exports =
         ]
       # math Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "math") || ((bufferPosition.column >= 6 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 5], bufferPosition]) == "math.") || previous_token == "math")
-        console.log "FOUND MATH"
+        #console.log "FOUND MATH"
         suggestions = [
           # Member Variables
           {
@@ -563,7 +563,7 @@ module.exports =
         ]
       # coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || ((bufferPosition.column >= 11 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 10], bufferPosition]) == "coroutine.") || previous_token == "coroutine")
-        console.log "FOUND COROUTINE"
+        #console.log "FOUND COROUTINE"
         suggestions = [
           {
             #text: 'getObjectFromGUID()' # OR
@@ -658,7 +658,7 @@ module.exports =
         ]
       # os Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || ((bufferPosition.column >= 4 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 3], bufferPosition]) == "os.") || previous_token == "os")
-        console.log "FOUND OS"
+        #console.log "FOUND OS"
         suggestions = [
           {
             #text: 'getObjectFromGUID()' # OR
@@ -723,7 +723,7 @@ module.exports =
         ]
       # Clock Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || ((bufferPosition.column >= 7 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 6], bufferPosition]) == "Clock.") || previous_token == "Clock")
-        console.log "FOUND CLOCK"
+        #console.log "FOUND CLOCK"
         suggestions = [
           # Member Variables
           {
@@ -820,7 +820,7 @@ module.exports =
         ]
       # Counter Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Counter") || ((bufferPosition.column >= 9 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 8], bufferPosition]) == "Counter.") || previous_token == "Counter")
-        console.log "FOUND COUNTER"
+        #console.log "FOUND COUNTER"
         suggestions = [
           # Functions
           {
@@ -902,7 +902,7 @@ module.exports =
       # Player Class. How to do?
       # Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || previous_token == "") || not editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")) && editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes(".")
-        console.log "FOUND OBJECT"
+        #console.log "FOUND OBJECT"
         suggestions = [
           # Member Variables
           {
@@ -1959,7 +1959,7 @@ module.exports =
         ]
       # Default Events
       else if editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")
-        console.log "FOUND DEFAULT EVENTS"
+        #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2174,7 +2174,7 @@ module.exports =
         ]
       # Globally accessible constants & functions
       else
-        console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
+        #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
           {
