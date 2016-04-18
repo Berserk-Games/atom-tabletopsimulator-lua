@@ -1,3 +1,6 @@
+## 1.1.3
+* Fixed setState autocomplete to include integer parameter
+
 ## 1.1.2
 * Bumping to get Atom repo to recognize it
 

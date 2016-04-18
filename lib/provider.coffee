@@ -1822,8 +1822,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'setState()'
-            displayText: 'setState()' # (optional)
+            snippet: 'setState(${1:int})'
+            displayText: 'setState(int state)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
