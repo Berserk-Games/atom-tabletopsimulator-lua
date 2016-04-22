@@ -2,12 +2,17 @@
 'context-menu':
   'atom-text-editor': [
     {
-      'label': 'TTS:Get Lua Scripts'
-      'command': 'tabletopsimulator-lua:getObjects'
-    },
-    {
-      'label': 'TTS:Save And Play'
-      'command': 'tabletopsimulator-lua:saveAndPlay'
+      label: 'Tabletop Simulator',
+      submenu: [
+        {
+          label: 'Get Lua Scripts',
+          command:'tabletopsimulator-lua:getObjects'
+        }
+        {
+          label: 'Save And Play',
+          command:'tabletopsimulator-lua:saveAndPlay'
+        }
+      ]
     }
   ]
 'menu': [
@@ -17,11 +22,11 @@
       'label': 'Tabletop Simulator'
       'submenu': [
         {
-          'label': 'TTS:Get Lua Scripts'
+          'label': 'Get Lua Scripts'
           'command': 'tabletopsimulator-lua:getObjects'
         },
         {
-          'label': 'TTS:Save And Play'
+          'label': 'Save And Play'
           'command': 'tabletopsimulator-lua:saveAndPlay'
         }
       ]

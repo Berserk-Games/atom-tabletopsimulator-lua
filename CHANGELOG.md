@@ -1,3 +1,21 @@
+## 1.1.4
+* Added tonumber() to autocomplete
+* Added tostring() to autocomplete
+* Added addNotebookTab() to autocomplete
+* Added removeNotebookTab() to autocomplete
+* Added getNotebookTabs() to autocomplete
+* Added editNotebookTab() to autocomplete
+* Added clearPixelPaint() to autocomplete
+* Added clearVectorPaint() to autocomplete
+* Added copy() to autocomplete
+* Added paste() to autocomplete
+* Added clone() to autocomplete
+* Added RPGFigurine class to autocomplete
+* Changed autocomplete references to color to player_color as appropriate
+* Fixed Uncaught TypeError: this.stopConnection is not a function
+* Globally accessible functions have been recolored to teal instead of blue
+* Moved TTS contextual menu commands into a submenu
+
 ## 1.1.3
 * Fixed setState autocomplete to include integer parameter
 

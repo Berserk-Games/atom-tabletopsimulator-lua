@@ -232,7 +232,7 @@ module.exports = TabletopsimulatorLua =
 
     @connection.on 'error', (e) ->
       #console.log e
-      @stopConnection()
+      @tabletopsimulator.stopConnection()
 
     @connection.on 'end', (data) ->
       #console.log "Connection closed"

@@ -899,6 +899,57 @@ module.exports =
           },
         ]
       # Player Class. How to do?
+      # RPGFigurine Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || ((bufferPosition.column >= 13 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 12], bufferPosition]) == "RPGFigurine.") || previous_token == "RPGFigurine")
+        #console.log "FOUND RPGFigurine"
+        suggestions = [
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'attack()'
+            displayText: 'attack()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Plays a random attack animation.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#attack' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'changeMode()'
+            displayText: 'changeMode()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Changes the RPG Figurine\'s current mode.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#changeMode' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'die()'
+            displayText: 'die()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Plays the death animation. Call die() again to reset the RPG Figurine.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die' # (optional)
+          },
+        ]
       # Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || previous_token == "") || not editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")) && editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes(".")
         #console.log "FOUND OBJECT"
@@ -1071,6 +1122,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'RPGFigurine'
+            displayText: 'RPGFigurine' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'RPGFigurine' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'A reference to the RPGFigurine class attached to this Object. Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#RPGFigurine' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'script_code'
             displayText: 'script_code' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1174,6 +1240,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Clears all 3D UI buttons on this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'clone(${1:Table})'
+            displayText: 'clone(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Object' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Copies and pastes this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2023,7 +2104,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'onDropped(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onDropped(string color)' # (optional)
+            displayText: 'onDropped(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2098,7 +2179,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPickedUp(string color)' # (optional)
+            displayText: 'onPickedUp(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2113,7 +2194,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerChangedColor(string color)' # (optional)
+            displayText: 'onPlayerChangedColor(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2128,7 +2209,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'onPlayerTurnEnd(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnEnd(string color)' # (optional)
+            displayText: 'onPlayerTurnEnd(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2143,7 +2224,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'onPlayerTurnStart(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnStart(string color)' # (optional)
+            displayText: 'onPlayerTurnStart(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2254,6 +2335,21 @@ module.exports =
           # Global Management Functions
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'addNotebookTab(${1:Table})'
+            displayText: 'addNotebookTab(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'int' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'callLuaFunctionInOtherScript(${1:Object}, ${2:string})'
             displayText: 'callLuaFunctionInOtherScript(Object func_owner, string func_name)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2284,6 +2380,51 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'clearPixelPaint()'
+            displayText: 'clearPixelPaint()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Clears all pixel paint.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearPixelPaint' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'clearVectorPaint()'
+            displayText: 'clearVectorPaint()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Clears all vector paint.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearVectorPaint' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'copy(${1:Table})'
+            displayText: 'copy(Table objects)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Copies a list of Objects.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'destroyObject(${1:Object})'
             displayText: 'destroyObject(Object obj)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2296,6 +2437,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Destroys an Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#destroyObject' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'editNotebookTab(${1:Table})'
+            displayText: 'editNotebookTab(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Edits an existing Tab on the Notebook.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2326,6 +2482,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Returns a Table of all the spawned Objects in the game.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getAllObjects' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getNotebookTabs()'
+            displayText: 'getNotebookTabs()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2389,6 +2560,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'paste(${1:Table})'
+            displayText: 'paste(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Pastes copied Objects and returns a Table of references to the new Objects.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'print(${1:string})'
             displayText: 'print(string message)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2431,6 +2617,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Prints a message to the chat window of a specific Player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'removeNotebookTab(${1:int})'
+            displayText: 'removeNotebookTab(int index)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Removes a Tab from the Notebook at a given index.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2480,7 +2681,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'stringColorToRGB(${1:string})'
-            displayText: 'stringColorToRGB(string color)' # (optional)
+            displayText: 'stringColorToRGB(string player_color)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -2491,6 +2692,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Converts a color string (player colors) to its RGB values.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#stringColorToRGB' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'tonumber(${1:e})'
+            displayText: 'tonumber(e [, base])' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'number' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'When called with no base, tonumber tries to convert its argument to a number.' # (optional)
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'tostring(${1:v})'
+            displayText: 'tostring(v)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'number' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Receives a value of any type and converts it to a string in a reasonable format.' # (optional)
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
       resolve(suggestions)
