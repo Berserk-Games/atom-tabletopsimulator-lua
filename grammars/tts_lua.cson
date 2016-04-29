@@ -150,6 +150,10 @@
     'name': 'constant.language.global.lua'
   }
   {
+    'match': '(?<![^.]\\.|:)\\b(JSON|Player)\\b'
+    'name': 'constant.language.static-classes.lua'
+  }
+  {
     'match': '(?<![^.]\\.|:)\\b(math|coroutine|os)\\b'
     'name': 'constant.language.stdlib.lua'
   }
@@ -158,7 +162,7 @@
     'name': 'support.function.lua'
   }
   {
-    'match': '(?<![^.]\\.|:)\\b(addNotebookTab|callLuaFunctionInOtherScript|callLuaFunctionInOtherScriptWithParams|clearPixelPaint|clearVectorPaint|copy|destroyObject|editNotebookTab|flipTable|getAllObjects|getNotebookTabs|getNotes|getObjectFromGUID|getPlayer|getSeatedPlayers|paste|printToAll|printToColor|removeNotebookTab|setNotes|spawnObject|startLuaCoroutine|stringColorToRGB)\\b(?=\\s*(?:[({"\']|\\[\\[))'
+    'match': '(?<![^.]\\.|:)\\b(addNotebookTab|callLuaFunctionInOtherScript|callLuaFunctionInOtherScriptWithParams|clearPixelPaint|clearVectorPaint|copy|destroyObject|editNotebookTab|flipTable|getAllObjects|getNotebookTabs|getNotes|getObjectFromGUID|getSeatedPlayers|paste|printToAll|printToColor|removeNotebookTab|setNotes|spawnObject|startLuaCoroutine|stringColorToRGB)\\b(?=\\s*(?:[({"\']|\\[\\[))'
     'name': 'support.function.tts.global-functions.lua'
   }
   {

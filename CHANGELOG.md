@@ -1,3 +1,16 @@
+## 1.1.5
+* Added previous player to onPlayerTurnStart()
+* Added next player to onPlayerTurnEnd()
+* Added use_grid to Object
+* Added use_snap_points to Object
+* Added auto_raise to Object
+* Added sticky to Object
+* Added interactable to Object
+* Removed getPlayer()
+* Added Player static global class
+* Added JSON static global class
+* Added TextTool class
+
 ## 1.1.4
 * Added tonumber() to autocomplete
 * Added tostring() to autocomplete

@@ -12,14 +12,12 @@ module.exports =
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     new Promise (resolve) ->
       # Find your suggestions here
-      #console.log "scopeDescriptor: " + scopeDescriptor
+      console.log "scopeDescriptor: " + scopeDescriptor
+      console.log scopeDescriptor
       #console.log editor
       #console.log bufferPosition
-      #console.log prefix
+      console.log prefix
       suggestions = []
-
-      #if bufferPosition.column >= 8
-      #  console.log editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition])
 
       if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
         resolve([])
@@ -28,6 +26,7 @@ module.exports =
       line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
       tokens = line.split "."
       previous_token = ""
+      previous_token_2 = ""
       if tokens.length > 1
         previous_token = tokens[tokens.length - 2].trim()
         tokens = previous_token.split("(")
@@ -45,13 +44,29 @@ module.exports =
         tokens = previous_token.split(" ")
         previous_token = tokens[tokens.length - 1].trim()
 
-      #console.log previous_token
-      #console.log (prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua")
-      #console.log bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global."
-      #console.log previous_token == "Clock"
+      tokens = line.split "."
+      if tokens.length > 2
+        previous_token_2 = tokens[tokens.length - 3].trim()
+        tokens = previous_token_2.split("(")
+        previous_token_2 = tokens[tokens.length - 1].trim()
+        tokens = previous_token_2.split("=")
+        previous_token_2 = tokens[tokens.length - 1].trim()
+        tokens = previous_token_2.split("{")
+        previous_token_2 = tokens[tokens.length - 1].trim()
+        tokens = previous_token_2.split(",")
+        previous_token_2 = tokens[tokens.length - 1].trim()
+        tokens = previous_token_2.split(">")
+        previous_token_2 = tokens[tokens.length - 1].trim()
+        tokens = previous_token_2.split("<")
+        previous_token_2 = tokens[tokens.length - 1 ].trim()
+        tokens = previous_token_2.split(" ")
+        previous_token_2 = tokens[tokens.length - 1].trim()
 
-      #console.log (prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || previous_token == "")
-      #console.log not editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")
+      console.log previous_token
+      console.log previous_token_2
+
+      console.log previous_token.length > 7 && previous_token.substring(0, 7) == "Player["
+      console.log previous_token.substring(0, 7)
 
       # Global object
       if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
@@ -898,7 +913,414 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue' # (optional)
           },
         ]
-      # Player Class. How to do?
+      # Player Colors
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Player.") || previous_token == "Player")
+        #console.log "FOUND Player"
+        suggestions = [
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Black'
+            displayText: 'Black' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Black player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Blue'
+            displayText: 'Blue' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Blue player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Brown'
+            displayText: 'Brown' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Brown player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Green'
+            displayText: 'Green' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Green player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Orange'
+            displayText: 'Orange' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Orange player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Pink'
+            displayText: 'Pink' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Pink player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Purple'
+            displayText: 'Purple' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Purple player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Red'
+            displayText: 'Red' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Red player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Teal'
+            displayText: 'Teal' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Teal player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'White'
+            displayText: 'White' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The White player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Yellow'
+            displayText: 'Yellow' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            leftLabel: 'Player' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Yellow player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+          },
+        ]
+      # Player Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token_2 == "Player") || (previous_token.length > 7 && previous_token.substring(0, 7) == "Player[")
+        #console.log "FOUND Player Class"
+        suggestions = [
+          # Member Variables
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'blindfolded'
+            displayText: 'blindfolded' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the player blindfolded?' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blindfolded' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'color'
+            displayText: 'color' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The player\'s color. Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#color' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'lift_height'
+            displayText: 'lift_height' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The player\'s lift height from 0 to 1.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lift_height' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'seated'
+            displayText: 'seated' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the player currently seated at the table? Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#seated' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'steam_id'
+            displayText: 'steam_id' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The player\'s Steam ID. Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_id' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'steam_name'
+            displayText: 'steam_name' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The player\'s Steam name. Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_name' # (optional)
+          },
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'blind()'
+            displayText: 'blind()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Puts the blindfold on the player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blind' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getPlayerHand()'
+            displayText: 'getPlayerHand()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Lua Table with the position and rotation of the given player\'s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayerHand' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getPointerPosition()'
+            displayText: 'getPointerPosition()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the position of the given player color\'s pointer.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerPosition' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getPointerRotation()'
+            displayText: 'getPointerRotation()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the y-axis rotation of the given player color\'s pointer in degrees.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'lookAt(${1:Table})'
+            displayText: 'lookAt(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Moves the Player\'s camera to look at a specific point.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'unblind()'
+            displayText: 'unblind()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Removes the blindfold from the player if she is blindfolded.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#unblind' # (optional)
+          },
+        ]
+      # JSON Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || ((bufferPosition.column >= 6 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 5], bufferPosition]) == "JSON.") || previous_token == "JSON")
+        #console.log "FOUND JSON"
+        suggestions = [
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'decode(${1:string})'
+            displayText: 'decode(string json_string)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Decodes a valid JSON string into a Lua string, number, or Table.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#decode' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'encode(${1:variable})'
+            displayText: 'encode(variable)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Encodes a Lua string, number, or Table into a valid JSON string. This will not work with Object references.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'encode_pretty(${1:variable})'
+            displayText: 'encode_pretty(variable)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Encodes a Lua string, number, or Table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty' # (optional)
+          },
+        ]
       # RPGFigurine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || ((bufferPosition.column >= 13 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 12], bufferPosition]) == "RPGFigurine.") || previous_token == "RPGFigurine")
         #console.log "FOUND RPGFigurine"
@@ -950,6 +1372,102 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die' # (optional)
           },
         ]
+      # TextTool Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "TextTool") || ((bufferPosition.column >= 10 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 9], bufferPosition]) == "TextTool.") || previous_token == "TextTool")
+        #console.log "FOUND TextTool"
+        suggestions = [
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getFontColor()'
+            displayText: 'getFontColor()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the current font color as a Lua Table keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getFontSize()'
+            displayText: 'getFontSize()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'int' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the current font size.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontSize' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getValue()'
+            displayText: 'getValue()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the current text.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getValue' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setFontColor(${1:Table})'
+            displayText: 'setFontColor(Table color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the current font color. The Lua Table parameter should be keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setFontSize(${1:int})'
+            displayText: 'setFontSize(int font_size)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the current font size.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontSize' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setValue(${1:string})'
+            displayText: 'setValue(string text)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the current text.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setValue' # (optional)
+          },
+        ]
       # Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || previous_token == "") || not editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")) && editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes(".")
         #console.log "FOUND OBJECT"
@@ -969,6 +1487,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The Object\'s angular drag.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#angular_drag' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'auto_raise'
+            displayText: 'auto_raise' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Should this Object automatically raise above other Objects when held?' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#auto_raise' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1077,6 +1610,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'interactable'
+            displayText: 'interactable' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#interactable' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'mass'
             displayText: 'mass' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1167,6 +1715,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'sticky'
+            displayText: 'sticky' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: '	Should Objects on top of this Object stick to this Object when this Object is picked up?' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#sticky' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'tag'
             displayText: 'tag' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1182,6 +1745,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'TextTool'
+            displayText: 'TextTool' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'TextTool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'A reference to the TextTool class attached to this Object. Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#TextTool' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'use_gravity'
             displayText: 'use_gravity' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1194,6 +1772,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Does gravity affect this Object?' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_gravity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'use_grid'
+            displayText: 'use_grid' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Should this Object snap to grid points?' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_grid' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'use_snap_points'
+            displayText: 'use_snap_points' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Should this Object snap to snap points?' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_snap_points' # (optional)
           },
           # Functions
           {
@@ -2208,8 +2816,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'onPlayerTurnEnd(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnEnd(string player_color)' # (optional)
+            snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2223,8 +2831,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'onPlayerTurnStart(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnStart(string player_color)' # (optional)
+            snippet: 'onPlayerTurnStart(player_color_start, player_color_previous)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2289,6 +2897,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'JSON'
+            displayText: 'JSON' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            #leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The JSON class.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'math'
             displayText: 'math' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2316,6 +2939,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The os class.' # (optional)
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.9' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Player'
+            displayText: 'Player' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            #leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Player class.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2527,21 +3165,6 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
-            snippet: 'getPlayer(${1:string})'
-            displayText: 'getSeatedPlayers(string player_color)' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Player' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Returns a Player object if someone is seated at the color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getPlayer' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
