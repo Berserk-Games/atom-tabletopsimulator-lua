@@ -1181,6 +1181,21 @@ module.exports =
           # Functions
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'attachCameraToObject(${1:Table})'
+            displayText: 'attachCameraToObject(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Makes a player\'s camera follow an Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'blind()'
             displayText: 'blind()' # (optional)
             #replacementPrefix: 'so' # (optional)
