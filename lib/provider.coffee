@@ -12,11 +12,11 @@ module.exports =
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     new Promise (resolve) ->
       # Find your suggestions here
-      console.log "scopeDescriptor: " + scopeDescriptor
-      console.log scopeDescriptor
+      #console.log "scopeDescriptor: " + scopeDescriptor
+      #console.log scopeDescriptor
       #console.log editor
       #console.log bufferPosition
-      console.log prefix
+      #console.log prefix
       suggestions = []
 
       if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
@@ -62,11 +62,11 @@ module.exports =
         tokens = previous_token_2.split(" ")
         previous_token_2 = tokens[tokens.length - 1].trim()
 
-      console.log previous_token
-      console.log previous_token_2
+      #console.log previous_token
+      #console.log previous_token_2
 
-      console.log previous_token.length > 7 && previous_token.substring(0, 7) == "Player["
-      console.log previous_token.substring(0, 7)
+      #console.log previous_token.length > 7 && previous_token.substring(0, 7) == "Player["
+      #console.log previous_token.substring(0, 7)
 
       # Global object
       if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
