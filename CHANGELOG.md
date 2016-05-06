@@ -1,3 +1,22 @@
+## 1.1.6
+* Changed onload() to onLoad(). onload() will still work, just not in autocomplete
+* Added Timer static global class
+* Added onSave() event
+* Added parameter to onLoad() for save state
+* Added script_code to Global
+* Added script_state to Object and Global
+* Deprecated callLuaFunctionInOtherScript() and callLuaFunctionInOtherScriptWithParams()
+* Added call() to Object and Global
+* Added onAttack() to RPGFigurine
+* Added onHit() to RPGFigurine
+* Added promoted to Player
+* Added team to Player
+* Added kick() to Player
+* Added mute() to Player
+* Added promote() to Player
+* Added changeColor() to Player
+* Added changeTeam() to Player
+
 ## 1.1.5
 * Added previous player to onPlayerTurnStart()
 * Added next player to onPlayerTurnEnd()

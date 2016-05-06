@@ -72,6 +72,53 @@ module.exports =
       if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
         #console.log "FOUND GLOBAL"
         suggestions = [
+          # Member Variables
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'script_code'
+            displayText: 'script_code' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Global Lua script.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'script_state'
+            displayText: 'script_state' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Global saved Lua script state.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state' # (optional)
+          },
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'call(${1:string}, ${2:Table})'
+            displayText: 'call(string function_name, Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Calls a Lua function owned by the Global Script and passes an optional Table as parameters to the function.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call' # (optional)
+          },
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'getTable(${1:string})'
@@ -1135,6 +1182,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'promoted'
+            displayText: 'promoted' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the player currently promoted? Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promoted' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'seated'
             displayText: 'seated' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1178,6 +1240,21 @@ module.exports =
             description: 'The player\'s Steam name. Read only.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_name' # (optional)
           },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'team'
+            displayText: 'team' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The player\'s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#team' # (optional)
+          },
           # Functions
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1208,6 +1285,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Puts the blindfold on the player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blind' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'changeColor(${1:string})'
+            displayText: 'changeColor(string new_color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Changes the player\'s color.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'changeTeam(${1:string})'
+            displayText: 'changeTeam(string new_team)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Changes the player\'s team. Valid team names: "None", "Clubs", "Diamonds", "Hearts", "Spades".' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeTeam' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1256,6 +1363,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'kick()'
+            displayText: 'kick()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Kicks the player from the game.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#kick' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'lookAt(${1:Table})'
             displayText: 'lookAt(Table parameters)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1268,6 +1390,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Moves the Player\'s camera to look at a specific point.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'mute()'
+            displayText: 'mute()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Mutes or unmutes the player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#mute' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'promote()'
+            displayText: 'promote()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Promotes or demotes the player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1336,6 +1488,42 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty' # (optional)
           },
         ]
+      # Timer Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Timer") || ((bufferPosition.column >= 7 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 6], bufferPosition]) == "Timer.") || previous_token == "Timer")
+        #console.log "FOUND Timer"
+        suggestions = [
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'create(${1:Table})'
+            displayText: 'create(Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'destroy(${1:string})'
+            displayText: 'destroy(string identifier)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Destroys an existing timer.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy' # (optional)
+          },
+        ]
       # RPGFigurine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || ((bufferPosition.column >= 13 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 12], bufferPosition]) == "RPGFigurine.") || previous_token == "RPGFigurine")
         #console.log "FOUND RPGFigurine"
@@ -1385,6 +1573,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Plays the death animation. Call die() again to reset the RPG Figurine.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'onAttack(hit_list)\n\t${0:-- body...}\nend'
+            displayText: 'onAttack(Table hit_list)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            #leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onAttack' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'onHit(attacker)\n\t${0:-- body...}\nend'
+            displayText: 'onHit(Object attacker)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            #leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onHit' # (optional)
           },
         ]
       # TextTool Class
@@ -1715,6 +1933,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'script_state'
+            displayText: 'script_state' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'string' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the saved Lua script state on the Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'static_friction'
             displayText: 'static_friction' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1848,6 +2081,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Adds a torque vector to the Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addTorque' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'call(${1:string}, ${2:Table})'
+            displayText: 'call(string function_name, Table parameters)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Calls a Lua function owned by this Object and passes an optional Table as parameters to the function.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2741,8 +2989,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'onload()\n\t${0:-- body...}\nend'
-            displayText: 'onload()' # (optional)
+            snippet: 'onLoad(save_state)\n\t${0:-- body...}\nend'
+            displayText: 'onLoad(string save_state)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             #leftLabel: 'Object' # (optional)
@@ -2752,7 +3000,7 @@ module.exports =
             #className: '' # (optional)
             #iconHTML: '' # (optional)
             description: 'Automatically called when a game save is finished loading every Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onload' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2858,6 +3106,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Automatically called at the start of a Player\'s turn.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'onSave()\n\t${0:-- body...}\nend'
+            displayText: 'onSave()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            #leftLabel: 'Object' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Automatically called when the game saves (including auto-save for Rewinding).' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2985,6 +3248,21 @@ module.exports =
             description: 'A reference to this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object' # (optional)
           },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Timer'
+            displayText: 'Timer' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            #leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Timer class.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/' # (optional)
+          },
           # Global Management Functions
           {
             #text: 'getObjectFromGUID()' # OR
@@ -3000,36 +3278,6 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
-            snippet: 'callLuaFunctionInOtherScript(${1:Object}, ${2:string})'
-            displayText: 'callLuaFunctionInOtherScript(Object func_owner, string func_name)' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Starts a Lua function owned by another Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#callLuaFunctionInOtherScript' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
-            snippet: 'callLuaFunctionInOtherScriptWithParams(${1:Object}, ${2:string}, ${3:Table})'
-            displayText: 'callLuaFunctionInOtherScriptWithParams(Object func_owner, string func_name, Table params)' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Starts a Lua function owned by another Object with parameters.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#callLuaFunctionInOtherScriptWithParams' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR

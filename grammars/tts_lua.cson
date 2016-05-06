@@ -150,7 +150,7 @@
     'name': 'constant.language.global.lua'
   }
   {
-    'match': '(?<![^.]\\.|:)\\b(JSON|Player)\\b'
+    'match': '(?<![^.]\\.|:)\\b(JSON|Player|Timer)\\b'
     'name': 'constant.language.static-classes.lua'
   }
   {
