@@ -1,3 +1,8 @@
+## 1.1.7
+* Added getHandObjects() to Player
+* Added onObjectDropped() event
+* Added onObjectPickedUp() event
+
 ## 1.1.6
 * Changed onload() to onLoad(). onload() will still work, just not in autocomplete
 * Added Timer static global class

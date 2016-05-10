@@ -1318,6 +1318,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'getHandObjects()'
+            displayText: 'getHandObjects()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'getPlayerHand()'
             displayText: 'getPlayerHand()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -3019,6 +3034,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDropped(string player_color, Object dropped_object)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            #leftLabel: 'Object' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Automatically called when an Object is dropped.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -3046,6 +3076,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Automatically called when an Object leaves a Scripting Zone.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            #leftLabel: 'Object' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Automatically called when an Object is picked up.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
