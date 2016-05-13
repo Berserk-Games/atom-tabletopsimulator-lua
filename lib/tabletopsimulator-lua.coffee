@@ -95,6 +95,14 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
 
+    # Close any open files
+    for editor,i in atom.workspace.getTextEditors()
+      try
+        #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+        editor.destroy()
+      catch error
+        console.log error
+
     # Delete any existing cached Lua files
     try
       @oldfiles = fs.readdirSync(ttsLuaDir)
@@ -148,6 +156,14 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
+          # Close any open files
+          for editor,i in atom.workspace.getTextEditors()
+            try
+              #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+              editor.destroy()
+            catch error
+              console.log error
+
           # Delete any existing cached Lua files
           try
             @oldfiles = fs.readdirSync(ttsLuaDir)
@@ -212,6 +228,14 @@ module.exports = TabletopsimulatorLua =
         return
 
       if @data.messageID == 0
+        # Close any open files
+        for editor,i in atom.workspace.getTextEditors()
+          try
+            #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+            editor.destroy()
+          catch error
+            console.log error
+
         for f,i in @data.scriptStates
           @file = new FileHandler()
           f.name = f.name.replace(/([":<>/\\|?*])/g, "")
@@ -282,6 +306,13 @@ module.exports = TabletopsimulatorLua =
 
           # Loading a new game
           else if @data.messageID == 1
+            for editor,i in atom.workspace.getTextEditors()
+              try
+                #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+                editor.destroy()
+              catch error
+                console.log error
+
             # Delete any existing cached Lua files
             try
               @oldfiles = fs.readdirSync(ttsLuaDir)
