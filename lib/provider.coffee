@@ -110,7 +110,7 @@ module.exports =
             displayText: 'call(string function_name, Table parameters)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
+            leftLabel: 'variable' # (optional)
             #leftLabelHTML: '' # (optional)
             #rightLabel: '' # (optional)
             #rightLabelHTML: '' # (optional)
@@ -1137,6 +1137,21 @@ module.exports =
           # Member Variables
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'admin'
+            displayText: 'admin' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the player currently promoted or hosting the game? Read only.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#admin' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'blindfolded'
             displayText: 'blindfolded' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1231,7 +1246,7 @@ module.exports =
             displayText: 'steam_name' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
+            leftLabel: 'string' # (optional)
             #leftLabelHTML: '' # (optional)
             #rightLabel: '' # (optional)
             #rightLabelHTML: '' # (optional)
@@ -1988,7 +2003,7 @@ module.exports =
             #rightLabelHTML: '' # (optional)
             #className: '' # (optional)
             #iconHTML: '' # (optional)
-            description: '	Should Objects on top of this Object stick to this Object when this Object is picked up?' # (optional)
+            description: 'Should Objects on top of this Object stick to this Object when this Object is picked up?' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#sticky' # (optional)
           },
           {
@@ -2005,6 +2020,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The tag of the Object representing its type. Read only.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tag' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'tooltip'
+            displayText: 'tooltip' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Should Object show tooltips when hovering over it.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tooltip' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2103,7 +2133,7 @@ module.exports =
             displayText: 'call(string function_name, Table parameters)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
+            leftLabel: 'variable' # (optional)
             #leftLabelHTML: '' # (optional)
             #rightLabel: '' # (optional)
             #rightLabelHTML: '' # (optional)
@@ -2139,7 +2169,7 @@ module.exports =
             #rightLabelHTML: '' # (optional)
             #className: '' # (optional)
             #iconHTML: '' # (optional)
-            description: 'Copies and pastes this Object.' # (optional)
+            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
           },
           {
@@ -2729,8 +2759,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'setPositionSmooth(${1:Table})'
-            displayText: 'setPositionSmooth(Table position)' # (optional)
+            snippet: 'setPositionSmooth(${1:Table}, ${2:bool}, ${3:bool})'
+            displayText: 'setPositionSmooth(Table position, bool Collide, bool Fast)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2759,8 +2789,8 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'setRotationSmooth(${1:Table})'
-            displayText: 'setRotationSmooth(Table rotation)' # (optional)
+            snippet: 'setRotationSmooth(${1:Table}, ${2:bool}, ${3:bool})'
+            displayText: 'setRotationSmooth(Table rotation, bool Collide, bool Fast)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -3398,6 +3428,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Edits an existing Tab on the Notebook.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'broadcastToAll(${1:string}, ${2:Table})'
+            displayText: 'broadcastToAll(string message, Table text_color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Prints a message to the screen and chat window on all connected clients.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToAll' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'broadcastToColor(${1:string}, ${2:string}, ${3:Table})'
+            displayText: 'broadcastToColor(string message, string player_color, Table text_color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Prints a private message to the screen and chat window to the player matching the player color.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToColor' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
