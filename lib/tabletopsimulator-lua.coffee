@@ -192,13 +192,14 @@ module.exports = TabletopsimulatorLua =
     @luaObjects.scriptStates = []
     @luafiles = fs.readdirSync(ttsLuaDir)
     for luafile,i in @luafiles
-      @luaObject = {}
-      tokens = luafile.split "."
-      @luaObject.name = luafile
-      @luaObject.guid = tokens[tokens.length-2]
       fname = path.join(ttsLuaDir, luafile)
-      @luaObject.script = fs.readFileSync(fname, 'utf8')
-      @luaObjects.scriptStates.push(@luaObject)
+      if not fs.statSync(fname).isDirectory()
+        @luaObject = {}
+        tokens = luafile.split "."
+        @luaObject.name = luafile
+        @luaObject.guid = tokens[tokens.length-2]
+        @luaObject.script = fs.readFileSync(fname, 'utf8')
+        @luaObjects.scriptStates.push(@luaObject)
 
     if not @if_connected
       @startConnection()
