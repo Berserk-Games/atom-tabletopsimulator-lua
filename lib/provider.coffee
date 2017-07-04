@@ -68,8 +68,11 @@ module.exports =
       #console.log previous_token.length > 7 && previous_token.substring(0, 7) == "Player["
       #console.log previous_token.substring(0, 7)
 
+      # Short circuit common erroneous predictions
+      if (line.endsWith(" do"))
+        suggestions = []
       # Global object
-      if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
         #console.log "FOUND GLOBAL"
         suggestions = [
           # Member Variables
@@ -689,7 +692,7 @@ module.exports =
           {
             #text: 'getObjectFromGUID()' # OR
             snippet: 'wrap(${1:function})'
-            displayText: 'wrap(funtion f)' # (optional)
+            displayText: 'wrap(function f)' # (optional)
             #replacementPrefix: 'so' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -1129,6 +1132,37 @@ module.exports =
             description: 'The Yellow player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
           },
+          # Functions
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getPlayers()'
+            displayText: 'getPlayers()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Table of all Players.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayers' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getSpectators()'
+            displayText: 'getSpectators()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Table of spectator Players.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getSpectators' # (optional)
+          },
         ]
       # Player Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token_2 == "Player") || (previous_token.length > 7 && previous_token.substring(0, 7) == "Player[")
@@ -1179,6 +1213,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The player\'s color. Read only.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#color' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'host'
+            displayText: 'host' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the player the host?.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#host' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1300,6 +1349,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Puts the blindfold on the player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blind' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'broadcast(${1:string})'
+            displayText: 'broadcast(string message)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Broadcasts a message to the player. This also sends a message to the top center of the screen.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'broadcast(${1:string}, $(2:string))'
+            displayText: 'broadcast(string message, string color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Broadcasts a message to the player with Color. This also sends a message to the top center of the screen.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1438,6 +1517,36 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'print(${1:string})'
+            displayText: 'print(string message)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Prints a message to the player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'print(${1:string}, $(2:string))'
+            displayText: 'print(string message, string color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Prints a message to the player with Color.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'promote()'
             displayText: 'promote()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1450,6 +1559,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Promotes or demotes the player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setHandTransform(${1:Table})'
+            displayText: 'setHandTransform(Table transform)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the Transform of the player’s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1840,6 +1964,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The Object\'s dynamic friction.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dynamic_friction' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'grid_projection'
+            displayText: 'grid_projection' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Should the grid project onto this object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#grid_projection' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2309,6 +2448,36 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'getBounds()'
+            displayText: 'getBounds()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the world space axis aligned Bounds of the Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBounds' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getBoundsNormalized()'
+            displayText: 'getBoundsNormalized()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the world space axis aligned Bounds of the Object at zero rotation.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBoundsNormalized' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'getButtons()'
             displayText: 'getButtons()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2381,6 +2550,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Returns the GUID that belongs to this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getLock()'
+            displayText: 'getLock()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Get the lock status of this object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLock' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2489,6 +2673,36 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'getStateId()'
+            displayText: 'getStateId()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'int' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns id of the active state for this object. Will return -1 if the object has no states.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStateId' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getStates()'
+            displayText: 'getStates()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns a Table with the keys “name”, “guid”, and “id”.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStates' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'getStatesCount()'
             displayText: 'getStatesCount()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2516,6 +2730,51 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Gets a Lua Table for this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getTransformForward()'
+            displayText: 'getTransformForward()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Gets the forward direction of this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformForward' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getTransformRight()'
+            displayText: 'getTransformRight()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Gets the right direction of this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformRight' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getTransformUp()'
+            displayText: 'getTransformUp()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Gets the up direction of this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2564,6 +2823,96 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'highlightOff()'
+            displayText: 'highlightOff()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Stop highlighting this object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOff' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'highlightOn(${1:Table}, ${2:float})'
+            displayText: 'highlightOn(Table color, float duration)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Highlight this object with color for an optional duration. Color values are between 0 and 1.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOn' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'isSmoothMoving()'
+            displayText: 'isSmoothMoving()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Is the object smoothly moving from our smooth functions.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'positionToLocal(${1:Table})'
+            displayText: 'positionToLocal(Table vector)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Converts the world position to a local position of this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToLocal' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'positionToWorld(${1:Table})'
+            displayText: 'positionToWorld(Table vector)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Converts the local position of this Object to a world position.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToWorld' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'putObject(${1:Table})'
+            displayText: 'putObject(Table object)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Add this object to the current object. Works for stacking chips, decks, and bags.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#putObject' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'lock()'
             displayText: 'lock()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2576,6 +2925,36 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Locks this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#lock' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'randomize()'
+            displayText: 'randomize()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Same as pressing the ‘R’ key on an Object. Shuffles deck/bag, rolls dice/coin, lifts any other object up in the air.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#randomize' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'reload()'
+            displayText: 'reload()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Reloads this object by destroying and spawning it place. Returns the newly spawned object. Very useful if using setCustomObject().' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reload' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2669,6 +3048,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'setAngularVelocity(${1:Table})'
+            displayText: 'setAngularVelocity(Table vector)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the angular velocity of the object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setAngularVelocity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'setColorTint(${1:Table})'
             displayText: 'setColorTint(Table color)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2711,6 +3105,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Sets the description for this Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setDescription' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setLock(${1:bool})'
+            displayText: 'setLock(bool lock)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Set the lock status of an object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLock' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -2879,6 +3288,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'setVelocity(${1:Table})'
+            displayText: 'setVelocity(Table vector)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the velocity of the object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVelocity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'shuffle()'
             displayText: 'shuffle()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -2954,7 +3378,7 @@ module.exports =
           }
         ]
       # Default Events
-      else if editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).includes("function")
+      else if editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).endsWith("function ")
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
