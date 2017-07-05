@@ -68,9 +68,35 @@ module.exports =
       #console.log previous_token.length > 7 && previous_token.substring(0, 7) == "Player["
       #console.log previous_token.substring(0, 7)
 
-      # Short circuit common erroneous predictions
+      # Control blocks
       if (line.endsWith(" do"))
-        suggestions = []
+        suggestions = [
+          {
+            snippet: 'do\n\t$1\nend'
+            displayText: 'do...end' # (optional)
+          },
+        ]
+      else if (line.endsWith(" then"))
+        suggestions = [
+          {
+            snippet: 'then\n\t$1\nend'
+            displayText: 'then...end' # (optional)
+          },
+        ]
+      else if (line.endsWith(" repeat"))
+        suggestions = [
+          {
+            snippet: 'repeat\n\t$1\nuntil'
+            displayText: 'repeat...until' # (optional)
+          },
+        ]
+      else if (line.includes("function") && line.endsWith(")"))
+        suggestions = [
+          {
+            snippet: '\n\t$1\nend'
+            displayText: 'function...end' # (optional)
+          },
+        ]
       # Global object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Global.") || previous_token == "Global")
         #console.log "FOUND GLOBAL"
@@ -963,6 +989,254 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue' # (optional)
           },
         ]
+      # Lighting
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Lighting") || ((bufferPosition.column >= 9 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 9], bufferPosition]) == "Lighting.") || previous_token == "Lighting")
+        suggestions = [
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'ambient_type'
+            displayText: 'ambient_type' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'int' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The source of the ambient light. 1 = Background, 2 = Gradient.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_type' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'ambient_intensity'
+            displayText: 'ambient_intensity' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The strength of the ambient light either from the background or gradient. Range is 0-4.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_intensity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'light_intensity'
+            displayText: 'light_intensity' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The strength of the directional light shining down in the scene. Range is 0-4.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#light_intensity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'reflection_intensity'
+            displayText: 'reflection_intensity' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'property' # (optional)
+            leftLabel: 'float' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The strength of the reflections from the background. Range is 0-1.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#reflection_intensity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'apply()'
+            displayText: 'apply()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Applies all changed made to the Lighting class. This must be called for these changes to take affect.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#apply' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getAmbientEquatorColor()'
+            displayText: 'getAmbientEquatorColor()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Color of the gradient equator.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientEquatorColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getAmbientGroundColor()'
+            displayText: 'getAmbientGroundColor()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Color of the gradient ground.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientGroundColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getAmbientSkyColor()'
+            displayText: 'getAmbientSkyColor()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Color of the gradient sky.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientSkyColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getLightColor()'
+            displayText: 'getLightColor()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Color of the directional light.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getLightColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setAmbientEquatorColor(${1:Table})'
+            displayText: 'setAmbientEquatorColor(Table color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the Color of the gradient equator.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setAmbientGroundColor(${1:Table})'
+            displayText: 'setAmbientGroundColor(Table color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the Color of the ambient ground.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setAmbientSkyColor(${1:Table})'
+            displayText: 'setAmbientSkyColor(Table color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the Color of the gradient sky.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setLightColor(${1:Table})'
+            displayText: 'setLightColor(Table color)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the Color of the directional light.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor' # (optional)
+          },
+        ]
+      # Physics
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 8], bufferPosition]) == "Physics.") || previous_token == "Physics")
+        suggestions = [
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'cast(${1:Table})'
+            displayText: 'cast(Table info)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Casts a shape based on Info and returns a table of multiple Hit.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getGravity()'
+            displayText: 'getGravity()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the gravity Vector.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#getGravity' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'setGravity(${1:Table})'
+            displayText: 'setGravity(Table vector)' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Sets the gravity Vector.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setGravity' # (optional)
+          },
+        ]
       # Player Colors
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || ((bufferPosition.column >= 8 && editor.getTextInRange([[bufferPosition.row, bufferPosition.column - 7], bufferPosition]) == "Player.") || previous_token == "Player")
         #console.log "FOUND Player"
@@ -1337,21 +1611,6 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'blind()'
-            displayText: 'blind()' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Puts the blindfold on the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blind' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
             snippet: 'broadcast(${1:string})'
             displayText: 'broadcast(string message)' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1397,21 +1656,6 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'changeTeam(${1:string})'
-            displayText: 'changeTeam(string new_team)' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Changes the player\'s team. Valid team names: "None", "Clubs", "Diamonds", "Hearts", "Spades".' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeTeam' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
             snippet: 'getHandObjects()'
             displayText: 'getHandObjects()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -1424,6 +1668,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'getHandTransform()'
+            displayText: 'getHandTransform()' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'Returns the Transform of the player’s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
@@ -1574,21 +1833,6 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'Sets the Transform of the player’s hand.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
-            snippet: 'unblind()'
-            displayText: 'unblind()' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Removes the blindfold from the player if she is blindfolded.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#unblind' # (optional)
           },
         ]
       # JSON Class
@@ -2913,21 +3157,6 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
-            snippet: 'lock()'
-            displayText: 'lock()' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Locks this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#lock' # (optional)
-          },
-          {
-            #text: 'getObjectFromGUID()' # OR
             snippet: 'randomize()'
             displayText: 'randomize()' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -3361,24 +3590,9 @@ module.exports =
             description: 'Smoothly moves this Object from its current position to a given offset.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#translate' # (optional)
           },
-          {
-            #text: 'getObjectFromGUID()' # OR
-            snippet: 'unlock()'
-            displayText: 'unlock()' # (optional)
-            #replacementPrefix: 'so' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            #leftLabelHTML: '' # (optional)
-            #rightLabel: '' # (optional)
-            #rightLabelHTML: '' # (optional)
-            #className: '' # (optional)
-            #iconHTML: '' # (optional)
-            description: 'Unlocks this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#unlock' # (optional)
-          }
         ]
       # Default Events
-      else if editor.getTextInRange([[bufferPosition.row, 0], bufferPosition]).endsWith("function ")
+      else if (line.includes("function") && line.lastIndexOf("function") > line.lastIndexOf("("))
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
@@ -3689,6 +3903,21 @@ module.exports =
           },
           {
             #text: 'getObjectFromGUID()' # OR
+            snippet: 'Lighting'
+            displayText: 'Lighting' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            #leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Lighting class.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
             snippet: 'math'
             displayText: 'math' # (optional)
             #replacementPrefix: 'so' # (optional)
@@ -3716,6 +3945,21 @@ module.exports =
             #iconHTML: '' # (optional)
             description: 'The os class.' # (optional)
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.9' # (optional)
+          },
+          {
+            #text: 'getObjectFromGUID()' # OR
+            snippet: 'Phyics'
+            displayText: 'Physics' # (optional)
+            #replacementPrefix: 'so' # (optional)
+            type: 'constant' # (optional)
+            #leftLabel: 'variable' # (optional)
+            #leftLabelHTML: '' # (optional)
+            #rightLabel: '' # (optional)
+            #rightLabelHTML: '' # (optional)
+            #className: '' # (optional)
+            #iconHTML: '' # (optional)
+            description: 'The Physics class.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/' # (optional)
           },
           {
             #text: 'getObjectFromGUID()' # OR
