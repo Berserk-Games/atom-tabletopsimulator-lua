@@ -14,6 +14,9 @@ serverport = 39998
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
 
+# Store cursor positions between loads
+cursors = {}
+
 # Ping function not used at the moment
 ping = (socket, delay) ->
   console.log "Pinging server"
@@ -68,6 +71,10 @@ class FileHandler
             @handle_connection(editor)
 
     handle_connection: (editor) ->
+        # Restore cursor position
+        try
+          editor.setCursorBufferPosition(cursors[editor.getPath()])
+        catch error
         buffer = editor.getBuffer()
         @subscriptions = new CompositeDisposable
         @subscriptions.add buffer.onDidSave =>
@@ -159,6 +166,8 @@ module.exports = TabletopsimulatorLua =
           # Close any open files
           for editor,i in atom.workspace.getTextEditors()
             try
+              # Store cursor positions
+              cursors[editor.getPath()] = editor.getCursorBufferPosition()
               #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
               editor.destroy()
             catch error
@@ -183,6 +192,8 @@ module.exports = TabletopsimulatorLua =
     # Save any open files
     for editor,i in atom.workspace.getTextEditors()
       try
+        # Store cursor positions
+        cursors[editor.getPath()] = editor.getCursorBufferPosition()
         editor.save()
       catch error
 
