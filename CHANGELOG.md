@@ -1,3 +1,6 @@
+## 1.1.8
+* Merged two pull requests
+
 ## 1.1.7
 * Added getHandObjects() to Player
 * Added onObjectDropped() event
