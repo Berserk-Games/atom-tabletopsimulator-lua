@@ -86,7 +86,7 @@ module.exports =
       else if (line.endsWith(" repeat"))
         suggestions = [
           {
-            snippet: 'repeat\n\t$1\nuntil'
+            snippet: 'repeat\n\t$1\nuntil $2'
             displayText: 'repeat...until' # (optional)
           },
         ]
@@ -3852,7 +3852,7 @@ module.exports =
           },
         ]
       # Globally accessible constants & functions
-      else
+      else if (line == "" || line.endsWith(" "))
         #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
