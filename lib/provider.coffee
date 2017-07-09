@@ -1169,7 +1169,7 @@ module.exports =
           },
         ]
       # Object
-      else if (prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && previous_token == "")) || (not line.includes("function") && line.includes("."))
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && previous_token == "")) || (not line.includes("function") && line.includes("."))) && not line.endsWith(")")
         #console.log "FOUND OBJECT"
         suggestions = [
           # Member Variables
