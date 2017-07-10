@@ -22,13 +22,26 @@ module.exports =
 
       # Split line into tokens
       tokens = line.split(".")
+      this_token = ""
+      this_token_whole = true
       previous_token = ""
       previous_token_2 = ""
-      if tokens.length > 1
-        previous_token = tokens.slice(-2)[0].split(/[^a-zA-Z0-9_]/).slice(-1)[0]
-        if tokens.length > 2
-          previous_token_2 = tokens.slice(-3)[0].split(/[^a-zA-Z0-9_]/).slice(-1)[0]
-      #console.log previous_token, " ", previous_token_2
+      if tokens.length > 0
+        this_token = tokens.slice(-1)[0]
+        if this_token.match(/[^a-zA-Z0-9_]+/)
+          this_token_whole = false
+        if tokens.length > 1
+          for part in tokens.slice(-2)[0].split(/[^a-zA-Z0-9_]+/)#.reverse()
+            if part != ""
+              previous_token = part
+              break
+          if tokens.length > 2
+            for part in tokens.slice(-3)[0].split(/[^a-zA-Z0-9_]+/)#.reverse()
+              if part != ""
+                previous_token_2 = part
+                break
+
+      console.log this_token, "(", this_token_whole, ") <- ", previous_token, " <- ", previous_token_2
 
       # Control blocks
       if (line.endsWith(" do"))
@@ -60,7 +73,7 @@ module.exports =
           },
         ]
       # Global object
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || line.endsWith("Global.") || previous_token == "Global"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || line.endsWith("Global.") || (previous_token == "Global" && this_token_whole)
         #console.log "FOUND GLOBAL"
         suggestions = [
           # Member Variables
@@ -130,7 +143,7 @@ module.exports =
           },
         ]
       # math Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "math") || line.endsWith("math.") || previous_token == "math"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "math") || line.endsWith("math.") || (previous_token == "math" && this_token_whole)
         #console.log "FOUND MATH"
         suggestions = [
           # Member Variables
@@ -368,7 +381,7 @@ module.exports =
           },
         ]
       # coroutine Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || previous_token == "coroutine"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_whole)
         #console.log "FOUND COROUTINE"
         suggestions = [
           {
@@ -420,7 +433,7 @@ module.exports =
           },
         ]
       # os Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || previous_token == "os"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || (previous_token == "os" && this_token_whole)
         #console.log "FOUND OS"
         suggestions = [
           {
@@ -457,7 +470,7 @@ module.exports =
           },
         ]
       # Clock Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || line.endsWith("Clock.") || previous_token == "Clock"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || line.endsWith("Clock.") || (previous_token == "Clock" && this_token_whole)
         #console.log "FOUND CLOCK"
         suggestions = [
           # Member Variables
@@ -512,7 +525,7 @@ module.exports =
           },
         ]
       # Counter Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Counter") || line.endsWith("Counter.") || previous_token == "Counter"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Counter") || line.endsWith("Counter.") || (previous_token == "Counter" && this_token_whole)
         #console.log "FOUND COUNTER"
         suggestions = [
           # Functions
@@ -558,7 +571,7 @@ module.exports =
           },
         ]
       # Lighting
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Lighting") || line.endsWith("Lighting.") || previous_token == "Lighting"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Lighting") || line.endsWith("Lighting.") || (previous_token == "Lighting" && this_token_whole)
         suggestions = [
           {
             snippet: 'ambient_type'
@@ -666,7 +679,7 @@ module.exports =
           },
         ]
       # Physics
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || previous_token == "Physics"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_whole)
         suggestions = [
           {
             snippet: 'cast(${1:Table})'
@@ -694,7 +707,7 @@ module.exports =
           },
         ]
       # Player Colors
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || line.endsWith("Player.") || previous_token == "Player"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || line.endsWith("Player.") || (previous_token == "Player" && this_token_whole)
         #console.log "FOUND Player"
         suggestions = [
           {
@@ -1019,7 +1032,7 @@ module.exports =
           },
         ]
       # JSON Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || previous_token == "JSON"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || (previous_token == "JSON" && this_token_whole)
         #console.log "FOUND JSON"
         suggestions = [
           # Functions
@@ -1049,7 +1062,7 @@ module.exports =
           },
         ]
       # Timer Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Timer") || line.endsWith("Timer.") || previous_token == "Timer"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Timer") || line.endsWith("Timer.") || (previous_token == "Timer" && this_token_whole)
         #console.log "FOUND Timer"
         suggestions = [
           # Functions
@@ -1071,7 +1084,7 @@ module.exports =
           },
         ]
       # RPGFigurine Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || line.endsWith("RPGFigurine.") || previous_token == "RPGFigurine"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || line.endsWith("RPGFigurine.") || (previous_token == "RPGFigurine" && this_token_whole)
         #console.log "FOUND RPGFigurine"
         suggestions = [
           # Functions
@@ -1115,7 +1128,7 @@ module.exports =
           },
         ]
       # TextTool Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "TextTool") || line.endsWith("TextTool.") || previous_token == "TextTool"
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "TextTool") || line.endsWith("TextTool.") || (previous_token == "TextTool" && this_token_whole)
         #console.log "FOUND TextTool"
         suggestions = [
           # Functions
@@ -1169,7 +1182,7 @@ module.exports =
           },
         ]
       # Object
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && previous_token == "")) || (not line.includes("function") && line.includes("."))) && not line.endsWith(")")
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_whole))) #|| (not line.includes("function") && line.includes("."))) && not line.endsWith(")")
         #console.log "FOUND OBJECT"
         suggestions = [
           # Member Variables
