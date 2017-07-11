@@ -138,7 +138,7 @@ module.exports =
           },
           # Functions
           {
-            snippet: 'call(${1:string}, ${2:Table})'
+            snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
             displayText: 'call(string function_name, Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'variable' # (optional)
@@ -146,7 +146,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call' # (optional)
           },
           {
-            snippet: 'getTable(${1:string})'
+            snippet: 'getTable(${1:string|table_name})'
             displayText: 'getTable(string table_name)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -154,7 +154,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable' # (optional)
           },
           {
-            snippet: 'getVar(${1:string})'
+            snippet: 'getVar(${1:string|variable_name})'
             displayText: 'getVar(string variable_name)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'variable' # (optional)
@@ -162,7 +162,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar' # (optional)
           },
           {
-            snippet: 'setTable(${1:string}, ${2:Table})'
+            snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
             displayText: 'setTable(string table_name, Table table)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -170,7 +170,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable' # (optional)
           },
           {
-            snippet: 'setVar(${1:string}, ${2:variable})'
+            snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
             displayText: 'setVar(string variable_name, variable value)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -201,7 +201,7 @@ module.exports =
           },
           # Functions
           {
-            snippet: 'abs(${1:x})'
+            snippet: 'abs(${1:float|x})'
             displayText: 'abs(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -209,7 +209,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.abs' # (optional)
           },
           {
-            snippet: 'acos(${1:x})'
+            snippet: 'acos(${1:float|x})'
             displayText: 'acos(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -217,7 +217,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.acos' # (optional)
           },
           {
-            snippet: 'asin(${1:x})'
+            snippet: 'asin(${1:float|x})'
             displayText: 'asin(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -225,7 +225,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.asin' # (optional)
           },
           {
-            snippet: 'atan(${1:x})'
+            snippet: 'atan(${1:float|x})'
             displayText: 'atan(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -233,7 +233,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan' # (optional)
           },
           {
-            snippet: 'atan2(${1:y}, ${2:x})'
+            snippet: 'atan2(${1:float|y}, ${2:float|x})'
             displayText: 'atan2(float y, float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -241,7 +241,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan2' # (optional)
           },
           {
-            snippet: 'ceil(${1:x})'
+            snippet: 'ceil(${1:float|x})'
             displayText: 'ceil(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'int' # (optional)
@@ -249,7 +249,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ceil' # (optional)
           },
           {
-            snippet: 'cos(${1:x})'
+            snippet: 'cos(${1:float|x})'
             displayText: 'cos(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -257,7 +257,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cos' # (optional)
           },
           {
-            snippet: 'cosh(${1:x})'
+            snippet: 'cosh(${1:float|x})'
             displayText: 'cosh(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -265,7 +265,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cosh' # (optional)
           },
           {
-            snippet: 'deg(${1:x})'
+            snippet: 'deg(${1:float|x})'
             displayText: 'deg(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -273,7 +273,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.deg' # (optional)
           },
           {
-            snippet: 'exp(${1:x})'
+            snippet: 'exp(${1:float|x})'
             displayText: 'exp(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -281,7 +281,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.exp' # (optional)
           },
           {
-            snippet: 'floor(${1:x})'
+            snippet: 'floor(${1:float|x})'
             displayText: 'floor(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'int' # (optional)
@@ -289,7 +289,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.floor' # (optional)
           },
           {
-            snippet: 'fmod(${1:x}, ${2:y})'
+            snippet: 'fmod(${1:float|x}, ${2:float|y})'
             displayText: 'fmod(float x, float y)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -297,7 +297,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.fmod' # (optional)
           },
           {
-            snippet: 'frexp(${1:x})'
+            snippet: 'frexp(${1:float|x})'
             displayText: 'frexp(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -305,7 +305,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.frexp' # (optional)
           },
           {
-            snippet: 'ldexp(${1:m}, ${2:e})'
+            snippet: 'ldexp(${1:float|m}, ${2:int|e})'
             displayText: 'ldexp(float m, int e)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -313,7 +313,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ldexp' # (optional)
           },
           {
-            snippet: 'log(${1:x})'
+            snippet: 'log(${1:float|x})'
             displayText: 'log(float x [, base])' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -321,7 +321,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.log' # (optional)
           },
           {
-            snippet: 'max(${1:x}, ${2:...})'
+            snippet: 'max(${1:float|x}, ${2:...})'
             displayText: 'max(float x, ...)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -329,7 +329,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.max' # (optional)
           },
           {
-            snippet: 'min(${1:x}, ${2:...})'
+            snippet: 'min(${1:float|x}, ${2:...})'
             displayText: 'min(float x, ...)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -337,7 +337,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.min' # (optional)
           },
           {
-            snippet: 'modf(${1:x})'
+            snippet: 'modf(${1:float|x})'
             displayText: 'modf(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -345,7 +345,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.modf' # (optional)
           },
           {
-            snippet: 'pow(${1:x}, ${2:y})'
+            snippet: 'pow(${1:float|x}, ${2:float|y})'
             displayText: 'pow(float x, float y)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -353,7 +353,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pow' # (optional)
           },
           {
-            snippet: 'rad(${1:x})'
+            snippet: 'rad(${1:float|x})'
             displayText: 'rad(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -369,14 +369,14 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.random' # (optional)
           },
           {
-            snippet: 'randomseed(${1:x})'
+            snippet: 'randomseed(${1:int|x})'
             displayText: 'randomseed(int x)' # (optional)
             type: 'function' # (optional)
             description: 'Sets x as the "seed" for the pseudo-random generator: equal seeds produce equal sequences of numbers.' # (optional)
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.randomseed' # (optional)
           },
           {
-            snippet: 'sin(${1:x})'
+            snippet: 'sin(${1:float|x})'
             displayText: 'sin(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -384,7 +384,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sin' # (optional)
           },
           {
-            snippet: 'sinh(${1:x})'
+            snippet: 'sinh(${1:float|x})'
             displayText: 'sinh(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -392,7 +392,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sinh' # (optional)
           },
           {
-            snippet: 'sqrt(${1:x})'
+            snippet: 'sqrt(${1:float|x})'
             displayText: 'sqrt(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -400,7 +400,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sqrt' # (optional)
           },
           {
-            snippet: 'tan(${1:x})'
+            snippet: 'tan(${1:float|x})'
             displayText: 'tan(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -408,7 +408,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tan' # (optional)
           },
           {
-            snippet: 'tanh(${1:x})'
+            snippet: 'tanh(${1:float|x})'
             displayText: 'tanh(float x)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'float' # (optional)
@@ -421,7 +421,7 @@ module.exports =
         #console.log "FOUND COROUTINE"
         suggestions = [
           {
-            snippet: 'create(${1:function})'
+            snippet: 'create(${1:function|f})'
             displayText: 'create(function f)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'thread' # (optional)
@@ -429,7 +429,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.create' # (optional)
           },
           {
-            snippet: 'resume(${1:coroutine})'
+            snippet: 'resume(${1:coroutine|co})'
             displayText: 'resume(coroutine co [, val1, ···])' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -445,7 +445,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.running' # (optional)
           },
           {
-            snippet: 'status(${1:coroutine})'
+            snippet: 'status(${1:coroutine|co})'
             displayText: 'status(coroutine co)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'string' # (optional)
@@ -453,7 +453,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.status' # (optional)
           },
           {
-            snippet: 'wrap(${1:function})'
+            snippet: 'wrap(${1:function|f})'
             displayText: 'wrap(function f)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -461,7 +461,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.wrap' # (optional)
           },
           {
-            snippet: 'yield(${1:int})'
+            snippet: 'yield(${1:int|value})'
             displayText: 'yield(int value)' # (optional)
             type: 'function' # (optional)
             description: 'Suspends the execution of the calling coroutine.' # (optional)
@@ -489,7 +489,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date' # (optional)
           },
           {
-            snippet: 'difftime(${1:time2}, ${2:time1})'
+            snippet: 'difftime(${1:time|t2}, ${2:time|t1})'
             displayText: 'difftime(t2, t1)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'int' # (optional)
@@ -536,7 +536,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#pauseStart' # (optional)
           },
           {
-            snippet: 'setValue(${1:int})'
+            snippet: 'setValue(${1:int|seconds})'
             displayText: 'setValue(int seconds)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -598,7 +598,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#increment' # (optional)
           },
           {
-            snippet: 'setValue(${1:int})'
+            snippet: 'setValue(${1:int|seconds})'
             displayText: 'setValue(int seconds)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -682,7 +682,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getLightColor' # (optional)
           },
           {
-            snippet: 'setAmbientEquatorColor(${1:Table})'
+            snippet: 'setAmbientEquatorColor(${1:Table|color})'
             displayText: 'setAmbientEquatorColor(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -690,7 +690,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor' # (optional)
           },
           {
-            snippet: 'setAmbientGroundColor(${1:Table})'
+            snippet: 'setAmbientGroundColor(${1:Table|color})'
             displayText: 'setAmbientGroundColor(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -698,7 +698,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor' # (optional)
           },
           {
-            snippet: 'setAmbientSkyColor(${1:Table})'
+            snippet: 'setAmbientSkyColor(${1:Table|color})'
             displayText: 'setAmbientSkyColor(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -706,7 +706,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor' # (optional)
           },
           {
-            snippet: 'setLightColor(${1:Table})'
+            snippet: 'setLightColor(${1:Table|color})'
             displayText: 'setLightColor(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -718,7 +718,7 @@ module.exports =
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_intact)
         suggestions = [
           {
-            snippet: 'cast(${1:Table})'
+            snippet: 'cast(${1:Table|info})'
             displayText: 'cast(Table info)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -734,7 +734,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#getGravity' # (optional)
           },
           {
-            snippet: 'setGravity(${1:Table})'
+            snippet: 'setGravity(${1:Table|vector})'
             displayText: 'setGravity(Table vector)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -939,7 +939,7 @@ module.exports =
           },
           # Functions
           {
-            snippet: 'attachCameraToObject(${1:Table})'
+            snippet: 'attachCameraToObject(${1:Table|parameters})'
             displayText: 'attachCameraToObject(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -947,7 +947,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
           },
           {
-            snippet: 'broadcast(${1:string})'
+            snippet: 'broadcast(${1:string|message})'
             displayText: 'broadcast(string message)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -955,7 +955,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
           },
           {
-            snippet: 'broadcast(${1:string}, $(2:string))'
+            snippet: 'broadcast(${1:string|message}, $(2:string|color))'
             displayText: 'broadcast(string message, string color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -963,7 +963,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
           },
           {
-            snippet: 'changeColor(${1:string})'
+            snippet: 'changeColor(${1:string|new_color})'
             displayText: 'changeColor(string new_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1019,7 +1019,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#kick' # (optional)
           },
           {
-            snippet: 'lookAt(${1:Table})'
+            snippet: 'lookAt(${1:Table|parameters})'
             displayText: 'lookAt(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1035,7 +1035,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#mute' # (optional)
           },
           {
-            snippet: 'print(${1:string})'
+            snippet: 'print(${1:string|message})'
             displayText: 'print(string message)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1043,7 +1043,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print' # (optional)
           },
           {
-            snippet: 'print(${1:string}, $(2:string))'
+            snippet: 'print(${1:string|message}, $(2:string|color))'
             displayText: 'print(string message, string color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1059,7 +1059,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote' # (optional)
           },
           {
-            snippet: 'setHandTransform(${1:Table})'
+            snippet: 'setHandTransform(${1:Table|transform})'
             displayText: 'setHandTransform(Table transform)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1073,7 +1073,7 @@ module.exports =
         suggestions = [
           # Functions
           {
-            snippet: 'decode(${1:string})'
+            snippet: 'decode(${1:string|json_string})'
             displayText: 'decode(string json_string)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'variable' # (optional)
@@ -1103,7 +1103,7 @@ module.exports =
         suggestions = [
           # Functions
           {
-            snippet: 'create(${1:Table})'
+            snippet: 'create(${1:Table|parameters})'
             displayText: 'create(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1111,7 +1111,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create' # (optional)
           },
           {
-            snippet: 'destroy(${1:string})'
+            snippet: 'destroy(${1:string|identifier})'
             displayText: 'destroy(string identifier)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1193,7 +1193,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getValue' # (optional)
           },
           {
-            snippet: 'setFontColor(${1:Table})'
+            snippet: 'setFontColor(${1:Table|color})'
             displayText: 'setFontColor(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1201,7 +1201,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontColor' # (optional)
           },
           {
-            snippet: 'setFontSize(${1:int})'
+            snippet: 'setFontSize(${1:int|font_size})'
             displayText: 'setFontSize(int font_size)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1209,7 +1209,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontSize' # (optional)
           },
           {
-            snippet: 'setValue(${1:string})'
+            snippet: 'setValue(${1:string|text})'
             displayText: 'setValue(string text)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1424,7 +1424,7 @@ module.exports =
           },
           # Functions
           {
-            snippet: 'addForce(${1:Table}, ${2:int})'
+            snippet: 'addForce(${1:Table|force_vector}, ${2:int|force_type})'
             displayText: 'addForce(Table force_vector, int force_type)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1432,7 +1432,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addForce' # (optional)
           },
           {
-            snippet: 'addTorque(${1:Table}, ${2:int})'
+            snippet: 'addTorque(${1:Table|torque_vector}, ${2:int|force_type})'
             displayText: 'addTorque(Table torque_vector, int force_type)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1440,7 +1440,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addTorque' # (optional)
           },
           {
-            snippet: 'call(${1:string}, ${2:Table})'
+            snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
             displayText: 'call(string function_name, Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'variable' # (optional)
@@ -1456,7 +1456,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons' # (optional)
           },
           {
-            snippet: 'clone(${1:Table})'
+            snippet: 'clone(${1:Table|parameters})'
             displayText: 'clone(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -1464,7 +1464,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
           },
           {
-            snippet: 'createButton(${1:Table})'
+            snippet: 'createButton(${1:Table|parameters})'
             displayText: 'createButton(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1480,7 +1480,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#cut' # (optional)
           },
           {
-            snippet: 'dealToAll(${1:int})'
+            snippet: 'dealToAll(${1:int|num_cards})'
             displayText: 'dealToAll(int num_cards)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1488,7 +1488,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll' # (optional)
           },
           {
-            snippet: 'dealToColor(${1:int}, ${2:string})'
+            snippet: 'dealToColor(${1:int|num_cards}, ${2:string|player_color})'
             displayText: 'dealToColor(int num_cards, string player_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1496,7 +1496,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor' # (optional)
           },
           {
-            snippet: 'dealToColorWithOffset(${1:Table}, ${2:bool}, ${3:string})'
+            snippet: 'dealToColorWithOffset(${1:Table|position}, ${2:bool|flip}, ${3:string|player_color})'
             displayText: 'dealToColorWithOffset(Table position, bool flip, string player_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -1512,7 +1512,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#destruct' # (optional)
           },
           {
-            snippet: 'editButton(${1:Table})'
+            snippet: 'editButton(${1:Table|parameters})'
             displayText: 'editButton(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1680,7 +1680,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStatesCount' # (optional)
           },
           {
-            snippet: 'getTable(${1:string})'
+            snippet: 'getTable(${1:string|table_name})'
             displayText: 'getTable(string table_name)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -1720,7 +1720,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getValue' # (optional)
           },
           {
-            snippet: 'getVar(${1:string})'
+            snippet: 'getVar(${1:string|variable_name})'
             displayText: 'getVar(string variable_name)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'variable' # (optional)
@@ -1744,7 +1744,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOff' # (optional)
           },
           {
-            snippet: 'highlightOn(${1:Table}, ${2:float})'
+            snippet: 'highlightOn(${1:Table|color}, ${2:float|duration})'
             displayText: 'highlightOn(Table color, float duration)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1760,7 +1760,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving' # (optional)
           },
           {
-            snippet: 'positionToLocal(${1:Table})'
+            snippet: 'positionToLocal(${1:Table|vector})'
             displayText: 'positionToLocal(Table vector)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -1768,7 +1768,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToLocal' # (optional)
           },
           {
-            snippet: 'positionToWorld(${1:Table})'
+            snippet: 'positionToWorld(${1:Table|vector})'
             displayText: 'positionToWorld(Table vector)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -1776,8 +1776,8 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToWorld' # (optional)
           },
           {
-            snippet: 'putObject(${1:Table})'
-            displayText: 'putObject(Table object)' # (optional)
+            snippet: 'putObject(${1:Object|object})'
+            displayText: 'putObject(Object object)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Add this object to the current object. Works for stacking chips, decks, and bags.' # (optional)
@@ -1800,7 +1800,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reload' # (optional)
           },
           {
-            snippet: 'removeButton(${1:int})'
+            snippet: 'removeButton(${1:int|index})'
             displayText: 'removeButton(int index)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1824,7 +1824,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#roll' # (optional)
           },
           {
-            snippet: 'rotate(${1:Table})'
+            snippet: 'rotate(${1:Table|rotation})'
             displayText: 'rotate(Table rotation)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1832,7 +1832,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rotate' # (optional)
           },
           {
-            snippet: 'scale(${1:Table})'
+            snippet: 'scale(${1:Table|scale})'
             displayText: 'scale(Table scale)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1840,7 +1840,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scale' # (optional)
           },
           {
-            snippet: 'scale(${1:float})'
+            snippet: 'scale(${1:float|scale})'
             displayText: 'scale(float scale)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1848,7 +1848,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scaleAllAxes' # (optional)
           },
           {
-            snippet: 'setAngularVelocity(${1:Table})'
+            snippet: 'setAngularVelocity(${1:Table|vector})'
             displayText: 'setAngularVelocity(Table vector)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1856,7 +1856,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setAngularVelocity' # (optional)
           },
           {
-            snippet: 'setColorTint(${1:Table})'
+            snippet: 'setColorTint(${1:Table|color})'
             displayText: 'setColorTint(Table color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1864,7 +1864,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setColorTint' # (optional)
           },
           {
-            snippet: 'setCustomObject(${1:Table})'
+            snippet: 'setCustomObject(${1:Table|parameters})'
             displayText: 'setCustomObject(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1872,7 +1872,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setCustomObject' # (optional)
           },
           {
-            snippet: 'setDescription(${1:string})'
+            snippet: 'setDescription(${1:string|description})'
             displayText: 'setDescription(string description)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1880,7 +1880,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setDescription' # (optional)
           },
           {
-            snippet: 'setLock(${1:bool})'
+            snippet: 'setLock(${1:bool|lock})'
             displayText: 'setLock(bool lock)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1888,7 +1888,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLock' # (optional)
           },
           {
-            snippet: 'setLuaScript(${1:string})'
+            snippet: 'setLuaScript(${1:string|script})'
             displayText: 'setLuaScript(string script)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1896,7 +1896,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLuaScript' # (optional)
           },
           {
-            snippet: 'setName(${1:string})'
+            snippet: 'setName(${1:string|nickname})'
             displayText: 'setName(string nickname)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1904,7 +1904,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setName' # (optional)
           },
           {
-            snippet: 'setPosition(${1:Table})'
+            snippet: 'setPosition(${1:Table|position})'
             displayText: 'setPosition(Table position)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1912,15 +1912,15 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPosition' # (optional)
           },
           {
-            snippet: 'setPositionSmooth(${1:Table}, ${2:bool}, ${3:bool})'
-            displayText: 'setPositionSmooth(Table position, bool Collide, bool Fast)' # (optional)
+            snippet: 'setPositionSmooth(${1:Table|position}, ${2:bool|collide}, ${3:bool|fast})'
+            displayText: 'setPositionSmooth(Table position, bool collide, bool fast)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Smoothly moves this Object from its current position to a given world space position.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPositionSmooth' # (optional)
           },
           {
-            snippet: 'setRotation(${1:Table})'
+            snippet: 'setRotation(${1:Table|rotation})'
             displayText: 'setRotation(Table rotation)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1928,15 +1928,15 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotation' # (optional)
           },
           {
-            snippet: 'setRotationSmooth(${1:Table}, ${2:bool}, ${3:bool})'
-            displayText: 'setRotationSmooth(Table rotation, bool Collide, bool Fast)' # (optional)
+            snippet: 'setRotationSmooth(${1:Table|rotation}, ${2:bool|collide}, ${3:bool|fast})'
+            displayText: 'setRotationSmooth(Table rotation, bool collide, bool fast)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Smoothly rotates this Object to the given orientation in degrees.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationSmooth' # (optional)
           },
           {
-            snippet: 'setScale(${1:Table})'
+            snippet: 'setScale(${1:Table|scale})'
             displayText: 'setScale(Table scale)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1944,7 +1944,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setScale' # (optional)
           },
           {
-            snippet: 'setState(${1:int})'
+            snippet: 'setState(${1:int|state})'
             displayText: 'setState(int state)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -1952,7 +1952,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setState' # (optional)
           },
           {
-            snippet: 'setTable(${1:string}, ${2:Table})'
+            snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
             displayText: 'setTable(string table_name, Table table)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1960,7 +1960,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable' # (optional)
           },
           {
-            snippet: 'setValue(${1:value})'
+            snippet: 'setValue(${1:variable|value})'
             displayText: 'setValue(variable value)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1968,7 +1968,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setValue' # (optional)
           },
           {
-            snippet: 'setVar(${1:string}, ${2:variable})'
+            snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
             displayText: 'setVar(string variable_name, variable value)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -1976,7 +1976,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar' # (optional)
           },
           {
-            snippet: 'setVelocity(${1:Table})'
+            snippet: 'setVelocity(${1:Table|vector})'
             displayText: 'setVelocity(Table vector)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2000,7 +2000,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffleStates' # (optional)
           },
           {
-            snippet: 'takeObject(${1:Table})'
+            snippet: 'takeObject(${1:Table|parameters})'
             displayText: 'takeObject(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -2008,7 +2008,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject' # (optional)
           },
           {
-            snippet: 'translate(${1:Table})'
+            snippet: 'translate(${1:Table|position})'
             displayText: 'translate(Table position)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2217,7 +2217,7 @@ module.exports =
           },
           # Global Management Functions
           {
-            snippet: 'addNotebookTab(${1:Table})'
+            snippet: 'addNotebookTab(${1:Table|parameters})'
             displayText: 'addNotebookTab(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'int' # (optional)
@@ -2241,7 +2241,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearVectorPaint' # (optional)
           },
           {
-            snippet: 'copy(${1:Table})'
+            snippet: 'copy(${1:Table|objects})'
             displayText: 'copy(Table objects)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2249,7 +2249,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
           },
           {
-            snippet: 'destroyObject(${1:Object})'
+            snippet: 'destroyObject(${1:Object|obj})'
             displayText: 'destroyObject(Object obj)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2257,7 +2257,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#destroyObject' # (optional)
           },
           {
-            snippet: 'editNotebookTab(${1:Table})'
+            snippet: 'editNotebookTab(${1:Table|parameters})'
             displayText: 'editNotebookTab(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2265,7 +2265,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
           },
           {
-            snippet: 'broadcastToAll(${1:string}, ${2:Table})'
+            snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
             displayText: 'broadcastToAll(string message, Table text_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2273,7 +2273,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToAll' # (optional)
           },
           {
-            snippet: 'broadcastToColor(${1:string}, ${2:string}, ${3:Table})'
+            snippet: 'broadcastToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
             displayText: 'broadcastToColor(string message, string player_color, Table text_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2313,7 +2313,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotes' # (optional)
           },
           {
-            snippet: 'getObjectFromGUID(${1:string})'
+            snippet: 'getObjectFromGUID(${1:string|guid})'
             displayText: 'getObjectFromGUID(string guid)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -2329,7 +2329,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getSeatedPlayers' # (optional)
           },
           {
-            snippet: 'paste(${1:Table})'
+            snippet: 'paste(${1:Table|parameters})'
             displayText: 'paste(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -2337,14 +2337,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
           },
           {
-            snippet: 'print(${1:string})'
+            snippet: 'print(${1:string|message})'
             displayText: 'print(string message)' # (optional)
             type: 'function' # (optional)
             description: 'Prints a message to the chatin window only on the host.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print' # (optional)
           },
           {
-            snippet: 'printToAll(${1:string}, ${2:Table})'
+            snippet: 'printToAll(${1:string|message}, ${2:Table|text_color})'
             displayText: 'printToAll(string message, Table text_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2352,7 +2352,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToAll' # (optional)
           },
           {
-            snippet: 'printToColor(${1:string}, ${2:string}, ${3:Table})'
+            snippet: 'printToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
             displayText: 'printToColor(string message, string player_color, Table text_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2360,7 +2360,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToColor' # (optional)
           },
           {
-            snippet: 'removeNotebookTab(${1:int})'
+            snippet: 'removeNotebookTab(${1:int|index})'
             displayText: 'removeNotebookTab(int index)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2368,7 +2368,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab' # (optional)
           },
           {
-            snippet: 'setNotes(${1:string})'
+            snippet: 'setNotes(${1:string|notes})'
             displayText: 'setNotes(string notes)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2376,7 +2376,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#setNotes' # (optional)
           },
           {
-            snippet: 'spawnObject(${1:Table})'
+            snippet: 'spawnObject(${1:Table|paremeters})'
             displayText: 'spawnObject(Table parameters)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
@@ -2384,7 +2384,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject' # (optional)
           },
           {
-            snippet: 'startLuaCoroutine(${1:Object}, ${2:string})'
+            snippet: 'startLuaCoroutine(${1:Object|func_owner}, ${2:string|func_name})'
             displayText: 'startLuaCoroutine(Object func_owner, string func_name)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
@@ -2392,7 +2392,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#startLuaCoroutine' # (optional)
           },
           {
-            snippet: 'stringColorToRGB(${1:string})'
+            snippet: 'stringColorToRGB(${1:string|player_color})'
             displayText: 'stringColorToRGB(string player_color)' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
@@ -2416,4 +2416,17 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
+      parameter_to_display = atom.config.get('tabletopsimulator-lua.parameterToDisplay')
+      match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/
+      if parameter_to_display == 'type'
+        replace_pattern = '$${$1:$2}'
+      else if parameter_to_display == 'name'
+        replace_pattern = '$${$1:$3}'
+      else if parameter_to_display == 'both'
+        replace_pattern = '$${$1:$2_$3}'
+      else #none
+        replace_pattern = '$${$1:}'
+      for suggestion in suggestions
+        while suggestion.snippet.match(/\${[0-9]+:[0-9a-zA-Z_]+\|[0-9a-zA-Z_]+}/)
+          suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
