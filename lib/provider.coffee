@@ -2188,7 +2188,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.9' # (optional)
           },
           {
-            snippet: 'Phyics'
+            snippet: 'Physics'
             displayText: 'Physics' # (optional)
             type: 'constant' # (optional)
             description: 'The Physics class.' # (optional)
