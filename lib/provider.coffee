@@ -2424,17 +2424,16 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
-      parameter_to_display = atom.config.get('tabletopsimulator-lua.parameterToDisplay')
-      match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/
-      if parameter_to_display == 'type'
-        replace_pattern = '$${$1:$2}'
-      else if parameter_to_display == 'name'
-        replace_pattern = '$${$1:$3}'
-      else if parameter_to_display == 'both'
-        replace_pattern = '$${$1:$2_$3}'
-      else #none
-        replace_pattern = '$${$1:}'
+      match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
+      replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.parameterToDisplay')]
       for suggestion in suggestions
-        while suggestion.snippet.match(/\${[0-9]+:[0-9a-zA-Z_]+\|[0-9a-zA-Z_]+}/)
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
+
+# replacement patterns for autocomplete parameters
+parameter_patterns = {
+  'type': '$${$1:$2}',
+  'name': '$${$1:$3}',
+  'both': '$${$1:$2_$3}',
+  'none': '$${$1:}',
+}
