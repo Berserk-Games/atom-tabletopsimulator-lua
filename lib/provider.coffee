@@ -52,7 +52,6 @@ module.exports =
 
       # Split relevant depth into tokens
       tokens = depths[depth].split(".")
-      #console.log tokens
       this_token = ""           # user is currently typing
       this_token_intact = true  # is it just ajphanumerics?
       previous_token = ""       # last string before a '.'
@@ -72,7 +71,9 @@ module.exports =
                 previous_token_2 = part
                 break
 
+      #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
+      console.log scopeDescriptor.scopes[1]
 
       # If we're in the middle of typing a number then suggest nothing on .
       if prefix == "." and previous_token.match(/^[0-9]$/)
@@ -2020,6 +2021,13 @@ module.exports =
       else if (line.includes("function") && line.lastIndexOf("function") > line.lastIndexOf("("))
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
+          {
+            snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
+            displayText: 'fixedUpdate()' # (optional)
+            type: 'function' # (optional)
+            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate' # (optional)
+          },
           {
             snippet: 'onCollisionEnter(collision_info)\n\t${0:-- body...}\nend'
             displayText: 'onCollisionEnter(Table collision_info)' # (optional)
