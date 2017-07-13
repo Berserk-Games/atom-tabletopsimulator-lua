@@ -90,6 +90,18 @@ class FileHandler
 
 module.exports = TabletopsimulatorLua =
   subscriptions: null
+  config:
+    parameterToDisplay:
+      title: 'Autocomplete parameters'
+      description: 'This will determine how autocomplete inserts parameters into your script'
+      type: 'string'
+      default: 'type'
+      enum: [
+        {value: 'none', description: 'Do not insert most parameters'}
+        {value: 'type', description: 'Insert parameters as <TYPE>'}
+        {value: 'name', description: 'Insert parameters as <NAME>'}
+        {value: 'both', description: 'Insert parameters as <TYPE_NAME>'}
+      ]
 
   activate: (state) ->
     # See if there are any Updates
