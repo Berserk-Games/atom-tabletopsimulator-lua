@@ -73,7 +73,7 @@ module.exports =
 
       #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
-      console.log scopeDescriptor.scopes[1]
+      #console.log scopeDescriptor.scopes[1]
 
       # If we're in the middle of typing a number then suggest nothing on .
       if prefix == "." and previous_token.match(/^[0-9]$/)
