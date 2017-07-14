@@ -2149,7 +2149,7 @@ module.exports =
           },
         ]
       # Globally accessible constants & functions
-      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ")
+      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and not this_token.match(/.*[\w ] $/)
         #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
