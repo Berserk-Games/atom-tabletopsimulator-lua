@@ -88,7 +88,7 @@ module.exports =
             displayText: 'do...end' # (optional)
           },
         ]
-      else if (line.endsWith(" then"))
+      else if (line.endsWith(" then") and not line.includes("elseif"))
         suggestions = [
           {
             snippet: 'then\n\t$1\nend'

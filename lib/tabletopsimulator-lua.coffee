@@ -113,6 +113,11 @@ module.exports = TabletopsimulatorLua =
       description: 'When pulling script from TTS, automatically replace all instances of \\u{xx} with its relevant character.  When saving to TTS do the reverse.'
       type: 'boolean'
       default: false
+    #excludeLowerPriority:
+    #  title: 'Only autocomplete API suggestions'
+    #  description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
+    #  type: 'boolean'
+    #  default: true
 
   activate: (state) ->
     # See if there are any Updates
