@@ -80,6 +80,7 @@ class FileHandler
     # Restore cursor position
     try
       editor.setCursorBufferPosition(cursors[editor.getPath()])
+      editor.scrollToCursorPosition()
     catch error
     buffer = editor.getBuffer()
     @subscriptions = new CompositeDisposable
