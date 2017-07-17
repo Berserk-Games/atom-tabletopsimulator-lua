@@ -75,7 +75,7 @@ class FileHandler
     if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
         unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
-      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/, replace_unicode)
+      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
 
     # Restore cursor position
     try
