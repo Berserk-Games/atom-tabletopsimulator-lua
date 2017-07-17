@@ -245,7 +245,7 @@ module.exports = TabletopsimulatorLua =
         if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
           replace_character = (character) ->
             return "\\u{" + character.codePointAt(0).toString(16) + "}"
-          @luaObject.script = @luaObject.script.replace(/[\u0080-\u00FF]/g, replace_character)
+          @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
         @luaObjects.scriptStates.push(@luaObject)
 
     if not @if_connected
