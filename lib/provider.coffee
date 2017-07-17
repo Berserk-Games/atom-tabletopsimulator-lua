@@ -52,7 +52,6 @@ module.exports =
 
       # Split relevant depth into tokens
       tokens = depths[depth].split(".")
-      #console.log tokens
       this_token = ""           # user is currently typing
       this_token_intact = true  # is it just ajphanumerics?
       previous_token = ""       # last string before a '.'
@@ -72,7 +71,9 @@ module.exports =
                 previous_token_2 = part
                 break
 
+      #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
+      #console.log scopeDescriptor.scopes[1]
 
       # If we're in the middle of typing a number then suggest nothing on .
       if prefix == "." and previous_token.match(/^[0-9]$/)
@@ -87,7 +88,7 @@ module.exports =
             displayText: 'do...end' # (optional)
           },
         ]
-      else if (line.endsWith(" then"))
+      else if (line.endsWith(" then") and not line.includes("elseif"))
         suggestions = [
           {
             snippet: 'then\n\t$1\nend'
@@ -2021,6 +2022,13 @@ module.exports =
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
+            snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
+            displayText: 'fixedUpdate()' # (optional)
+            type: 'function' # (optional)
+            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate' # (optional)
+          },
+          {
             snippet: 'onCollisionEnter(collision_info)\n\t${0:-- body...}\nend'
             displayText: 'onCollisionEnter(Table collision_info)' # (optional)
             type: 'function' # (optional)
@@ -2141,7 +2149,7 @@ module.exports =
           },
         ]
       # Globally accessible constants & functions
-      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ")
+      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and not this_token.match(/.*[\w ] $/)
         #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
@@ -2416,17 +2424,16 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
-      parameter_to_display = atom.config.get('tabletopsimulator-lua.parameterToDisplay')
-      match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/
-      if parameter_to_display == 'type'
-        replace_pattern = '$${$1:$2}'
-      else if parameter_to_display == 'name'
-        replace_pattern = '$${$1:$3}'
-      else if parameter_to_display == 'both'
-        replace_pattern = '$${$1:$2_$3}'
-      else #none
-        replace_pattern = '$${$1:}'
+      match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
+      replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.parameterToDisplay')]
       for suggestion in suggestions
-        while suggestion.snippet.match(/\${[0-9]+:[0-9a-zA-Z_]+\|[0-9a-zA-Z_]+}/)
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
+
+# replacement patterns for autocomplete parameters
+parameter_patterns = {
+  'type': '$${$1:$2}',
+  'name': '$${$1:$3}',
+  'both': '$${$1:$2_$3}',
+  'none': '$${$1:}',
+}

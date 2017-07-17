@@ -36,56 +36,63 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 class FileHandler
-    constructor: ->
-      @readbytes = 0
-      @ready = false
+  constructor: ->
+    @readbytes = 0
+    @ready = false
 
-    setBasename: (basename) ->
-        @basename = basename
+  setBasename: (basename) ->
+    @basename = basename
 
-    setDatasize: (datasize) ->
-        @datasize = datasize
+  setDatasize: (datasize) ->
+    @datasize = datasize
 
-    create: ->
-        @tempfile = path.join(ttsLuaDir, @basename)
-        dirname = path.dirname(@tempfile)
-        mkdirp.sync(dirname)
-        @fd = fs.openSync(@tempfile, 'w')
+  create: ->
+    @tempfile = path.join(ttsLuaDir, @basename)
+    dirname = path.dirname(@tempfile)
+    mkdirp.sync(dirname)
+    @fd = fs.openSync(@tempfile, 'w')
 
-    append: (line) ->
-        if @readbytes < @datasize
-            @readbytes += Buffer.byteLength(line)
-            # remove trailing newline if necessary
-            if @readbytes == @datasize + 1 and line.slice(-1) is "\n"
-                @readbytes = @datasize
-                line = line.slice(0, -1)
-            fs.writeSync(@fd, line)
-        if @readbytes >= @datasize
-            fs.closeSync @fd
-            @ready = true
+  append: (line) ->
+    if @readbytes < @datasize
+      @readbytes += Buffer.byteLength(line)
+      # remove trailing newline if necessary
+      if @readbytes == @datasize + 1 and line.slice(-1) is "\n"
+        @readbytes = @datasize
+        line = line.slice(0, -1)
+      fs.writeSync(@fd, line)
+    if @readbytes >= @datasize
+      fs.closeSync @fd
+      @ready = true
 
-    open: ->
-        #atom.focus()
-        # register events
-        atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
-            @handle_connection(editor)
+  open: ->
+    #atom.focus()
+    # register events
+    atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
+      @handle_connection(editor)
 
-    handle_connection: (editor) ->
-        # Restore cursor position
-        try
-          editor.setCursorBufferPosition(cursors[editor.getPath()])
-        catch error
-        buffer = editor.getBuffer()
-        @subscriptions = new CompositeDisposable
-        @subscriptions.add buffer.onDidSave =>
-            @save()
-        @subscriptions.add buffer.onDidDestroy =>
-            @close()
+  handle_connection: (editor) ->
+    # Replace \u character codes
+    if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
+      replace_unicode = (unicode) ->
+        unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
+      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/, replace_unicode)
 
-    save: ->
+    # Restore cursor position
+    try
+      editor.setCursorBufferPosition(cursors[editor.getPath()])
+      editor.scrollToCursorPosition()
+    catch error
+    buffer = editor.getBuffer()
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add buffer.onDidSave =>
+      @save()
+    @subscriptions.add buffer.onDidDestroy =>
+      @close()
 
-    close: ->
-        @subscriptions.dispose()
+  save: ->
+
+  close: ->
+    @subscriptions.dispose()
 
 
 module.exports = TabletopsimulatorLua =
@@ -102,6 +109,16 @@ module.exports = TabletopsimulatorLua =
         {value: 'name', description: 'Insert parameters as <NAME>'}
         {value: 'both', description: 'Insert parameters as <TYPE_NAME>'}
       ]
+    convertUnicodeCharacters:
+      title: 'Convert between \\u{xx} and character when loading/saving'
+      description: 'When pulling script from TTS, automatically replace all instances of \\u{xx} with its relevant character.  When saving to TTS do the reverse.'
+      type: 'boolean'
+      default: false
+    #excludeLowerPriority:
+    #  title: 'Only autocomplete API suggestions'
+    #  description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
+    #  type: 'boolean'
+    #  default: true
 
   activate: (state) ->
     # See if there are any Updates
@@ -206,6 +223,8 @@ module.exports = TabletopsimulatorLua =
       try
         # Store cursor positions
         cursors[editor.getPath()] = editor.getCursorBufferPosition()
+      catch error
+      try
         editor.save()
       catch error
 
@@ -222,6 +241,11 @@ module.exports = TabletopsimulatorLua =
         @luaObject.name = luafile
         @luaObject.guid = tokens[tokens.length-2]
         @luaObject.script = fs.readFileSync(fname, 'utf8')
+        # Replace with \u character codes
+        if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
+          replace_character = (character) ->
+            return "\\u{" + character.codePointAt(0).toString(16) + "}"
+          @luaObject.script = @luaObject.script.replace(/[\u0080-\u00FF]/g, replace_character)
         @luaObjects.scriptStates.push(@luaObject)
 
     if not @if_connected
