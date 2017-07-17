@@ -75,7 +75,7 @@ class FileHandler
     if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
         unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
-      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/, replace_unicode)
+      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
 
     # Restore cursor position
     try
@@ -245,7 +245,7 @@ module.exports = TabletopsimulatorLua =
         if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
           replace_character = (character) ->
             return "\\u{" + character.codePointAt(0).toString(16) + "}"
-          @luaObject.script = @luaObject.script.replace(/[\u0080-\u00FF]/g, replace_character)
+          @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
         @luaObjects.scriptStates.push(@luaObject)
 
     if not @if_connected
@@ -287,7 +287,7 @@ module.exports = TabletopsimulatorLua =
         for f,i in @data.scriptStates
           @file = new FileHandler()
           f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-          @file.setBasename(f.name + "." + f.guid + ".lua")
+          @file.setBasename(f.name + "." + f.guid + ".ttslua")
           @file.setDatasize(f.script.length)
           @file.create()
 
@@ -339,7 +339,7 @@ module.exports = TabletopsimulatorLua =
             for f,i in @data.scriptStates
               @file = new FileHandler()
               f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setBasename(f.name + "." + f.guid + ".ttslua")
               @file.setDatasize(f.script.length)
               @file.create()
 
@@ -373,7 +373,7 @@ module.exports = TabletopsimulatorLua =
             for f,i in @data.scriptStates
               @file = new FileHandler()
               f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setBasename(f.name + "." + f.guid + ".ttslua")
               @file.setDatasize(f.script.length)
               @file.create()
 
