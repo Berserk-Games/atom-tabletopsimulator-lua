@@ -287,7 +287,7 @@ module.exports = TabletopsimulatorLua =
         for f,i in @data.scriptStates
           @file = new FileHandler()
           f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-          @file.setBasename(f.name + "." + f.guid + ".lua")
+          @file.setBasename(f.name + "." + f.guid + ".ttslua")
           @file.setDatasize(f.script.length)
           @file.create()
 
@@ -339,7 +339,7 @@ module.exports = TabletopsimulatorLua =
             for f,i in @data.scriptStates
               @file = new FileHandler()
               f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setBasename(f.name + "." + f.guid + ".ttslua")
               @file.setDatasize(f.script.length)
               @file.create()
 
@@ -373,7 +373,7 @@ module.exports = TabletopsimulatorLua =
             for f,i in @data.scriptStates
               @file = new FileHandler()
               f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".lua")
+              @file.setBasename(f.name + "." + f.guid + ".ttslua")
               @file.setDatasize(f.script.length)
               @file.create()
 

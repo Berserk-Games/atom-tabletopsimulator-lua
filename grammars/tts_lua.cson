@@ -1,14 +1,10 @@
 # Adapted from https://github.com/FireZenk/language-lua
 'comment': 'Lua Syntax: version 0.8'
 'fileTypes': [
-  'lua'
-  'nse'
-  'rockspec'
-  'luacheckrc'
-  'lakefile'
+  'ttslua'
 ]
 'firstLineMatch': '\\A#!.*?\\blua\\b'
-'name': 'Lua'
+'name': 'TTSLua'
 'patterns': [
   {
     'captures':
