@@ -738,7 +738,7 @@ module.exports =
               'size          = ${4:-- Vector},\n\t' +
               'orientation   = ${5:-- Vector},\n\t' +
               'max_distance  = ${6:-- float},\n\t' +
-              'debug         = ${7:-- bool (true=visualize cast)},\n' +
+              'debug         = ${7:-- bool (true = visualize cast)},\n' +
               '}) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}'
             displayText: 'cast({Vector origin, Vector direction, int type, Vector size, Vector orientation, float max_distanc, bool debug})' # (optional)
             type: 'function' # (optional)
