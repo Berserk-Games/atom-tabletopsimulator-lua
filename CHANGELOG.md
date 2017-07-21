@@ -1,3 +1,6 @@
+## 1.1.9
+* Merged more pull requests
+
 ## 1.1.8
 * Merged two pull requests
 
