@@ -109,6 +109,9 @@ module.exports =
             displayText: 'function...end' # (optional)
           },
         ]
+      # Short circuit some common lua keywords
+      else if (line.endsWith(" else") || line.endsWith(" elseif") || line.endsWith(" end") || line == "end")
+        suggestions = []
       # Global object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || line.endsWith("Global.") || (previous_token == "Global" && this_token_intact)
         #console.log "FOUND GLOBAL"
@@ -1009,6 +1012,22 @@ module.exports =
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
             description: 'Returns the y-axis rotation of the given player color\'s pointer in degrees.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation' # (optional)
+          },
+          {
+            snippet: 'getHoldingObjects()'
+            displayText: 'getHoldingObjects()' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns a Lua Table representing a list of all the Objects currently held by the player.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoldingObjects' # (optional)
+          },
+          {
+            snippet: 'getSelectedObjects()'
+            displayText: 'getSelectedObjects()' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns a Lua Table representing a list of all the Objects currently selected by the player.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation' # (optional)
           },
           {
@@ -2099,11 +2118,32 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone' # (optional)
           },
           {
+            snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLoopingEffect(Object object, int index)' # (optional)
+            type: 'function' # (optional)
+            description: "Automatically called when an asset Object's loop is started." # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect' # (optional)
+          },
+          {
             snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)' # (optional)
             type: 'function' # (optional)
             description: 'Automatically called when an Object is picked up.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp' # (optional)
+          },
+          {
+            snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectRandomize(Object object, string player_color)' # (optional)
+            type: 'function' # (optional)
+            description: 'Automatically called when an asset Object is randomized by player_color.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize' # (optional)
+          },
+          {
+            snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectTriggerEffect(Object object, int index)' # (optional)
+            type: 'function' # (optional)
+            description: 'Automatically called when an asset Object is triggered.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect' # (optional)
           },
           {
             snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
