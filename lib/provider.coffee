@@ -1156,7 +1156,7 @@ module.exports =
               'right     = ${5:-- Vector},\n\t' +
               'up        = ${6:-- Vector},\n' +
               '})'
-            displayText: 'setHandTransform({Vector position, Vectir rotation, Vector scale, Vector forward, Vector right, Vector up})' # (optional)
+            displayText: 'setHandTransform({Vector position, Vector rotation, Vector scale, Vector forward, Vector right, Vector up})' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Sets the Transform of the player’s hand.' # (optional)
