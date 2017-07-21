@@ -730,6 +730,23 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast' # (optional)
           },
           {
+            snippet:
+              'cast({\n\t' +
+              'origin        = ${1:-- Vector},\n\t' +
+              'direction     = ${2:-- Vector},\n\t' +
+              'type          = ${3:-- int (1: Ray, 2: Sphere, 3: Box)},\n\t' +
+              'size          = ${4:-- Vector},\n\t' +
+              'orientation   = ${5:-- Vector},\n\t' +
+              'max_distance  = ${6:-- float},\n\t' +
+              'debug         = ${7:-- bool (true=visualize cast)},\n' +
+              '}) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}'
+            displayText: 'cast({Vector origin, Vector direction, int type, Vector size, Vector orientation, float max_distanc, bool debug})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Casts a shape based on Info and returns a table of multiple Hit.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast' # (optional)
+          },
+          {
             snippet: 'getGravity()'
             displayText: 'getGravity()' # (optional)
             type: 'function' # (optional)
@@ -951,6 +968,18 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
           },
           {
+            snippet:
+              'attachCameraToObject({\n\t' +
+              'object = ${1:-- Object},\n\t' +
+              'offset = ${2:-- Vector [x=0, y=0, z=0]},\n' +
+              '})'
+            displayText: 'attachCameraToObject({Object object, Vector offset})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Makes a player\'s camera follow an Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
+          },
+          {
             snippet: 'broadcast(${1:string|message})'
             displayText: 'broadcast(string message)' # (optional)
             type: 'function' # (optional)
@@ -990,6 +1019,23 @@ module.exports =
             description: 'Returns the Transform of the player’s hand.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform' # (optional)
           },
+          {
+            snippet:
+              'getHandTransform() -- returns table:\n\t' +
+                '-- position     Vector    (World position)\n\t' +
+                '-- rotation     Vector    (World rotation)\n\t' +
+                '-- scale        Vector    (Local scale)\n\t' +
+                '-- forward      Vector    (Forward direction)\n\t' +
+                '-- right        Vector    (Right direction)\n\t' +
+                '-- up           Vector    (Up direction)'
+            displayText: 'getHandTransform() -- returns {...' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns the Transform of the player’s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform' # (optional)
+          },
+
+
           {
             snippet: 'getPlayerHand()'
             displayText: 'getPlayerHand()' # (optional)
@@ -1047,6 +1093,20 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
           },
           {
+            snippet:
+              'lookAt({\n\t' +
+              'position  = ${1:-- Vector (required)},\n\t' +
+              'pitch     = ${2:-- float},\n\t' +
+              'yaw       = ${3:-- float},\n\t' +
+              'distance  = ${4:-- float},\n' +
+              '})'
+            displayText: 'lookAt({Vector position, float pitch, float yaw, float distance})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Moves the Player\'s camera to look at a specific point.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
+          },
+          {
             snippet: 'mute()'
             displayText: 'mute()' # (optional)
             type: 'function' # (optional)
@@ -1086,6 +1146,23 @@ module.exports =
             description: 'Sets the Transform of the player’s hand.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
           },
+          {
+            snippet:
+              'setHandTransform({\n\t' +
+              'position  = ${1:-- Vector},\n\t' +
+              'rotation  = ${2:-- Vector},\n\t' +
+              'scale     = ${3:-- Vector},\n\t' +
+              'forward   = ${4:-- Vector},\n\t' +
+              'right     = ${5:-- Vector},\n\t' +
+              'up        = ${6:-- Vector},\n' +
+              '})'
+            displayText: 'setHandTransform({Vector position, Vectir rotation, Vector scale, Vector forward, Vector right, Vector up})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Sets the Transform of the player’s hand.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
+          },
+
         ]
       # JSON Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || (previous_token == "JSON" && this_token_intact)
@@ -1125,6 +1202,22 @@ module.exports =
           {
             snippet: 'create(${1:Table|parameters})'
             displayText: 'create(Table parameters)' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create' # (optional)
+          },
+          {
+            snippet:
+              'create({\n\t' +
+              'identifier      = ${1:-- string (must be unique)},\n\t' +
+              'function_name   = ${2:-- string},\n\t' +
+              'function_owner  = ${3:-- Object},\n\t' +
+              'parameters      = ${4:-- Table},\n\t' +
+              'delay           = ${5:-- float  [0 seconds]},\n\t' +
+              'repetitions     = ${6:-- int    [1] (0 = infinite)},\n' +
+              '})'
+            displayText: 'create({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.' # (optional)
@@ -1484,8 +1577,41 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
           },
           {
+            snippet:
+              'clone({\n\t' +
+              'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
+              'snap_to_grid  = ${2:-- boolean [false]},\n' +
+              '})'
+            displayText: 'clone({Vector position, bool snap_to_grid})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Object' # (optional)
+            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
+          },
+          {
             snippet: 'createButton(${1:Table|parameters})'
             displayText: 'createButton(Table parameters)' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Creates a 3D UI button on this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton' # (optional)
+          },
+          {
+            snippet:
+              'createButton({\n\t' +
+              'click_function  = ${1:-- string (required)},\n\t' +
+              'function_owner  = ${2:-- Object (required)},\n\t' +
+              'label           = ${3:-- string},\n\t' +
+              'position        = ${4:-- Vector},\n\t' +
+              'rotation        = ${5:-- Vector},\n\t' +
+              'scale           = ${6:-- Vector},\n\t' +
+              'width           = ${7:-- int},\n\t' +
+              'height          = ${8:-- int},\n\t' +
+              'font_size       = ${9:-- int},\n\t' +
+              'color           = ${10:-- Color},\n\t' +
+              'font_color      = ${11:-- Color},\n' +
+              '})'
+            displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Creates a 3D UI button on this Object.' # (optional)
@@ -1540,6 +1666,28 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton' # (optional)
           },
           {
+            snippet:
+              'editButton({\n\t' +
+              'index           = ${1:-- int    (required)},\n\t' +
+              'click_function  = ${2:-- string},\n\t' +
+              'function_owner  = ${3:-- Object},\n\t' +
+              'label           = ${4:-- string},\n\t' +
+              'position        = ${5:-- Vector},\n\t' +
+              'rotation        = ${6:-- Vector},\n\t' +
+              'scale           = ${7:-- Vector},\n\t' +
+              'width           = ${8:-- int},\n\t' +
+              'height          = ${9:-- int},\n\t' +
+              'font_size       = ${10:-- int},\n\t' +
+              'color           = ${11:-- Color},\n\t' +
+              'font_color      = ${12:-- Color},\n' +
+              '})'
+            displayText: 'editButton({int index, string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Edits a 3D UI button on this Object based on its index.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton' # (optional)
+          },
+          {
             snippet: 'flip()'
             displayText: 'flip()' # (optional)
             type: 'function' # (optional)
@@ -1580,6 +1728,17 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons' # (optional)
           },
           {
+            snippet: 'getButtons() -- returns table:\n\t' +
+            '-- {{int index, string click_function, Object function_owner, string label\n\t' +
+            '--   Vector position, Vector rotation, Vector scale, int width, int height\n\t' +
+            '--   int font_size, Color color, Color font_color}, ...}'
+            displayText: 'getButtons() -- returns {{...' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Gets a list of all the 3D UI buttons on this Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons' # (optional)
+          },
+          {
             snippet: 'getColorTint()'
             displayText: 'getColorTint()' # (optional)
             type: 'function' # (optional)
@@ -1590,6 +1749,34 @@ module.exports =
           {
             snippet: 'getCustomObject()'
             displayText: 'getCustomObject()' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns the custom parameters on a Custom Object.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject' # (optional)
+          },
+          {
+            snippet:
+              'getCustomObject() -- returns table:\n\t' +
+                '-- image                  string  (Image URL for Custom Board, Custom Dice, Custom Figurine, Custom Tile, and Custom Token.)\n\t' +
+                '-- image_secondary        string  (Secondary / Back Image URL for Custom Figurine or Custom Tile.)\n\t' +
+                '-- type                   int     (The number of sides of the Custom Dice, the shape of the Custom Tile, the type of Custom Mesh, or the type of Custom AssetBundle.)\n\t' +
+                '-- thickness              float   (Thickness of the Custom Tile or Custom Token.)\n\t' +
+                '-- stackable              bool    (Is this Custom Tile or Custom Token stackable?)\n\t' +
+                '-- merge_distance         float   (The accuracy of the Custom Tile to it’s base image.)\n\t' +
+                '-- mesh                   string  (Mesh URL for the Custom Mesh.)\n\t' +
+                '-- diffuse                string  (Diffuse image URL for the Custom Mesh.)\n\t' +
+                '-- normal                 string  (Normal image URL for the Custom Mesh.)\n\t' +
+                '-- collider               string  (Collider URL for the Custom Mesh.)\n\t' +
+                '-- convex                 bool    (Is this Custom Mesh concave?)\n\t' +
+                '-- material               int     (The material for the Custom Mesh or Custom AssetBundle.)\n\t' +
+                '-- specular_intensity     float   (The specular intensity for the Custom Mesh.)\n\t' +
+                '-- specular_color         Color   (The specular color for the Custom Mesh.)\n\t' +
+                '-- specular_sharpness     float   (The specular sharpness for the Custom Mesh.)\n\t' +
+                '-- fresnel_strength       float   (The fresnel strength for the Custom Mesh.)\n\t' +
+                '-- cast_shadows           bool    (Does this Custom Mesh cast shadows?)\n\t' +
+                '-- assetbundle            string  (AssetBundle URL for this Custom AssetBundle.)\n\t' +
+                '-- assetbundle_secondary  string  (Secondary AssetBundle URL for this Custom AssetBundle.)'
+            displayText: 'getCustomObject() -- returns {{...' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
             description: 'Returns the custom parameters on a Custom Object.' # (optional)
@@ -1638,6 +1825,30 @@ module.exports =
           {
             snippet: 'getObjects()'
             displayText: 'getObjects()' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns all the Objects inside of this container.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+          },
+          {
+            snippet: 'getObjects()$1\n\t-- Bag.getObjects() returns {{int index, string guid, string name}, ...}'
+            displayText: 'getObjects() -- Bag returns {{int index, string guid, string name}, ...}' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns all the Objects inside of this container.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+          },
+          {
+            snippet: 'getObjects()$1\n\t-- Deck.getObjects() returns:\n\t-- {{int index, string nickname, string description, string guid, string lua_script}, ...}'
+            displayText: 'getObjects() -- Deck returns {{int index, string nickname, string description, string guid, string lua_script}, ...}' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns all the Objects inside of this container.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+          },
+          {
+            snippet: 'getObjects()$1\n\t-- Zone.getObjects() returns {Object, ...}'
+            displayText: 'getObjects() -- Zone returns {Object, ...}' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
             description: 'Returns all the Objects inside of this container.' # (optional)
@@ -2028,6 +2239,25 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject' # (optional)
           },
           {
+            snippet:
+              'takeObject({\n\t' +
+              'position        = ${1:-- Vector [container position, x+2]},\n\t' +
+              'rotation        = ${2:-- Vector [container rotation]},\n\t' +
+              'callback        = ${3:-- string},\n\t' +
+              'callback_owner  = ${4:-- Object},\n\t' +
+              'params          = ${5:-- Table},\n\t' +
+              'flip            = ${6:-- bool},\n\t' +
+              'guid            = ${7:-- string},\n\t' +
+              'index           = ${8:-- int},\n\t' +
+              'top             = ${9:-- bool [true]},\n' +
+              '})'
+            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Object' # (optional)
+            description: 'Takes an Object from this container.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject' # (optional)
+          },
+          {
             snippet: 'translate(${1:Table|position})'
             displayText: 'translate(Table position)' # (optional)
             type: 'function' # (optional)
@@ -2048,21 +2278,39 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate' # (optional)
           },
           {
-            snippet: 'onCollisionEnter(collision_info)\n\t${0:-- body...}\nend'
+            snippet:
+              'onCollisionEnter(collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
             displayText: 'onCollisionEnter(Table collision_info)' # (optional)
             type: 'function' # (optional)
             description: 'Automatically called when this Object collides with another Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionEnter' # (optional)
           },
           {
-            snippet: 'onCollisionExit(collision_info)\n\t${0:-- body...}\nend'
+            snippet:
+              'onCollisionExit(collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
             displayText: 'onCollisionExit(Table collision_info)' # (optional)
             type: 'function' # (optional)
             description: 'Automatically called when this Object stops touching another Object.' # (optional)
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionExit' # (optional)
           },
           {
-            snippet: 'onCollisionStay(collision_info)\n\t${0:-- body...}\nend'
+            snippet:
+              'onCollisionStay(collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
             displayText: 'onCollisionStay(Table collision_info)' # (optional)
             type: 'function' # (optional)
             description: 'Automatically called when this Object is touching another Object.' # (optional)
@@ -2273,6 +2521,19 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
           },
           {
+            snippet:
+              'addNotebookTab({\n\t' +
+              'title  = ${1:-- string},\n\t' +
+              'body   = ${2:-- string (BBcode is allowed)},\n\t' +
+              'color  = ${3:-- string [Grey]},\n' +
+              '})'
+            displayText: 'addNotebookTab({string title, string body, string color})' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'int' # (optional)
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
+          },
+          {
             snippet: 'clearPixelPaint()'
             displayText: 'clearPixelPaint()' # (optional)
             type: 'function' # (optional)
@@ -2307,6 +2568,20 @@ module.exports =
           {
             snippet: 'editNotebookTab(${1:Table|parameters})'
             displayText: 'editNotebookTab(Table parameters)' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'bool' # (optional)
+            description: 'Edits an existing Tab on the Notebook.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
+          },
+          {
+            snippet:
+              'editNotebookTab({\n\t' +
+              'index  = ${1:-- int},\n\t' +
+              'title  = ${2:-- string},\n\t' +
+              'body   = ${3:-- string (BBcode is allowed)},\n\t' +
+              'color  = ${4:-- string [Grey]},\n' +
+              '})'
+            displayText: 'editNotebookTab({int index, string title, string body, string color})' # (optional)
             type: 'function' # (optional)
             leftLabel: 'bool' # (optional)
             description: 'Edits an existing Tab on the Notebook.' # (optional)
@@ -2353,6 +2628,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs' # (optional)
           },
           {
+            snippet: 'getNotebookTabs()$1\n\t-- getNotebookTabs returns:\n\t-- {{int index, string title, string body, string color}, ...}'
+            displayText: 'getNotebookTabs() -- returns {{int index, string title, string body, string color}, ...}'
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs' # (optional)
+          },
+          {
             snippet: 'getNotes()'
             displayText: 'getNotes()' # (optional)
             type: 'function' # (optional)
@@ -2379,6 +2662,18 @@ module.exports =
           {
             snippet: 'paste(${1:Table|parameters})'
             displayText: 'paste(Table parameters)' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Table' # (optional)
+            description: 'Pastes copied Objects and returns a Table of references to the new Objects.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+          },
+          {
+            snippet:
+              'paste({\n\t' +
+              'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
+              'snap_to_grid  = ${2:-- boolean [false]},\n' +
+              '})'
+            displayText: 'paste({Vector position, bool snap_to_grid})' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Table' # (optional)
             description: 'Pastes copied Objects and returns a Table of references to the new Objects.' # (optional)
@@ -2426,6 +2721,24 @@ module.exports =
           {
             snippet: 'spawnObject(${1:Table|paremeters})'
             displayText: 'spawnObject(Table parameters)' # (optional)
+            type: 'function' # (optional)
+            leftLabel: 'Object' # (optional)
+            description: 'Spawns an Object and returns a reference to it.' # (optional)
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject' # (optional)
+          },
+          {
+            snippet:
+              'spawnObject({\n\t' +
+              'type            = ${1:-- string},\n\t' +
+              'position        = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation        = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale           = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback        = ${5:-- string},\n\t' +
+              'callback_owner  = ${6:-- Object},\n\t' +
+              'params          = ${7:-- Table},\n\t' +
+              'snap_to_grid    = ${8:-- bool},\n' +
+              '})'
+            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, Table params, bool snap_to_grid})' # (optional)
             type: 'function' # (optional)
             leftLabel: 'Object' # (optional)
             description: 'Spawns an Object and returns a reference to it.' # (optional)
