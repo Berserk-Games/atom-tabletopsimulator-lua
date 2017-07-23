@@ -110,12 +110,14 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: false
     autocomplete:
-      title: 'Autocomplete parameters'
+      title: 'Autocomplete'
       order: 2
       type: 'object'
       properties:
         parameterToDisplay:
-          title: 'This will determine how autocomplete inserts parameters into your script'
+          title: 'Function Parameters'
+          description: 'This will determine how autocomplete inserts parameters into your script'
+          order: 1
           type: 'string'
           default: 'type'
           enum: [
@@ -124,6 +126,12 @@ module.exports = TabletopsimulatorLua =
             {value: 'name', description: 'Insert parameters as <NAME>'}
             {value: 'both', description: 'Insert parameters as <TYPE_NAME>'}
           ]
+        excludeLowerPriority:
+          title: 'Only autocomplete API suggestions'
+          order: 2
+          description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
+          type: 'boolean'
+          default: true
     style:
       title: 'Style'
       order: 3
@@ -139,12 +147,6 @@ module.exports = TabletopsimulatorLua =
           order: 2
           type: 'string'
           default: '_GUID'
-
-    #excludeLowerPriority:
-    #  title: 'Only autocomplete API suggestions'
-    #  description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
-    #  type: 'boolean'
-    #  default: true
 
   activate: (state) ->
     # See if there are any Updates
@@ -170,6 +172,7 @@ module.exports = TabletopsimulatorLua =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
 
     # Close any open files
     for editor,i in atom.workspace.getTextEditors()
@@ -294,6 +297,9 @@ module.exports = TabletopsimulatorLua =
       @connection.write JSON.stringify(@luaObjects)
     catch error
       console.log error
+
+  excludeChange: (newValue) ->
+    provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
 
   startConnection: ->
     if @if_connected

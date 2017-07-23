@@ -2785,12 +2785,14 @@ module.exports =
           },
         ]
         # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
+        # TODO make this smarter when dealing with Tables
+        #   i.e. discard_zones.Green = getObjectFromGUID(discard_zones_GUID.Green)
         if this_token.includes('=')
           for suggestion, index in suggestions
             if suggestion.snippet.startsWith('getObjectFromGUID')
               suggestions.splice(index + 1, 0,
                     {
-                      snippet: 'getObjectFromGUID(' + this_token.match(/(\w+)[^\w]*=/)[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + ')'
+                      snippet: 'getObjectFromGUID(' + line.match(/(\w+)[^\w]*=[^=]*$/)[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + ')'
                       displayText: 'getObjectFromGUID(<-...' # (optional)
                       type: 'function' # (optional)
                       leftLabel: 'Object' # (optional)
