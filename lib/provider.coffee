@@ -103,10 +103,16 @@ module.exports =
           },
         ]
       else if (line.includes("function") && line.endsWith(")"))
+        function_name = this_token.substring(0, this_token.lastIndexOf("("))
+        function_name = function_name.substring(function_name.lastIndexOf(" ") + 1)
         suggestions = [
           {
             snippet: '\n\t$1\nend'
             displayText: 'function...end' # (optional)
+          },
+          {
+            snippet: '\n\tfunction ' + function_name + "_routine()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "_routine')\nend"
+            displayText: 'function...coroutine...end' # (optional)
           },
         ]
       # Short circuit some common lua keywords
@@ -2777,6 +2783,7 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
+
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
       replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.parameterToDisplay')]
       for suggestion in suggestions
