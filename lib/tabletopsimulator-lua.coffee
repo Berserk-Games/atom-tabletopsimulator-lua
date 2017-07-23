@@ -105,7 +105,7 @@ module.exports = TabletopsimulatorLua =
       properties:
         convertUnicodeCharacters:
           title: 'Convert between \\u{xx} and character when loading/saving'
-          description: 'When loading from TTS, automatically replace all instances of \\u{xx} with its relevant character.  When saving to TTS do the reverse.'
+          description: 'When loading from TTS, automatically replace all instances of ``\\u{xx}`` with its relevant character.  When saving to TTS do the reverse.  e.g. it will switch ``\\u{e9}`` to/from ``é``'
           order: 1
           type: 'boolean'
           default: false
@@ -114,37 +114,43 @@ module.exports = TabletopsimulatorLua =
       order: 2
       type: 'object'
       properties:
+        excludeLowerPriority:
+          title: 'Only autocomplete API suggestions'
+          order: 1
+          description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
+          type: 'boolean'
+          default: true
         parameterToDisplay:
           title: 'Function Parameters'
           description: 'This will determine how autocomplete inserts parameters into your script'
-          order: 1
+          order: 2
           type: 'string'
           default: 'type'
           enum: [
             {value: 'none', description: 'Do not insert most parameters'}
-            {value: 'type', description: 'Insert parameters as <TYPE>'}
-            {value: 'name', description: 'Insert parameters as <NAME>'}
-            {value: 'both', description: 'Insert parameters as <TYPE_NAME>'}
+            {value: 'type', description: 'Insert parameters as TYPE'}
+            {value: 'name', description: 'Insert parameters as NAME'}
+            {value: 'both', description: 'Insert parameters as TYPE & NAME'}
           ]
-        excludeLowerPriority:
-          title: 'Only autocomplete API suggestions'
-          order: 2
-          description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
-          type: 'boolean'
-          default: true
     style:
       title: 'Style'
       order: 3
       type: 'object'
       properties:
+        parameterFormat:
+          title: 'Parameter TYPE & NAME Format'
+          description: "If you select ``TYPE & NAME`` above it will format like this. You may vary the case, e.g. ``typeName`` or ``name <TYPE>``"
+          order: 1
+          type: 'string'
+          default: 'type_name'
         coroutinePostfix:
           title: 'Coroutine Postfix'
-          order: 1
+          order: 2
           type: 'string'
           default: '_routine'
         guidPostfix:
           title: 'GUID Postfix'
-          order: 2
+          order: 3
           type: 'string'
           default: '_GUID'
 

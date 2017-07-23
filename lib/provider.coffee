@@ -2785,25 +2785,66 @@ module.exports =
           },
         ]
         # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
-        # TODO make this smarter when dealing with Tables
-        #   i.e. discard_zones.Green = getObjectFromGUID(discard_zones_GUID.Green)
         if this_token.includes('=')
           for suggestion, index in suggestions
             if suggestion.snippet.startsWith('getObjectFromGUID')
+              # Last identifier before =
+              post_token = line.match(/(\w+)[^\w]*=[^=]*$/)[1]
+              token = post_token + atom.config.get('tabletopsimulator-lua.style.guidPostfix')
               suggestions.splice(index + 1, 0,
                     {
-                      snippet: 'getObjectFromGUID(' + line.match(/(\w+)[^\w]*=[^=]*$/)[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + ')'
-                      displayText: 'getObjectFromGUID(<-...' # (optional)
+                      snippet: 'getObjectFromGUID(' + token + ')'
+                      displayText: 'getObjectFromGUID(->' +  token + ')'
                       type: 'function' # (optional)
                       leftLabel: 'Object' # (optional)
                       description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
                       descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
                     }
               )
+              # Parent identifier if present
+              pre_token = line.match(/([\w]+)\.[^.]*=[^=]*$/)
+              if pre_token
+                token = pre_token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + '.' + post_token
+                suggestions.splice(index + 2, 0,
+                      {
+                        snippet: 'getObjectFromGUID(' + token + ')'
+                        displayText: 'getObjectFromGUID(->' +  token + ')'
+                        type: 'function' # (optional)
+                        leftLabel: 'Object' # (optional)
+                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
+                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                      }
+                )
+              # Table identifier if present
+              token = line.match(/([\w]+)(\[[^\]]*\])[^=]*=[^=]*$/)
+              if token
+                token = token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + token[2]
+                suggestions.splice(index + 2, 0,
+                      {
+                        snippet: 'getObjectFromGUID(' + token + ')'
+                        displayText: 'getObjectFromGUID(->' +  token + ')'
+                        type: 'function' # (optional)
+                        leftLabel: 'Object' # (optional)
+                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
+                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                      }
+                )
               break
 
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
-      replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay')]
+      replace_type = atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay')
+      if replace_type == 'both'
+        replace_pattern = (match, index, parameter_type, parameter_name) ->
+          format = atom.config.get('tabletopsimulator-lua.style.parameterFormat')
+          format = format.replace("TYPE", parameter_type.toUpperCase())
+          format = format.replace("Type", capitalize(parameter_type))
+          format = format.replace("type", parameter_type)
+          format = format.replace("NAME", parameter_name.toUpperCase())
+          format = format.replace("Name", capitalize(parameter_name))
+          format = format.replace("name", parameter_name)
+          return '${' + index + ':' + format + '}'
+      else
+        replace_pattern = parameter_patterns[replace_type]
       for suggestion in suggestions
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
@@ -2815,3 +2856,6 @@ parameter_patterns = {
   'both': '$${$1:$2_$3}',
   'none': '$${$1:}',
 }
+
+capitalize = (s) ->
+  return s.substring(0,1).toUpperCase() + s.substring(1)
