@@ -105,13 +105,14 @@ module.exports =
       else if (line.includes("function") && line.endsWith(")"))
         function_name = this_token.substring(0, this_token.lastIndexOf("("))
         function_name = function_name.substring(function_name.lastIndexOf(" ") + 1)
+        function_name = function_name + atom.config.get('tabletopsimulator-lua.style.coroutinePostfix')
         suggestions = [
           {
             snippet: '\n\t$1\nend'
             displayText: 'function...end' # (optional)
           },
           {
-            snippet: '\n\tfunction ' + function_name + "_routine()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "_routine')\nend"
+            snippet: '\n\tfunction ' + function_name + "()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
             displayText: 'function...coroutine...end' # (optional)
           },
         ]
@@ -2783,9 +2784,24 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
           },
         ]
+        # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
+        if this_token.includes('=')
+          for suggestion, index in suggestions
+            if suggestion.snippet.startsWith('getObjectFromGUID')
+              suggestions.splice(index + 1, 0,
+                    {
+                      snippet: 'getObjectFromGUID(' + this_token.match(/(\w+)[^\w]*=/)[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + ')'
+                      displayText: 'getObjectFromGUID(<-...' # (optional)
+                      type: 'function' # (optional)
+                      leftLabel: 'Object' # (optional)
+                      description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
+                      descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                    }
+              )
+              break
 
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
-      replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.parameterToDisplay')]
+      replace_pattern = parameter_patterns[atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay')]
       for suggestion in suggestions
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
