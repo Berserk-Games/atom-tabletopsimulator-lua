@@ -2788,50 +2788,39 @@ module.exports =
         if this_token.includes('=')
           for suggestion, index in suggestions
             if suggestion.snippet.startsWith('getObjectFromGUID')
-              insertion_point = index + 1
-              # Last identifier before =
-              post_token = line.match(/(\w+)[^\w]*=[^=]*$/)[1]
-              token = post_token + atom.config.get('tabletopsimulator-lua.style.guidPostfix')
-              suggestions.splice(insertion_point, 0,
-                    {
-                      snippet: 'getObjectFromGUID(' + token + ')'
-                      displayText: 'getObjectFromGUID(->' +  token + ')'
-                      type: 'function' # (optional)
-                      leftLabel: 'Object' # (optional)
-                      description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
-                      descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
-                    }
-              )
-              # Parent identifier if present
-              pre_token = line.match(/([\w]+)\.[^.]*=[^=]*$/)
-              if pre_token
-                token = pre_token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + '.' + post_token
+              identifier = line.match(/([^\s]+)\s*=[^=]*$/)[1]
+              guid_string =  atom.config.get('tabletopsimulator-lua.style.guidPostfix')
+              insertion_point = index
+              if identifier.match(/.*\w$/)
                 insertion_point = insertion_point + 1
-                suggestions.splice(insertion_point + 2, 0,
-                      {
-                        snippet: 'getObjectFromGUID(' + token + ')'
-                        displayText: 'getObjectFromGUID(->' +  token + ')'
-                        type: 'function' # (optional)
-                        leftLabel: 'Object' # (optional)
-                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
-                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
-                      }
-                )
-              # Table identifier if present
-              token = line.match(/([\w]+)(\[[^\]]*\])[^=]*=[^=]*$/)
-              if token
-                token = token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + token[2]
-                insertion_point = insertion_point + 1
+                suggestion = identifier + guid_string
                 suggestions.splice(insertion_point, 0,
                       {
-                        snippet: 'getObjectFromGUID(' + token + ')'
-                        displayText: 'getObjectFromGUID(->' +  token + ')'
+                        snippet: 'getObjectFromGUID(' + suggestion + ')'
+                        displayText: 'getObjectFromGUID(->' +  suggestion + ')'
                         type: 'function' # (optional)
                         leftLabel: 'Object' # (optional)
                         description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
                         descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
                       }
                 )
+              for c, i in identifier
+                if c.match(/[^\w]/)
+                  pre  = identifier.substring(0, i)
+                  post = identifier.substring(i)
+                  if pre.match(/.*\w$/)
+                    insertion_point = insertion_point + 1
+                    suggestion = pre + guid_string + post
+                    suggestions.splice(insertion_point, 0,
+                          {
+                            snippet: 'getObjectFromGUID(' + suggestion + ')'
+                            displayText: 'getObjectFromGUID(->' +  suggestion + ')'
+                            type: 'function' # (optional)
+                            leftLabel: 'Object' # (optional)
+                            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
+                            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                          }
+                    )
               break
 
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
