@@ -2788,10 +2788,11 @@ module.exports =
         if this_token.includes('=')
           for suggestion, index in suggestions
             if suggestion.snippet.startsWith('getObjectFromGUID')
+              insertion_point = index + 1
               # Last identifier before =
               post_token = line.match(/(\w+)[^\w]*=[^=]*$/)[1]
               token = post_token + atom.config.get('tabletopsimulator-lua.style.guidPostfix')
-              suggestions.splice(index + 1, 0,
+              suggestions.splice(insertion_point, 0,
                     {
                       snippet: 'getObjectFromGUID(' + token + ')'
                       displayText: 'getObjectFromGUID(->' +  token + ')'
@@ -2805,7 +2806,8 @@ module.exports =
               pre_token = line.match(/([\w]+)\.[^.]*=[^=]*$/)
               if pre_token
                 token = pre_token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + '.' + post_token
-                suggestions.splice(index + 2, 0,
+                insertion_point = insertion_point + 1
+                suggestions.splice(insertion_point + 2, 0,
                       {
                         snippet: 'getObjectFromGUID(' + token + ')'
                         displayText: 'getObjectFromGUID(->' +  token + ')'
@@ -2819,7 +2821,8 @@ module.exports =
               token = line.match(/([\w]+)(\[[^\]]*\])[^=]*=[^=]*$/)
               if token
                 token = token[1] + atom.config.get('tabletopsimulator-lua.style.guidPostfix') + token[2]
-                suggestions.splice(index + 2, 0,
+                insertion_point = insertion_point + 1
+                suggestions.splice(insertion_point, 0,
                       {
                         snippet: 'getObjectFromGUID(' + token + ')'
                         displayText: 'getObjectFromGUID(->' +  token + ')'
