@@ -117,7 +117,7 @@ module.exports = TabletopsimulatorLua =
         excludeLowerPriority:
           title: 'Only autocomplete API suggestions'
           order: 1
-          description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
+          description: 'This will disable the default autocomplete provider and any other providers with a lower priority; try unticking it - you might like it!'
           type: 'boolean'
           default: true
         parameterToDisplay:
@@ -145,11 +145,13 @@ module.exports = TabletopsimulatorLua =
           default: 'type_name'
         coroutinePostfix:
           title: 'Coroutine Postfix'
+          description: "When automatically creating an internal coroutine function this is appended to the parent function's name"
           order: 2
           type: 'string'
           default: '_routine'
         guidPostfix:
           title: 'GUID Postfix'
+          description: "When guessing the getObjectFromGUID parameter this is appended to the name of the variable being assigned to"
           order: 3
           type: 'string'
           default: '_GUID'
