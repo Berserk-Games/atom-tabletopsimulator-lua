@@ -2274,7 +2274,7 @@ module.exports =
           },
         ]
       # Default Events
-      else if (line.includes("function") && line.lastIndexOf("function") > line.lastIndexOf("("))
+      else if (line.match(/^\s*function/) && line.lastIndexOf("function") > line.lastIndexOf("("))
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
@@ -2444,7 +2444,7 @@ module.exports =
           },
         ]
       # Globally accessible constants & functions
-      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and not this_token.match(/.*[\w ] $/)
+      else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and line.match(/\w$/)
         #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
