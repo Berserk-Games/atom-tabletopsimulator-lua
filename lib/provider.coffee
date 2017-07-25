@@ -2283,123 +2283,9 @@ module.exports =
 
       # Section: Default Events
       else if (line.startsWith('function') && not line.includes("("))
-        if global_script # This is the main script, not an object script
-          suggestions = [
-            {
-              snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
-              displayText: 'fixedUpdate()'
-              type: 'function'
-              description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate'
-            },
-            {
-              snippet: 'onload(save_state)\n\t${0:-- body...}\nend'
-              displayText: 'onload(string save_state)'
-              type: 'function'
-              description: 'Automatically called when a game save is finished loading every Object.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
-            },
-            {
-              snippet: 'onObjectDestroyed(dying_object)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectDestroyed(Object dying_object)'
-              type: 'function'
-              description: 'Automatically called when an Object is destroyed.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed'
-            },
-            {
-              snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectDropped(string player_color, Object dropped_object)'
-              type: 'function'
-              description: 'Automatically called when an Object is dropped.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped'
-            },
-            {
-              snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)'
-              type: 'function'
-              description: 'Automatically called when an Object enters a Scripting Zone.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
-            },
-            {
-              snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
-              type: 'function'
-              description: 'Automatically called when an Object leaves a Scripting Zone.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone'
-            },
-            {
-              snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectLoopingEffect(Object object, int index)'
-              type: 'function'
-              description: "Automatically called when an asset Object's loop is started."
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect'
-            },
-            {
-              snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)'
-              type: 'function'
-              description: 'Automatically called when an Object is picked up.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp'
-            },
-            {
-              snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectRandomize(Object object, string player_color)'
-              type: 'function'
-              description: 'Automatically called when an asset Object is randomized by player_color.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
-            },
-            {
-              snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
-              displayText: 'onObjectTriggerEffect(Object object, int index)'
-              type: 'function'
-              description: 'Automatically called when an asset Object is triggered.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect'
-            },
-            {
-              snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onPlayerChangedColor(string player_color)'
-              type: 'function'
-              description: 'Automatically called when a Player changes color.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
-            },
-            {
-              snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
-              displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
-              type: 'function'
-              description: 'Automatically called at the end of a Player\'s turn.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnEnd'
-            },
-            {
-              snippet: 'onPlayerTurnStart(player_color_start, player_color_previous)\n\t${0:-- body...}\nend'
-              displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)'
-              type: 'function'
-              description: 'Automatically called at the start of a Player\'s turn.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart'
-            },
-            {
-              snippet: 'onSave()\n\t${0:-- body...}\nend'
-              displayText: 'onSave()'
-              type: 'function'
-              description: 'Automatically called when the game saves (including auto-save for Rewinding).'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
-            },
-            {
-              snippet: 'update()\n\t${0:-- body...}\nend'
-              displayText: 'update()'
-              type: 'function'
-              description: 'Automatically called once every frame.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
-            },
-          ]
-        else # Object script
-          suggestions = [
-            {
-              snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
-              displayText: 'fixedUpdate()'
-              type: 'function'
-              description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate'
-            },
+        suggestions = []
+        if not global_script
+          suggestions = suggestions.concat [
             {
               snippet:
                 'onCollisionEnter(collision_info)\n\t' +
@@ -2467,21 +2353,114 @@ module.exports =
               description: 'Automatically called when this Object is picked up.'
               descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickedUp'
             },
-            {
-              snippet: 'onSave()\n\t${0:-- body...}\nend'
-              displayText: 'onSave()'
-              type: 'function'
-              description: 'Automatically called when the game saves (including auto-save for Rewinding).'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
-            },
-            {
-              snippet: 'update()\n\t${0:-- body...}\nend'
-              displayText: 'update()'
-              type: 'function'
-              description: 'Automatically called once every frame.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
-            },
           ]
+        suggestions = suggestions.concat [
+          {
+            snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
+            displayText: 'fixedUpdate()'
+            type: 'function'
+            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate'
+          },
+          {
+            snippet: 'onload(save_state)\n\t${0:-- body...}\nend'
+            displayText: 'onload(string save_state)'
+            type: 'function'
+            description: 'Automatically called when a game save is finished loading every Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
+          },
+          {
+            snippet: 'onObjectDestroyed(dying_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDestroyed(Object dying_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is destroyed.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed'
+          },
+          {
+            snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDropped(string player_color, Object dropped_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is dropped.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped'
+          },
+          {
+            snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)'
+            type: 'function'
+            description: 'Automatically called when an Object enters a Scripting Zone.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
+          },
+          {
+            snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
+            type: 'function'
+            description: 'Automatically called when an Object leaves a Scripting Zone.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone'
+          },
+          {
+            snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLoopingEffect(Object object, int index)'
+            type: 'function'
+            description: "Automatically called when an asset Object's loop is started."
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect'
+          },
+          {
+            snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is picked up.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp'
+          },
+          {
+            snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectRandomize(Object object, string player_color)'
+            type: 'function'
+            description: 'Automatically called when an asset Object is randomized by player_color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
+          },
+          {
+            snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectTriggerEffect(Object object, int index)'
+            type: 'function'
+            description: 'Automatically called when an asset Object is triggered.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect'
+          },
+          {
+            snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerChangedColor(string player_color)'
+            type: 'function'
+            description: 'Automatically called when a Player changes color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
+          },
+          {
+            snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
+            type: 'function'
+            description: 'Automatically called at the end of a Player\'s turn.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnEnd'
+          },
+          {
+            snippet: 'onPlayerTurnStart(player_color_start, player_color_previous)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)'
+            type: 'function'
+            description: 'Automatically called at the start of a Player\'s turn.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart'
+          },
+          {
+            snippet: 'onSave()\n\t${0:-- body...}\nend'
+            displayText: 'onSave()'
+            type: 'function'
+            description: 'Automatically called when the game saves (including auto-save for Rewinding).'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
+          },
+          {
+            snippet: 'update()\n\t${0:-- body...}\nend'
+            displayText: 'update()'
+            type: 'function'
+            description: 'Automatically called once every frame.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
+          },
+        ]
 
       # Section: Globally accessible constants & functions
       else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and line.match(/\w$/)
