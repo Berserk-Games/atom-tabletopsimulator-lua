@@ -748,13 +748,13 @@ module.exports =
           {
             snippet:
               'cast({\n\t' +
-              'origin        = ${1:-- Vector},\n\t' +
-              'direction     = ${2:-- Vector},\n\t' +
-              'type          = ${3:-- int (1: Ray, 2: Sphere, 3: Box)},\n\t' +
-              'size          = ${4:-- Vector},\n\t' +
-              'orientation   = ${5:-- Vector},\n\t' +
-              'max_distance  = ${6:-- float},\n\t' +
-              'debug         = ${7:-- bool (true = visualize cast)},\n' +
+              'origin       = ${1:-- Vector},\n\t' +
+              'direction    = ${2:-- Vector},\n\t' +
+              'type         = ${3:-- int (1: Ray, 2: Sphere, 3: Box)},\n\t' +
+              'size         = ${4:-- Vector},\n\t' +
+              'orientation  = ${5:-- Vector},\n\t' +
+              'max_distance = ${6:-- float},\n\t' +
+              'debug        = ${7:-- bool (true = visualize cast)},\n' +
               '}) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}'
             displayText: 'cast({Vector origin, Vector direction, int type, Vector size, Vector orientation, float max_distanc, bool debug})'
             type: 'function'
@@ -1110,10 +1110,10 @@ module.exports =
           {
             snippet:
               'lookAt({\n\t' +
-              'position  = ${1:-- Vector (required)},\n\t' +
-              'pitch     = ${2:-- float},\n\t' +
-              'yaw       = ${3:-- float},\n\t' +
-              'distance  = ${4:-- float},\n' +
+              'position = ${1:-- Vector (required)},\n\t' +
+              'pitch    = ${2:-- float},\n\t' +
+              'yaw      = ${3:-- float},\n\t' +
+              'distance = ${4:-- float},\n' +
               '})'
             displayText: 'lookAt({Vector position, float pitch, float yaw, float distance})'
             type: 'function'
@@ -1164,12 +1164,12 @@ module.exports =
           {
             snippet:
               'setHandTransform({\n\t' +
-              'position  = ${1:-- Vector},\n\t' +
-              'rotation  = ${2:-- Vector},\n\t' +
-              'scale     = ${3:-- Vector},\n\t' +
-              'forward   = ${4:-- Vector},\n\t' +
-              'right     = ${5:-- Vector},\n\t' +
-              'up        = ${6:-- Vector},\n' +
+              'position = ${1:-- Vector},\n\t' +
+              'rotation = ${2:-- Vector},\n\t' +
+              'scale    = ${3:-- Vector},\n\t' +
+              'forward  = ${4:-- Vector},\n\t' +
+              'right    = ${5:-- Vector},\n\t' +
+              'up       = ${6:-- Vector},\n' +
               '})'
             displayText: 'setHandTransform({Vector position, Vector rotation, Vector scale, Vector forward, Vector right, Vector up})'
             type: 'function'
@@ -1224,12 +1224,12 @@ module.exports =
           {
             snippet:
               'create({\n\t' +
-              'identifier      = ${1:-- string (must be unique)},\n\t' +
-              'function_name   = ${2:-- string},\n\t' +
-              'function_owner  = ${3:-- Object},\n\t' +
-              'parameters      = ${4:-- Table},\n\t' +
-              'delay           = ${5:-- float  [0 seconds]},\n\t' +
-              'repetitions     = ${6:-- int    [1] (0 = infinite)},\n' +
+              'identifier     = ${1:-- string (must be unique)},\n\t' +
+              'function_name  = ${2:-- string},\n\t' +
+              'function_owner = ${3:-- Object},\n\t' +
+              'parameters     = ${4:-- Table},\n\t' +
+              'delay          = ${5:-- float  [0 seconds]},\n\t' +
+              'repetitions    = ${6:-- int    [1] (0 = infinite)},\n' +
               '})'
             displayText: 'create({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
             type: 'function'
@@ -1593,8 +1593,8 @@ module.exports =
           {
             snippet:
               'clone({\n\t' +
-              'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
-              'snap_to_grid  = ${2:-- boolean [false]},\n' +
+              'position     = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
+              'snap_to_grid = ${2:-- boolean [false]},\n' +
               '})'
             displayText: 'clone({Vector position, bool snap_to_grid})'
             type: 'function'
@@ -1613,17 +1613,17 @@ module.exports =
           {
             snippet:
               'createButton({\n\t' +
-              'click_function  = ${1:-- string (required)},\n\t' +
-              'function_owner  = ${2:-- Object (required)},\n\t' +
-              'label           = ${3:-- string},\n\t' +
-              'position        = ${4:-- Vector},\n\t' +
-              'rotation        = ${5:-- Vector},\n\t' +
-              'scale           = ${6:-- Vector},\n\t' +
-              'width           = ${7:-- int},\n\t' +
-              'height          = ${8:-- int},\n\t' +
-              'font_size       = ${9:-- int},\n\t' +
-              'color           = ${10:-- Color},\n\t' +
-              'font_color      = ${11:-- Color},\n' +
+              'click_function = ${1:-- string (required)},\n\t' +
+              'function_owner = ${2:-- Object (required)},\n\t' +
+              'label          = ${3:-- string},\n\t' +
+              'position       = ${4:-- Vector},\n\t' +
+              'rotation       = ${5:-- Vector},\n\t' +
+              'scale          = ${6:-- Vector},\n\t' +
+              'width          = ${7:-- int},\n\t' +
+              'height         = ${8:-- int},\n\t' +
+              'font_size      = ${9:-- int},\n\t' +
+              'color          = ${10:-- Color},\n\t' +
+              'font_color     = ${11:-- Color},\n' +
               '})'
             displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
             type: 'function'
@@ -1682,18 +1682,18 @@ module.exports =
           {
             snippet:
               'editButton({\n\t' +
-              'index           = ${1:-- int    (required)},\n\t' +
-              'click_function  = ${2:-- string},\n\t' +
-              'function_owner  = ${3:-- Object},\n\t' +
-              'label           = ${4:-- string},\n\t' +
-              'position        = ${5:-- Vector},\n\t' +
-              'rotation        = ${6:-- Vector},\n\t' +
-              'scale           = ${7:-- Vector},\n\t' +
-              'width           = ${8:-- int},\n\t' +
-              'height          = ${9:-- int},\n\t' +
-              'font_size       = ${10:-- int},\n\t' +
-              'color           = ${11:-- Color},\n\t' +
-              'font_color      = ${12:-- Color},\n' +
+              'index          = ${1:-- int    (required)},\n\t' +
+              'click_function = ${2:-- string},\n\t' +
+              'function_owner = ${3:-- Object},\n\t' +
+              'label          = ${4:-- string},\n\t' +
+              'position       = ${5:-- Vector},\n\t' +
+              'rotation       = ${6:-- Vector},\n\t' +
+              'scale          = ${7:-- Vector},\n\t' +
+              'width          = ${8:-- int},\n\t' +
+              'height         = ${9:-- int},\n\t' +
+              'font_size      = ${10:-- int},\n\t' +
+              'color          = ${11:-- Color},\n\t' +
+              'font_color     = ${12:-- Color},\n' +
               '})'
             displayText: 'editButton({int index, string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
             type: 'function'
@@ -2255,15 +2255,15 @@ module.exports =
           {
             snippet:
               'takeObject({\n\t' +
-              'position        = ${1:-- Vector [container position, x+2]},\n\t' +
-              'rotation        = ${2:-- Vector [container rotation]},\n\t' +
-              'callback        = ${3:-- string},\n\t' +
-              'callback_owner  = ${4:-- Object},\n\t' +
-              'params          = ${5:-- Table},\n\t' +
-              'flip            = ${6:-- bool},\n\t' +
-              'guid            = ${7:-- string},\n\t' +
-              'index           = ${8:-- int},\n\t' +
-              'top             = ${9:-- bool [true]},\n' +
+              'position       = ${1:-- Vector [container position, x+2]},\n\t' +
+              'rotation       = ${2:-- Vector [container rotation]},\n\t' +
+              'callback       = ${3:-- string},\n\t' +
+              'callback_owner = ${4:-- Object},\n\t' +
+              'params         = ${5:-- Table},\n\t' +
+              'flip           = ${6:-- bool},\n\t' +
+              'guid           = ${7:-- string},\n\t' +
+              'index          = ${8:-- int},\n\t' +
+              'top            = ${9:-- bool [true]},\n' +
               '})'
             displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
             type: 'function'
@@ -2569,9 +2569,9 @@ module.exports =
           {
             snippet:
               'addNotebookTab({\n\t' +
-              'title  = ${1:-- string},\n\t' +
-              'body   = ${2:-- string (BBcode is allowed)},\n\t' +
-              'color  = ${3:-- string [Grey]},\n' +
+              'title = ${1:-- string},\n\t' +
+              'body  = ${2:-- string (BBcode is allowed)},\n\t' +
+              'color = ${3:-- string [Grey]},\n' +
               '})'
             displayText: 'addNotebookTab({string title, string body, string color})'
             type: 'function'
@@ -2622,10 +2622,10 @@ module.exports =
           {
             snippet:
               'editNotebookTab({\n\t' +
-              'index  = ${1:-- int},\n\t' +
-              'title  = ${2:-- string},\n\t' +
-              'body   = ${3:-- string (BBcode is allowed)},\n\t' +
-              'color  = ${4:-- string [Grey]},\n' +
+              'index = ${1:-- int},\n\t' +
+              'title = ${2:-- string},\n\t' +
+              'body  = ${3:-- string (BBcode is allowed)},\n\t' +
+              'color = ${4:-- string [Grey]},\n' +
               '})'
             displayText: 'editNotebookTab({int index, string title, string body, string color})'
             type: 'function'
@@ -2716,8 +2716,8 @@ module.exports =
           {
             snippet:
               'paste({\n\t' +
-              'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
-              'snap_to_grid  = ${2:-- boolean [false]},\n' +
+              'position     = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
+              'snap_to_grid = ${2:-- boolean [false]},\n' +
               '})'
             displayText: 'paste({Vector position, bool snap_to_grid})'
             type: 'function'
@@ -2775,14 +2775,14 @@ module.exports =
           {
             snippet:
               'spawnObject({\n\t' +
-              'type            = ${1:-- string},\n\t' +
-              'position        = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
-              'rotation        = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
-              'scale           = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
-              'callback        = ${5:-- string},\n\t' +
-              'callback_owner  = ${6:-- Object},\n\t' +
-              'params          = ${7:-- Table},\n\t' +
-              'snap_to_grid    = ${8:-- bool},\n' +
+              'type           = ${1:-- string},\n\t' +
+              'position       = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation       = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback       = ${5:-- string},\n\t' +
+              'callback_owner = ${6:-- Object},\n\t' +
+              'params         = ${7:-- Table},\n\t' +
+              'snap_to_grid   = ${8:-- bool},\n' +
               '})'
             displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, Table params, bool snap_to_grid})'
             type: 'function'
