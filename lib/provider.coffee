@@ -2,25 +2,20 @@ module.exports =
   selector: '.source.tts.lua'
   disableForSelector: '.source.tts.lua .comment'
   filterSuggestions: true
-
   # This will take priority over the default provider, which has a priority of 0.
   # `excludeLowerPriority` will suppress any providers with a lower priority
   # i.e. The default provider will be suppressed
   inclusionPriority: 2
   excludeLowerPriority: true
-
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     new Promise (resolve) ->
       # Find your suggestions here
       suggestions = []
-
       if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
         resolve([])
         return
-
       # Substring up until this position
       line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
-
       # Split line into bracket depths
       depths = {}
       depth = 0
@@ -49,11 +44,10 @@ module.exports =
             returned_to_depth = false
           depths[depth] += c
       depths[depth] += returning_from
-
       # Split relevant depth into tokens
       tokens = depths[depth].split(".")
       this_token = ""           # user is currently typing
-      this_token_intact = true  # is it just ajphanumerics?
+      this_token_intact = true  # is it just alphanumerics?
       previous_token = ""       # last string before a '.'
       previous_token_2 = ""     # ...and the one before that
       if tokens.length > 0
@@ -70,36 +64,33 @@ module.exports =
               if part != ""
                 previous_token_2 = part
                 break
-
       #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
       #console.log scopeDescriptor.scopes[1]
-
       # If we're in the middle of typing a number then suggest nothing on .
       if prefix == "." and previous_token.match(/^[0-9]$/)
         resolve([])
         return
-
       # Control blocks
       if (line.endsWith(" do"))
         suggestions = [
           {
             snippet: 'do\n\t$1\nend'
-            displayText: 'do...end' # (optional)
+            displayText: 'do...end'
           },
         ]
       else if (line.endsWith(" then") and not line.includes("elseif"))
         suggestions = [
           {
             snippet: 'then\n\t$1\nend'
-            displayText: 'then...end' # (optional)
+            displayText: 'then...end'
           },
         ]
       else if (line.endsWith(" repeat"))
         suggestions = [
           {
             snippet: 'repeat\n\t$1\nuntil $2'
-            displayText: 'repeat...until' # (optional)
+            displayText: 'repeat...until'
           },
         ]
       else if (line.includes("function") && line.endsWith(")"))
@@ -109,11 +100,11 @@ module.exports =
         suggestions = [
           {
             snippet: '\n\t$1\nend'
-            displayText: 'function...end' # (optional)
+            displayText: 'function...end'
           },
           {
             snippet: '\n\tfunction ' + function_name + "()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
-            displayText: 'function...coroutine...end' # (optional)
+            displayText: 'function...coroutine...end'
           },
         ]
       # Short circuit some common lua keywords
@@ -125,7 +116,7 @@ module.exports =
         suggestions = [
           # Member Variables
           {
-            #text: 'getObjectFromGUID()' # OR
+            #text: 'script_code' # OR
             snippet: 'script_code'
             displayText: 'script_code' # (optional)
             type: 'property' # (optional)
@@ -141,52 +132,52 @@ module.exports =
           },
           {
             snippet: 'script_state'
-            displayText: 'script_state' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the Global saved Lua script state.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state' # (optional)
+            displayText: 'script_state'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'Returns the Global saved Lua script state.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state'
           },
           # Functions
           {
             snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
-            displayText: 'call(string function_name, Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'variable' # (optional)
-            description: 'Calls a Lua function owned by the Global Script and passes an optional Table as parameters to the function.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call' # (optional)
+            displayText: 'call(string function_name, Table parameters)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Calls a Lua function owned by the Global Script and passes an optional Table as parameters to the function.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call'
           },
           {
             snippet: 'getTable(${1:string|table_name})'
-            displayText: 'getTable(string table_name)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets a Lua Table for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable' # (optional)
+            displayText: 'getTable(string table_name)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets a Lua Table for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable'
           },
           {
             snippet: 'getVar(${1:string|variable_name})'
-            displayText: 'getVar(string variable_name)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'variable' # (optional)
-            description: 'Gets a Lua variable for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar' # (optional)
+            displayText: 'getVar(string variable_name)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Gets a Lua variable for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar'
           },
           {
             snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
-            displayText: 'setTable(string table_name, Table table)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets a Lua Table for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable' # (optional)
+            displayText: 'setTable(string table_name, Table table)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets a Lua Table for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable'
           },
           {
             snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
-            displayText: 'setVar(string variable_name, variable value)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets a Lua variable for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar' # (optional)
+            displayText: 'setVar(string variable_name, variable value)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets a Lua variable for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
           },
         ]
       # math Class
@@ -196,235 +187,235 @@ module.exports =
           # Member Variables
           {
             snippet: 'huge'
-            displayText: 'huge' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The value HUGE_VAL, a value larger than or equal to any other numerical value.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.huge' # (optional)
+            displayText: 'huge'
+            type: 'constant'
+            leftLabel: 'float'
+            description: 'The value HUGE_VAL, a value larger than or equal to any other numerical value.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.huge'
           },
           {
             snippet: 'pi'
-            displayText: 'pi' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The value of p.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pi' # (optional)
+            displayText: 'pi'
+            type: 'constant'
+            leftLabel: 'float'
+            description: 'The value of p.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pi'
           },
           # Functions
           {
             snippet: 'abs(${1:float|x})'
-            displayText: 'abs(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the absolute value of x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.abs' # (optional)
+            displayText: 'abs(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the absolute value of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.abs'
           },
           {
             snippet: 'acos(${1:float|x})'
-            displayText: 'acos(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the arc cosine of x (in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.acos' # (optional)
+            displayText: 'acos(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the arc cosine of x (in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.acos'
           },
           {
             snippet: 'asin(${1:float|x})'
-            displayText: 'asin(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the arc sine of x (in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.asin' # (optional)
+            displayText: 'asin(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the arc sine of x (in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.asin'
           },
           {
             snippet: 'atan(${1:float|x})'
-            displayText: 'atan(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the arc tangent of x (in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan' # (optional)
+            displayText: 'atan(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the arc tangent of x (in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan'
           },
           {
             snippet: 'atan2(${1:float|y}, ${2:float|x})'
-            displayText: 'atan2(float y, float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the arc tangent of y/x (in radians), but uses the signs of both parameters to find the quadrant of the result.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan2' # (optional)
+            displayText: 'atan2(float y, float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the arc tangent of y/x (in radians), but uses the signs of both parameters to find the quadrant of the result.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.atan2'
           },
           {
             snippet: 'ceil(${1:float|x})'
-            displayText: 'ceil(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the smallest integer larger than or equal to x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ceil' # (optional)
+            displayText: 'ceil(float x)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the smallest integer larger than or equal to x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ceil'
           },
           {
             snippet: 'cos(${1:float|x})'
-            displayText: 'cos(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the cosine of x (assumed to be in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cos' # (optional)
+            displayText: 'cos(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the cosine of x (assumed to be in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cos'
           },
           {
             snippet: 'cosh(${1:float|x})'
-            displayText: 'cosh(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the hyperbolic cosine of x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cosh' # (optional)
+            displayText: 'cosh(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the hyperbolic cosine of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.cosh'
           },
           {
             snippet: 'deg(${1:float|x})'
-            displayText: 'deg(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the angle x (given in radians) in degrees.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.deg' # (optional)
+            displayText: 'deg(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the angle x (given in radians) in degrees.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.deg'
           },
           {
             snippet: 'exp(${1:float|x})'
-            displayText: 'exp(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the value e^x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.exp' # (optional)
+            displayText: 'exp(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the value e^x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.exp'
           },
           {
             snippet: 'floor(${1:float|x})'
-            displayText: 'floor(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the largest integer smaller than or equal to x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.floor' # (optional)
+            displayText: 'floor(float x)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the largest integer smaller than or equal to x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.floor'
           },
           {
             snippet: 'fmod(${1:float|x}, ${2:float|y})'
-            displayText: 'fmod(float x, float y)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the remainder of the division of x by y that rounds the quotient towards zero.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.fmod' # (optional)
+            displayText: 'fmod(float x, float y)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the remainder of the division of x by y that rounds the quotient towards zero.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.fmod'
           },
           {
             snippet: 'frexp(${1:float|x})'
-            displayText: 'frexp(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns m and e such that x = m2^e, e is an integer and the absolute value of m is in the range [0.5, 1) (or zero when x is zero).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.frexp' # (optional)
+            displayText: 'frexp(float x)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns m and e such that x = m2^e, e is an integer and the absolute value of m is in the range [0.5, 1) (or zero when x is zero).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.frexp'
           },
           {
             snippet: 'ldexp(${1:float|m}, ${2:int|e})'
-            displayText: 'ldexp(float m, int e)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns m2^e (e should be an integer).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ldexp' # (optional)
+            displayText: 'ldexp(float m, int e)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns m2^e (e should be an integer).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.ldexp'
           },
           {
             snippet: 'log(${1:float|x})'
-            displayText: 'log(float x [, base])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the logarithm of x in the given base.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.log' # (optional)
+            displayText: 'log(float x [, base])'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the logarithm of x in the given base.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.log'
           },
           {
             snippet: 'max(${1:float|x}, ${2:...})'
-            displayText: 'max(float x, ...)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the maximum value among its arguments.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.max' # (optional)
+            displayText: 'max(float x, ...)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the maximum value among its arguments.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.max'
           },
           {
             snippet: 'min(${1:float|x}, ${2:...})'
-            displayText: 'min(float x, ...)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the minimum value among its arguments.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.min' # (optional)
+            displayText: 'min(float x, ...)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the minimum value among its arguments.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.min'
           },
           {
             snippet: 'modf(${1:float|x})'
-            displayText: 'modf(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns two numbers, the integral part of x and the fractional part of x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.modf' # (optional)
+            displayText: 'modf(float x)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns two numbers, the integral part of x and the fractional part of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.modf'
           },
           {
             snippet: 'pow(${1:float|x}, ${2:float|y})'
-            displayText: 'pow(float x, float y)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns x^y. (You can also use the expression x^y to compute this value.)' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pow' # (optional)
+            displayText: 'pow(float x, float y)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns x^y. (You can also use the expression x^y to compute this value.)'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pow'
           },
           {
             snippet: 'rad(${1:float|x})'
-            displayText: 'rad(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the angle x (given in degrees) in radians.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.rad' # (optional)
+            displayText: 'rad(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the angle x (given in degrees) in radians.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.rad'
           },
           {
             snippet: 'random()'
-            displayText: 'random([m [, n]])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'This function is an interface to the simple pseudo-random generator function rand provided by Standard C.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.random' # (optional)
+            displayText: 'random([m [, n]])'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'This function is an interface to the simple pseudo-random generator function rand provided by Standard C.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.random'
           },
           {
             snippet: 'randomseed(${1:int|x})'
-            displayText: 'randomseed(int x)' # (optional)
-            type: 'function' # (optional)
-            description: 'Sets x as the "seed" for the pseudo-random generator: equal seeds produce equal sequences of numbers.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.randomseed' # (optional)
+            displayText: 'randomseed(int x)'
+            type: 'function'
+            description: 'Sets x as the "seed" for the pseudo-random generator: equal seeds produce equal sequences of numbers.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.randomseed'
           },
           {
             snippet: 'sin(${1:float|x})'
-            displayText: 'sin(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the sine of x (assumed to be in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sin' # (optional)
+            displayText: 'sin(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the sine of x (assumed to be in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sin'
           },
           {
             snippet: 'sinh(${1:float|x})'
-            displayText: 'sinh(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the hyperbolic sine of x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sinh' # (optional)
+            displayText: 'sinh(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the hyperbolic sine of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sinh'
           },
           {
             snippet: 'sqrt(${1:float|x})'
-            displayText: 'sqrt(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the square root of x. (You can also use the expression x^0.5 to compute this value.)' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sqrt' # (optional)
+            displayText: 'sqrt(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the square root of x. (You can also use the expression x^0.5 to compute this value.)'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.sqrt'
           },
           {
             snippet: 'tan(${1:float|x})'
-            displayText: 'tan(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the tangent of x (assumed to be in radians).' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tan' # (optional)
+            displayText: 'tan(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the tangent of x (assumed to be in radians).'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tan'
           },
           {
             snippet: 'tanh(${1:float|x})'
-            displayText: 'tanh(float x)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Returns the hyperbolic tangent of x.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tanh' # (optional)
+            displayText: 'tanh(float x)'
+            type: 'function'
+            leftLabel: 'float'
+            description: 'Returns the hyperbolic tangent of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tanh'
           },
         ]
       # coroutine Class
@@ -433,50 +424,50 @@ module.exports =
         suggestions = [
           {
             snippet: 'create(${1:function|f})'
-            displayText: 'create(function f)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'thread' # (optional)
-            description: 'Creates a new coroutine, with body f.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.create' # (optional)
+            displayText: 'create(function f)'
+            type: 'function'
+            leftLabel: 'thread'
+            description: 'Creates a new coroutine, with body f.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.create'
           },
           {
             snippet: 'resume(${1:coroutine|co})'
-            displayText: 'resume(coroutine co [, val1, ···])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Starts or continues the execution of coroutine co.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.resume' # (optional)
+            displayText: 'resume(coroutine co [, val1, ···])'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Starts or continues the execution of coroutine co.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.resume'
           },
           {
             snippet: 'running()'
-            displayText: 'running()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the running coroutine plus a boolean, true when the running coroutine is the main one.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.running' # (optional)
+            displayText: 'running()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the running coroutine plus a boolean, true when the running coroutine is the main one.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.running'
           },
           {
             snippet: 'status(${1:coroutine|co})'
-            displayText: 'status(coroutine co)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the status of coroutine co, as a string.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.status' # (optional)
+            displayText: 'status(coroutine co)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the status of coroutine co, as a string.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.status'
           },
           {
             snippet: 'wrap(${1:function|f})'
-            displayText: 'wrap(function f)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Creates a new coroutine, with body f.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.wrap' # (optional)
+            displayText: 'wrap(function f)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Creates a new coroutine, with body f.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.wrap'
           },
           {
             snippet: 'yield(${1:int|value})'
-            displayText: 'yield(int value)' # (optional)
-            type: 'function' # (optional)
-            description: 'Suspends the execution of the calling coroutine.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.yield' # (optional)
+            displayText: 'yield(int value)'
+            type: 'function'
+            description: 'Suspends the execution of the calling coroutine.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.yield'
           },
         ]
       # os Class
@@ -485,35 +476,35 @@ module.exports =
         suggestions = [
           {
             snippet: 'clock()'
-            displayText: 'clock()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns an approximation of the amount in seconds of CPU time used by the program.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock' # (optional)
+            displayText: 'clock()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns an approximation of the amount in seconds of CPU time used by the program.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock'
           },
           {
             snippet: 'date()'
-            displayText: 'date([format [, time]])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a string or a table containing date and time.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date' # (optional)
+            displayText: 'date([format [, time]])'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a string or a table containing date and time.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date'
           },
           {
             snippet: 'difftime(${1:time|t2}, ${2:time|t1})'
-            displayText: 'difftime(t2, t1)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the number of seconds from time t1 to time t2.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime' # (optional)
+            displayText: 'difftime(t2, t1)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number of seconds from time t1 to time t2.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime'
           },
           {
             snippet: 'time()'
-            displayText: 'time([table])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time' # (optional)
+            displayText: 'time([table])'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time'
           },
         ]
       # Clock Class
@@ -523,52 +514,52 @@ module.exports =
           # Member Variables
           {
             snippet: 'paused'
-            displayText: 'paused' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'If the Clock’s timer is paused. Setting this value will pause or resume the timer.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#paused' # (optional)
+            displayText: 'paused'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'If the Clock’s timer is paused. Setting this value will pause or resume the timer.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#paused'
           },
           # Functions
           {
             snippet: 'getValue()'
-            displayText: 'getValue()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the current value in stopwatch or timer mode as the number of seconds.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#getValue' # (optional)
+            displayText: 'getValue()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the current value in stopwatch or timer mode as the number of seconds.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#getValue'
           },
           {
             snippet: 'pauseStart()'
-            displayText: 'pauseStart()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Toggle function for pausing and resuming a stopwatch or timer on the Clock.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#pauseStart' # (optional)
+            displayText: 'pauseStart()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Toggle function for pausing and resuming a stopwatch or timer on the Clock.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#pauseStart'
           },
           {
             snippet: 'setValue(${1:int|seconds})'
-            displayText: 'setValue(int seconds)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Switches the clock to timer mode and sets the timer to the given value in seconds.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#setValue' # (optional)
+            displayText: 'setValue(int seconds)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Switches the clock to timer mode and sets the timer to the given value in seconds.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#setValue'
           },
           {
             snippet: 'startStopwatch()'
-            displayText: 'startStopwatch()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Switches the Clock to stopwatch mode and begins the stopwatch from 0.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#startStopwatch' # (optional)
+            displayText: 'startStopwatch()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Switches the Clock to stopwatch mode and begins the stopwatch from 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#startStopwatch'
           },
           {
             snippet: 'showCurrentTime()'
-            displayText: 'showCurrentTime()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Switches the Clock back to displaying the current time.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#showCurrentTime' # (optional)
+            displayText: 'showCurrentTime()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Switches the Clock back to displaying the current time.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#showCurrentTime'
           },
         ]
       # Counter Class
@@ -578,43 +569,43 @@ module.exports =
           # Functions
           {
             snippet: 'clear()'
-            displayText: 'clear()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Resets the Counter value back to 0.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#clear' # (optional)
+            displayText: 'clear()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Resets the Counter value back to 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#clear'
           },
           {
             snippet: 'decrement()'
-            displayText: 'decrement()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Decrements the Counter’s value by 1.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#decrement' # (optional)
+            displayText: 'decrement()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Decrements the Counter’s value by 1.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#decrement'
           },
           {
             snippet: 'getValue()'
-            displayText: 'getValue()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the current value of the Counter.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#getValue' # (optional)
+            displayText: 'getValue()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the current value of the Counter.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#getValue'
           },
           {
             snippet: 'increment()'
-            displayText: 'increment()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Increments the Counter’s value by 1.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#increment' # (optional)
+            displayText: 'increment()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Increments the Counter’s value by 1.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#increment'
           },
           {
             snippet: 'setValue(${1:int|seconds})'
-            displayText: 'setValue(int seconds)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the current value of the Counter.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue' # (optional)
+            displayText: 'setValue(int seconds)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current value of the Counter.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue'
           },
         ]
       # Lighting
@@ -622,107 +613,107 @@ module.exports =
         suggestions = [
           {
             snippet: 'ambient_type'
-            displayText: 'ambient_type' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'The source of the ambient light. 1 = Background, 2 = Gradient.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_type' # (optional)
+            displayText: 'ambient_type'
+            type: 'property'
+            leftLabel: 'int'
+            description: 'The source of the ambient light. 1 = Background, 2 = Gradient.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_type'
           },
           {
             snippet: 'ambient_intensity'
-            displayText: 'ambient_intensity' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The strength of the ambient light either from the background or gradient. Range is 0-4.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_intensity' # (optional)
+            displayText: 'ambient_intensity'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The strength of the ambient light either from the background or gradient. Range is 0-4.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_intensity'
           },
           {
             snippet: 'light_intensity'
-            displayText: 'light_intensity' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The strength of the directional light shining down in the scene. Range is 0-4.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#light_intensity' # (optional)
+            displayText: 'light_intensity'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The strength of the directional light shining down in the scene. Range is 0-4.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#light_intensity'
           },
           {
             snippet: 'reflection_intensity'
-            displayText: 'reflection_intensity' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The strength of the reflections from the background. Range is 0-1.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#reflection_intensity' # (optional)
+            displayText: 'reflection_intensity'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The strength of the reflections from the background. Range is 0-1.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#reflection_intensity'
           },
           {
             snippet: 'apply()'
-            displayText: 'apply()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Applies all changed made to the Lighting class. This must be called for these changes to take affect.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#apply' # (optional)
+            displayText: 'apply()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Applies all changed made to the Lighting class. This must be called for these changes to take affect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#apply'
           },
           {
             snippet: 'getAmbientEquatorColor()'
-            displayText: 'getAmbientEquatorColor()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Color of the gradient equator.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientEquatorColor' # (optional)
+            displayText: 'getAmbientEquatorColor()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Color of the gradient equator.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientEquatorColor'
           },
           {
             snippet: 'getAmbientGroundColor()'
-            displayText: 'getAmbientGroundColor()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Color of the gradient ground.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientGroundColor' # (optional)
+            displayText: 'getAmbientGroundColor()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Color of the gradient ground.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientGroundColor'
           },
           {
             snippet: 'getAmbientSkyColor()'
-            displayText: 'getAmbientSkyColor()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Color of the gradient sky.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientSkyColor' # (optional)
+            displayText: 'getAmbientSkyColor()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Color of the gradient sky.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientSkyColor'
           },
           {
             snippet: 'getLightColor()'
-            displayText: 'getLightColor()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Color of the directional light.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getLightColor' # (optional)
+            displayText: 'getLightColor()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Color of the directional light.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getLightColor'
           },
           {
             snippet: 'setAmbientEquatorColor(${1:Table|color})'
-            displayText: 'setAmbientEquatorColor(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Color of the gradient equator.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor' # (optional)
+            displayText: 'setAmbientEquatorColor(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Color of the gradient equator.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor'
           },
           {
             snippet: 'setAmbientGroundColor(${1:Table|color})'
-            displayText: 'setAmbientGroundColor(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Color of the ambient ground.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor' # (optional)
+            displayText: 'setAmbientGroundColor(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Color of the ambient ground.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor'
           },
           {
             snippet: 'setAmbientSkyColor(${1:Table|color})'
-            displayText: 'setAmbientSkyColor(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Color of the gradient sky.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor' # (optional)
+            displayText: 'setAmbientSkyColor(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Color of the gradient sky.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor'
           },
           {
             snippet: 'setLightColor(${1:Table|color})'
-            displayText: 'setLightColor(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Color of the directional light.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor' # (optional)
+            displayText: 'setLightColor(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Color of the directional light.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor'
           },
         ]
       # Physics
@@ -730,11 +721,11 @@ module.exports =
         suggestions = [
           {
             snippet: 'cast(${1:Table|info})'
-            displayText: 'cast(Table info)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Casts a shape based on Info and returns a table of multiple Hit.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast' # (optional)
+            displayText: 'cast(Table info)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Casts a shape based on Info and returns a table of multiple Hit.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast'
           },
           {
             snippet:
@@ -747,27 +738,27 @@ module.exports =
               'max_distance  = ${6:-- float},\n\t' +
               'debug         = ${7:-- bool (true = visualize cast)},\n' +
               '}) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}'
-            displayText: 'cast({Vector origin, Vector direction, int type, Vector size, Vector orientation, float max_distanc, bool debug})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Casts a shape based on Info and returns a table of multiple Hit.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast' # (optional)
+            displayText: 'cast({Vector origin, Vector direction, int type, Vector size, Vector orientation, float max_distanc, bool debug})'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Casts a shape based on Info and returns a table of multiple Hit.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast'
           },
           {
             snippet: 'getGravity()'
-            displayText: 'getGravity()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the gravity Vector.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#getGravity' # (optional)
+            displayText: 'getGravity()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the gravity Vector.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#getGravity'
           },
           {
             snippet: 'setGravity(${1:Table|vector})'
-            displayText: 'setGravity(Table vector)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the gravity Vector.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setGravity' # (optional)
+            displayText: 'setGravity(Table vector)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the gravity Vector.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setGravity'
           },
         ]
       # Player Colors
@@ -776,108 +767,108 @@ module.exports =
         suggestions = [
           {
             snippet: 'Black'
-            displayText: 'Black' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Black player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Black'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Black player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Blue'
-            displayText: 'Blue' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Blue player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Blue'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Blue player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Brown'
-            displayText: 'Brown' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Brown player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Brown'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Brown player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Green'
-            displayText: 'Green' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Green player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Green'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Green player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Orange'
-            displayText: 'Orange' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Orange player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Orange'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Orange player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Pink'
-            displayText: 'Pink' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Pink player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Pink'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Pink player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Purple'
-            displayText: 'Purple' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Purple player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Purple'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Purple player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Red'
-            displayText: 'Red' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Red player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Red'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Red player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Teal'
-            displayText: 'Teal' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Teal player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Teal'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Teal player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'White'
-            displayText: 'White' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The White player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'White'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The White player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           {
             snippet: 'Yellow'
-            displayText: 'Yellow' # (optional)
-            type: 'constant' # (optional)
-            leftLabel: 'Player' # (optional)
-            description: 'The Yellow player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/' # (optional)
+            displayText: 'Yellow'
+            type: 'constant'
+            leftLabel: 'Player'
+            description: 'The Yellow player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
           },
           # Functions
           {
             snippet: 'getPlayers()'
-            displayText: 'getPlayers()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table of all Players.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayers' # (optional)
+            displayText: 'getPlayers()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of all Players.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayers'
           },
           {
             snippet: 'getSpectators()'
-            displayText: 'getSpectators()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table of spectator Players.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getSpectators' # (optional)
+            displayText: 'getSpectators()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of spectator Players.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getSpectators'
           },
         ]
       # Player Class
@@ -887,92 +878,92 @@ module.exports =
           # Member Variables
           {
             snippet: 'admin'
-            displayText: 'admin' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Is the player currently promoted or hosting the game? Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#admin' # (optional)
+            displayText: 'admin'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Is the player currently promoted or hosting the game? Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#admin'
           },
           {
             snippet: 'blindfolded'
-            displayText: 'blindfolded' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Is the player blindfolded?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blindfolded' # (optional)
+            displayText: 'blindfolded'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Is the player blindfolded?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blindfolded'
           },
           {
             snippet: 'color'
-            displayText: 'color' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The player\'s color. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#color' # (optional)
+            displayText: 'color'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The player\'s color. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#color'
           },
           {
             snippet: 'host'
-            displayText: 'host' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Is the player the host?.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#host' # (optional)
+            displayText: 'host'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Is the player the host?.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#host'
           },
           {
             snippet: 'lift_height'
-            displayText: 'lift_height' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The player\'s lift height from 0 to 1.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lift_height' # (optional)
+            displayText: 'lift_height'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The player\'s lift height from 0 to 1.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lift_height'
           },
           {
             snippet: 'promoted'
-            displayText: 'promoted' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Is the player currently promoted? Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promoted' # (optional)
+            displayText: 'promoted'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Is the player currently promoted? Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promoted'
           },
           {
             snippet: 'seated'
-            displayText: 'seated' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'Is the player currently seated at the table? Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#seated' # (optional)
+            displayText: 'seated'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'Is the player currently seated at the table? Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#seated'
           },
           {
             snippet: 'steam_id'
-            displayText: 'steam_id' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The player\'s Steam ID. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_id' # (optional)
+            displayText: 'steam_id'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The player\'s Steam ID. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_id'
           },
           {
             snippet: 'steam_name'
-            displayText: 'steam_name' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The player\'s Steam name. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_name' # (optional)
+            displayText: 'steam_name'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The player\'s Steam name. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_name'
           },
           {
             snippet: 'team'
-            displayText: 'team' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The player\'s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#team' # (optional)
+            displayText: 'team'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The player\'s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#team'
           },
           # Functions
           {
             snippet: 'attachCameraToObject(${1:Table|parameters})'
-            displayText: 'attachCameraToObject(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Makes a player\'s camera follow an Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
+            displayText: 'attachCameraToObject(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Makes a player\'s camera follow an Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject'
           },
           {
             snippet:
@@ -980,51 +971,51 @@ module.exports =
               'object = ${1:-- Object},\n\t' +
               'offset = ${2:-- Vector [x=0, y=0, z=0]},\n' +
               '})'
-            displayText: 'attachCameraToObject({Object object, Vector offset})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Makes a player\'s camera follow an Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject' # (optional)
+            displayText: 'attachCameraToObject({Object object, Vector offset})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Makes a player\'s camera follow an Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject'
           },
           {
             snippet: 'broadcast(${1:string|message})'
-            displayText: 'broadcast(string message)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Broadcasts a message to the player. This also sends a message to the top center of the screen.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
+            displayText: 'broadcast(string message)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Broadcasts a message to the player. This also sends a message to the top center of the screen.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast'
           },
           {
             snippet: 'broadcast(${1:string|message}, $(2:string|color))'
-            displayText: 'broadcast(string message, string color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Broadcasts a message to the player with Color. This also sends a message to the top center of the screen.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast' # (optional)
+            displayText: 'broadcast(string message, string color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Broadcasts a message to the player with Color. This also sends a message to the top center of the screen.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast'
           },
           {
             snippet: 'changeColor(${1:string|new_color})'
-            displayText: 'changeColor(string new_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Changes the player\'s color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeColor' # (optional)
+            displayText: 'changeColor(string new_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Changes the player\'s color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeColor'
           },
           {
             snippet: 'getHandObjects()'
-            displayText: 'getHandObjects()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects' # (optional)
+            displayText: 'getHandObjects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects'
           },
           {
             snippet: 'getHandTransform()'
-            displayText: 'getHandTransform()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Transform of the player’s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform' # (optional)
+            displayText: 'getHandTransform()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Transform of the player’s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform'
           },
           {
             snippet:
@@ -1035,69 +1026,67 @@ module.exports =
                 '-- forward      Vector    (Forward direction)\n\t' +
                 '-- right        Vector    (Right direction)\n\t' +
                 '-- up           Vector    (Up direction)'
-            displayText: 'getHandTransform() -- returns {...' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the Transform of the player’s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform' # (optional)
+            displayText: 'getHandTransform() -- returns {...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the Transform of the player’s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform'
           },
-
-
           {
             snippet: 'getPlayerHand()'
-            displayText: 'getPlayerHand()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Lua Table with the position and rotation of the given player\'s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayerHand' # (optional)
+            displayText: 'getPlayerHand()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Lua Table with the position and rotation of the given player\'s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayerHand'
           },
           {
             snippet: 'getPointerPosition()'
-            displayText: 'getPointerPosition()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the position of the given player color\'s pointer.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerPosition' # (optional)
+            displayText: 'getPointerPosition()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the position of the given player color\'s pointer.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerPosition'
           },
           {
             snippet: 'getPointerRotation()'
-            displayText: 'getPointerRotation()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the y-axis rotation of the given player color\'s pointer in degrees.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation' # (optional)
+            displayText: 'getPointerRotation()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the y-axis rotation of the given player color\'s pointer in degrees.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation'
           },
           {
             snippet: 'getHoldingObjects()'
-            displayText: 'getHoldingObjects()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Lua Table representing a list of all the Objects currently held by the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoldingObjects' # (optional)
+            displayText: 'getHoldingObjects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Lua Table representing a list of all the Objects currently held by the player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoldingObjects'
           },
           {
             snippet: 'getSelectedObjects()'
-            displayText: 'getSelectedObjects()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Lua Table representing a list of all the Objects currently selected by the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation' # (optional)
+            displayText: 'getSelectedObjects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Lua Table representing a list of all the Objects currently selected by the player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation'
           },
           {
             snippet: 'kick()'
-            displayText: 'kick()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Kicks the player from the game.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#kick' # (optional)
+            displayText: 'kick()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Kicks the player from the game.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#kick'
           },
           {
             snippet: 'lookAt(${1:Table|parameters})'
-            displayText: 'lookAt(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Moves the Player\'s camera to look at a specific point.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
+            displayText: 'lookAt(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Moves the Player\'s camera to look at a specific point.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt'
           },
           {
             snippet:
@@ -1107,51 +1096,51 @@ module.exports =
               'yaw       = ${3:-- float},\n\t' +
               'distance  = ${4:-- float},\n' +
               '})'
-            displayText: 'lookAt({Vector position, float pitch, float yaw, float distance})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Moves the Player\'s camera to look at a specific point.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt' # (optional)
+            displayText: 'lookAt({Vector position, float pitch, float yaw, float distance})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Moves the Player\'s camera to look at a specific point.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt'
           },
           {
             snippet: 'mute()'
-            displayText: 'mute()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Mutes or unmutes the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#mute' # (optional)
+            displayText: 'mute()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Mutes or unmutes the player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#mute'
           },
           {
             snippet: 'print(${1:string|message})'
-            displayText: 'print(string message)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a message to the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print' # (optional)
+            displayText: 'print(string message)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print'
           },
           {
             snippet: 'print(${1:string|message}, $(2:string|color))'
-            displayText: 'print(string message, string color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a message to the player with Color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print' # (optional)
+            displayText: 'print(string message, string color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the player with Color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print'
           },
           {
             snippet: 'promote()'
-            displayText: 'promote()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Promotes or demotes the player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote' # (optional)
+            displayText: 'promote()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Promotes or demotes the player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote'
           },
           {
             snippet: 'setHandTransform(${1:Table|transform})'
-            displayText: 'setHandTransform(Table transform)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Transform of the player’s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
+            displayText: 'setHandTransform(Table transform)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Transform of the player’s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform'
           },
           {
             snippet:
@@ -1163,13 +1152,12 @@ module.exports =
               'right     = ${5:-- Vector},\n\t' +
               'up        = ${6:-- Vector},\n' +
               '})'
-            displayText: 'setHandTransform({Vector position, Vector rotation, Vector scale, Vector forward, Vector right, Vector up})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Transform of the player’s hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform' # (optional)
+            displayText: 'setHandTransform({Vector position, Vector rotation, Vector scale, Vector forward, Vector right, Vector up})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Transform of the player’s hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform'
           },
-
         ]
       # JSON Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || (previous_token == "JSON" && this_token_intact)
@@ -1178,27 +1166,27 @@ module.exports =
           # Functions
           {
             snippet: 'decode(${1:string|json_string})'
-            displayText: 'decode(string json_string)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'variable' # (optional)
-            description: 'Decodes a valid JSON string into a Lua string, number, or Table.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#decode' # (optional)
+            displayText: 'decode(string json_string)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Decodes a valid JSON string into a Lua string, number, or Table.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#decode'
           },
           {
             snippet: 'encode(${1:variable})'
-            displayText: 'encode(variable)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Encodes a Lua string, number, or Table into a valid JSON string. This will not work with Object references.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode' # (optional)
+            displayText: 'encode(variable)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Encodes a Lua string, number, or Table into a valid JSON string. This will not work with Object references.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode'
           },
           {
             snippet: 'encode_pretty(${1:variable})'
-            displayText: 'encode_pretty(variable)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Encodes a Lua string, number, or Table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty' # (optional)
+            displayText: 'encode_pretty(variable)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Encodes a Lua string, number, or Table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty'
           },
         ]
       # Timer Class
@@ -1208,11 +1196,11 @@ module.exports =
           # Functions
           {
             snippet: 'create(${1:Table|parameters})'
-            displayText: 'create(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create' # (optional)
+            displayText: 'create(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create'
           },
           {
             snippet:
@@ -1224,19 +1212,19 @@ module.exports =
               'delay           = ${5:-- float  [0 seconds]},\n\t' +
               'repetitions     = ${6:-- int    [1] (0 = infinite)},\n' +
               '})'
-            displayText: 'create({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create' # (optional)
+            displayText: 'create({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create'
           },
           {
             snippet: 'destroy(${1:string|identifier})'
-            displayText: 'destroy(string identifier)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Destroys an existing timer.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy' # (optional)
+            displayText: 'destroy(string identifier)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Destroys an existing timer.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy'
           },
         ]
       # RPGFigurine Class
@@ -1246,41 +1234,41 @@ module.exports =
           # Functions
           {
             snippet: 'attack()'
-            displayText: 'attack()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Plays a random attack animation.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#attack' # (optional)
+            displayText: 'attack()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Plays a random attack animation.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#attack'
           },
           {
             snippet: 'changeMode()'
-            displayText: 'changeMode()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Changes the RPG Figurine\'s current mode.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#changeMode' # (optional)
+            displayText: 'changeMode()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Changes the RPG Figurine\'s current mode.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#changeMode'
           },
           {
             snippet: 'die()'
-            displayText: 'die()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Plays the death animation. Call die() again to reset the RPG Figurine.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die' # (optional)
+            displayText: 'die()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Plays the death animation. Call die() again to reset the RPG Figurine.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die'
           },
           {
             snippet: 'onAttack(hit_list)\n\t${0:-- body...}\nend'
-            displayText: 'onAttack(Table hit_list)' # (optional)
-            type: 'function' # (optional)
-            description: 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onAttack' # (optional)
+            displayText: 'onAttack(Table hit_list)'
+            type: 'function'
+            description: 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onAttack'
           },
           {
             snippet: 'onHit(attacker)\n\t${0:-- body...}\nend'
-            displayText: 'onHit(Object attacker)' # (optional)
-            type: 'function' # (optional)
-            description: 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onHit' # (optional)
+            displayText: 'onHit(Object attacker)'
+            type: 'function'
+            description: 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onHit'
           },
         ]
       # TextTool Class
@@ -1290,51 +1278,51 @@ module.exports =
           # Functions
           {
             snippet: 'getFontColor()'
-            displayText: 'getFontColor()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the current font color as a Lua Table keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontColor' # (optional)
+            displayText: 'getFontColor()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the current font color as a Lua Table keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontColor'
           },
           {
             snippet: 'getFontSize()'
-            displayText: 'getFontSize()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the current font size.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontSize' # (optional)
+            displayText: 'getFontSize()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the current font size.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontSize'
           },
           {
             snippet: 'getValue()'
-            displayText: 'getValue()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the current text.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getValue' # (optional)
+            displayText: 'getValue()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the current text.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getValue'
           },
           {
             snippet: 'setFontColor(${1:Table|color})'
-            displayText: 'setFontColor(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the current font color. The Lua Table parameter should be keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontColor' # (optional)
+            displayText: 'setFontColor(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current font color. The Lua Table parameter should be keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontColor'
           },
           {
             snippet: 'setFontSize(${1:int|font_size})'
-            displayText: 'setFontSize(int font_size)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the current font size.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontSize' # (optional)
+            displayText: 'setFontSize(int font_size)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current font size.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontSize'
           },
           {
             snippet: 'setValue(${1:string|text})'
-            displayText: 'setValue(string text)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the current text.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setValue' # (optional)
+            displayText: 'setValue(string text)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current text.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setValue'
           },
         ]
       # Object
@@ -1344,244 +1332,244 @@ module.exports =
           # Member Variables
           {
             snippet: 'angular_drag'
-            displayText: 'angular_drag' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s angular drag.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#angular_drag' # (optional)
+            displayText: 'angular_drag'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s angular drag.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#angular_drag'
           },
           {
             snippet: 'auto_raise'
-            displayText: 'auto_raise' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should this Object automatically raise above other Objects when held?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#auto_raise' # (optional)
+            displayText: 'auto_raise'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should this Object automatically raise above other Objects when held?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#auto_raise'
           },
           {
             snippet: 'bounciness'
-            displayText: 'bounciness' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s bounciness.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#bounciness' # (optional)
+            displayText: 'bounciness'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s bounciness.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#bounciness'
           },
           {
             snippet: 'Clock'
-            displayText: 'Clock' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'Clock' # (optional)
-            description: 'A reference to the Clock class attached to this Object. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Clock' # (optional)
+            displayText: 'Clock'
+            type: 'property'
+            leftLabel: 'Clock'
+            description: 'A reference to the Clock class attached to this Object. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Clock'
           },
           {
             snippet: 'Counter'
-            displayText: 'Counter' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'Counter' # (optional)
-            description: 'A reference to the Counter class attached to this Object. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Counter' # (optional)
+            displayText: 'Counter'
+            type: 'property'
+            leftLabel: 'Counter'
+            description: 'A reference to the Counter class attached to this Object. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Counter'
           },
           {
             snippet: 'drag'
-            displayText: 'drag' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s drag.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#drag' # (optional)
+            displayText: 'drag'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s drag.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#drag'
           },
           {
             snippet: 'dynamic_friction'
-            displayText: 'dynamic_friction' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s dynamic friction.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dynamic_friction' # (optional)
+            displayText: 'dynamic_friction'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s dynamic friction.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dynamic_friction'
           },
           {
             snippet: 'grid_projection'
-            displayText: 'grid_projection' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should the grid project onto this object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#grid_projection' # (optional)
+            displayText: 'grid_projection'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should the grid project onto this object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#grid_projection'
           },
           {
             snippet: 'guid'
-            displayText: 'guid' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The Object’s guid. This is the same as the getGUID function. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#guid' # (optional)
+            displayText: 'guid'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The Object’s guid. This is the same as the getGUID function. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#guid'
           },
           {
             snippet: 'held_by_color'
-            displayText: 'held_by_color' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The color of the Player currently holding the Object. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#held_by_color' # (optional)
+            displayText: 'held_by_color'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The color of the Player currently holding the Object. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#held_by_color'
           },
           {
             snippet: 'interactable'
-            displayText: 'interactable' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#interactable' # (optional)
+            displayText: 'interactable'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#interactable'
           },
           {
             snippet: 'mass'
-            displayText: 'mass' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s mass.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#mass' # (optional)
+            displayText: 'mass'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s mass.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#mass'
           },
           {
             snippet: 'name'
-            displayText: 'name' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The Object’s formated name or nickname if applicable. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#name' # (optional)
+            displayText: 'name'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The Object’s formated name or nickname if applicable. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#name'
           },
           {
             snippet: 'resting'
-            displayText: 'resting' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Returns true if this Object is not moving. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#resting' # (optional)
+            displayText: 'resting'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Returns true if this Object is not moving. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#resting'
           },
           {
             snippet: 'RPGFigurine'
-            displayText: 'RPGFigurine' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'RPGFigurine' # (optional)
-            description: 'A reference to the RPGFigurine class attached to this Object. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#RPGFigurine' # (optional)
+            displayText: 'RPGFigurine'
+            type: 'property'
+            leftLabel: 'RPGFigurine'
+            description: 'A reference to the RPGFigurine class attached to this Object. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#RPGFigurine'
           },
           {
             snippet: 'script_code'
-            displayText: 'script_code' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the Lua script on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code' # (optional)
+            displayText: 'script_code'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'Returns the Lua script on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code'
           },
           {
             snippet: 'script_state'
-            displayText: 'script_state' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the saved Lua script state on the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state' # (optional)
+            displayText: 'script_state'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'Returns the saved Lua script state on the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state'
           },
           {
             snippet: 'static_friction'
-            displayText: 'static_friction' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'float' # (optional)
-            description: 'The Object\'s static friction.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#static_friction' # (optional)
+            displayText: 'static_friction'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The Object\'s static friction.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#static_friction'
           },
           {
             snippet: 'sticky'
-            displayText: 'sticky' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should Objects on top of this Object stick to this Object when this Object is picked up?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#sticky' # (optional)
+            displayText: 'sticky'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should Objects on top of this Object stick to this Object when this Object is picked up?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#sticky'
           },
           {
             snippet: 'tag'
-            displayText: 'tag' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'The tag of the Object representing its type. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tag' # (optional)
+            displayText: 'tag'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The tag of the Object representing its type. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tag'
           },
           {
             snippet: 'tooltip'
-            displayText: 'tooltip' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should Object show tooltips when hovering over it.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tooltip' # (optional)
+            displayText: 'tooltip'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should Object show tooltips when hovering over it.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tooltip'
           },
           {
             snippet: 'TextTool'
-            displayText: 'TextTool' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'TextTool' # (optional)
-            description: 'A reference to the TextTool class attached to this Object. Read only.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#TextTool' # (optional)
+            displayText: 'TextTool'
+            type: 'property'
+            leftLabel: 'TextTool'
+            description: 'A reference to the TextTool class attached to this Object. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#TextTool'
           },
           {
             snippet: 'use_gravity'
-            displayText: 'use_gravity' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Does gravity affect this Object?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_gravity' # (optional)
+            displayText: 'use_gravity'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Does gravity affect this Object?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_gravity'
           },
           {
             snippet: 'use_grid'
-            displayText: 'use_grid' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should this Object snap to grid points?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_grid' # (optional)
+            displayText: 'use_grid'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should this Object snap to grid points?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_grid'
           },
           {
             snippet: 'use_snap_points'
-            displayText: 'use_snap_points' # (optional)
-            type: 'property' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Should this Object snap to snap points?' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_snap_points' # (optional)
+            displayText: 'use_snap_points'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should this Object snap to snap points?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_snap_points'
           },
           # Functions
           {
             snippet: 'addForce(${1:Table|force_vector}, ${2:int|force_type})'
-            displayText: 'addForce(Table force_vector, int force_type)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Adds a force vector to the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addForce' # (optional)
+            displayText: 'addForce(Table force_vector, int force_type)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Adds a force vector to the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addForce'
           },
           {
             snippet: 'addTorque(${1:Table|torque_vector}, ${2:int|force_type})'
-            displayText: 'addTorque(Table torque_vector, int force_type)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Adds a torque vector to the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addTorque' # (optional)
+            displayText: 'addTorque(Table torque_vector, int force_type)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Adds a torque vector to the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addTorque'
           },
           {
             snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
-            displayText: 'call(string function_name, Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'variable' # (optional)
-            description: 'Calls a Lua function owned by this Object and passes an optional Table as parameters to the function.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call' # (optional)
+            displayText: 'call(string function_name, Table parameters)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Calls a Lua function owned by this Object and passes an optional Table as parameters to the function.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call'
           },
           {
             snippet: 'clearButtons()'
-            displayText: 'clearButtons()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Clears all 3D UI buttons on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons' # (optional)
+            displayText: 'clearButtons()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears all 3D UI buttons on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons'
           },
           {
             snippet: 'clone(${1:Table|parameters})'
-            displayText: 'clone(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
+            displayText: 'clone(Table parameters)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone'
           },
           {
             snippet:
@@ -1589,19 +1577,19 @@ module.exports =
               'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
               'snap_to_grid  = ${2:-- boolean [false]},\n' +
               '})'
-            displayText: 'clone({Vector position, bool snap_to_grid})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone' # (optional)
+            displayText: 'clone({Vector position, bool snap_to_grid})'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone'
           },
           {
             snippet: 'createButton(${1:Table|parameters})'
-            displayText: 'createButton(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Creates a 3D UI button on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton' # (optional)
+            displayText: 'createButton(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a 3D UI button on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
           },
           {
             snippet:
@@ -1619,58 +1607,58 @@ module.exports =
               'font_color      = ${11:-- Color},\n' +
               '})'
             displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Creates a 3D UI button on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton' # (optional)
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a 3D UI button on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
           },
           {
             snippet: 'cut()'
-            displayText: 'cut()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Cuts this Object if it is a Deck or a Stack.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#cut' # (optional)
+            displayText: 'cut()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Cuts this Object if it is a Deck or a Stack.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#cut'
           },
           {
             snippet: 'dealToAll(${1:int|num_cards})'
-            displayText: 'dealToAll(int num_cards)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Deals a number of Cards from a this Deck to all seated players.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll' # (optional)
+            displayText: 'dealToAll(int num_cards)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Deals a number of Cards from a this Deck to all seated players.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll'
           },
           {
             snippet: 'dealToColor(${1:int|num_cards}, ${2:string|player_color})'
-            displayText: 'dealToColor(int num_cards, string player_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Deals a number of Cards from this Deck to a specific player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor' # (optional)
+            displayText: 'dealToColor(int num_cards, string player_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Deals a number of Cards from this Deck to a specific player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor'
           },
           {
             snippet: 'dealToColorWithOffset(${1:Table|position}, ${2:bool|flip}, ${3:string|player_color})'
-            displayText: 'dealToColorWithOffset(Table position, bool flip, string player_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Deals a Card to a player with an offset from their hand.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColorWithOffset' # (optional)
+            displayText: 'dealToColorWithOffset(Table position, bool flip, string player_color)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Deals a Card to a player with an offset from their hand.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColorWithOffset'
           },
           {
             snippet: 'destruct()'
-            displayText: 'destruct()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Destroys this Object. Mainly so you can call self.destruct().' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#destruct' # (optional)
+            displayText: 'destruct()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Destroys this Object. Mainly so you can call self.destruct().'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#destruct'
           },
           {
             snippet: 'editButton(${1:Table|parameters})'
-            displayText: 'editButton(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Edits a 3D UI button on this Object based on its index.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton' # (optional)
+            displayText: 'editButton(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits a 3D UI button on this Object based on its index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
           },
           {
             snippet:
@@ -1689,77 +1677,77 @@ module.exports =
               'font_color      = ${12:-- Color},\n' +
               '})'
             displayText: 'editButton({int index, string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Edits a 3D UI button on this Object based on its index.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton' # (optional)
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits a 3D UI button on this Object based on its index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
           },
           {
             snippet: 'flip()'
-            displayText: 'flip()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Flips this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#flip' # (optional)
+            displayText: 'flip()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Flips this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#flip'
           },
           {
             snippet: 'getAngularVelocity()'
-            displayText: 'getAngularVelocity()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the current angular velocity vector of the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getAngularVelocity' # (optional)
+            displayText: 'getAngularVelocity()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the current angular velocity vector of the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getAngularVelocity'
           },
           {
             snippet: 'getBounds()'
-            displayText: 'getBounds()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the world space axis aligned Bounds of the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBounds' # (optional)
+            displayText: 'getBounds()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the world space axis aligned Bounds of the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBounds'
           },
           {
             snippet: 'getBoundsNormalized()'
-            displayText: 'getBoundsNormalized()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the world space axis aligned Bounds of the Object at zero rotation.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBoundsNormalized' # (optional)
+            displayText: 'getBoundsNormalized()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the world space axis aligned Bounds of the Object at zero rotation.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBoundsNormalized'
           },
           {
             snippet: 'getButtons()'
-            displayText: 'getButtons()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets a list of all the 3D UI buttons on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons' # (optional)
+            displayText: 'getButtons()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets a list of all the 3D UI buttons on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons'
           },
           {
             snippet: 'getButtons() -- returns table:\n\t' +
             '-- {{int index, string click_function, Object function_owner, string label\n\t' +
             '--   Vector position, Vector rotation, Vector scale, int width, int height\n\t' +
             '--   int font_size, Color color, Color font_color}, ...}'
-            displayText: 'getButtons() -- returns {{...' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets a list of all the 3D UI buttons on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons' # (optional)
+            displayText: 'getButtons() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets a list of all the 3D UI buttons on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons'
           },
           {
             snippet: 'getColorTint()'
-            displayText: 'getColorTint()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the color tint for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getColorTint' # (optional)
+            displayText: 'getColorTint()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the color tint for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getColorTint'
           },
           {
             snippet: 'getCustomObject()'
-            displayText: 'getCustomObject()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the custom parameters on a Custom Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject' # (optional)
+            displayText: 'getCustomObject()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the custom parameters on a Custom Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject'
           },
           {
             snippet:
@@ -1783,467 +1771,467 @@ module.exports =
                 '-- cast_shadows           bool    (Does this Custom Mesh cast shadows?)\n\t' +
                 '-- assetbundle            string  (AssetBundle URL for this Custom AssetBundle.)\n\t' +
                 '-- assetbundle_secondary  string  (Secondary AssetBundle URL for this Custom AssetBundle.)'
-            displayText: 'getCustomObject() -- returns {{...' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the custom parameters on a Custom Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject' # (optional)
+            displayText: 'getCustomObject() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the custom parameters on a Custom Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject'
           },
           {
             snippet: 'getDescription()'
-            displayText: 'getDescription()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Gets the description for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getDescription' # (optional)
+            displayText: 'getDescription()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Gets the description for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getDescription'
           },
           {
             snippet: 'getGUID()'
-            displayText: 'getGUID()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the GUID that belongs to this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID' # (optional)
+            displayText: 'getGUID()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the GUID that belongs to this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
           },
           {
             snippet: 'getLock()'
-            displayText: 'getLock()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Get the lock status of this object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLock' # (optional)
+            displayText: 'getLock()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Get the lock status of this object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLock'
           },
           {
             snippet: 'getLuaScript()'
-            displayText: 'getLuaScript()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the Lua script for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLuaScript' # (optional)
+            displayText: 'getLuaScript()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the Lua script for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLuaScript'
           },
           {
             snippet: 'getName()'
-            displayText: 'getName()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the nickname for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getName' # (optional)
+            displayText: 'getName()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the nickname for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getName'
           },
           {
             snippet: 'getObjects()'
-            displayText: 'getObjects()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns all the Objects inside of this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+            displayText: 'getObjects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all the Objects inside of this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Bag.getObjects() returns {{int index, string guid, string name}, ...}'
-            displayText: 'getObjects() -- Bag returns {{int index, string guid, string name}, ...}' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns all the Objects inside of this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+            displayText: 'getObjects() -- Bag returns {{int index, string guid, string name}, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all the Objects inside of this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Deck.getObjects() returns:\n\t-- {{int index, string nickname, string description, string guid, string lua_script}, ...}'
-            displayText: 'getObjects() -- Deck returns {{int index, string nickname, string description, string guid, string lua_script}, ...}' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns all the Objects inside of this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+            displayText: 'getObjects() -- Deck returns {{int index, string nickname, string description, string guid, string lua_script}, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all the Objects inside of this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Zone.getObjects() returns {Object, ...}'
-            displayText: 'getObjects() -- Zone returns {Object, ...}' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns all the Objects inside of this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects' # (optional)
+            displayText: 'getObjects() -- Zone returns {Object, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all the Objects inside of this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
           },
           {
             snippet: 'getPosition()'
-            displayText: 'getPosition()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the position for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getPosition' # (optional)
+            displayText: 'getPosition()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the position for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getPosition'
           },
           {
             snippet: 'getQuantity()'
-            displayText: 'getQuantity()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the number of Objects in a stack.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getQuantity' # (optional)
+            displayText: 'getQuantity()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number of Objects in a stack.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getQuantity'
           },
           {
             snippet: 'getRotation()'
-            displayText: 'getRotation()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the rotation of this Object in degrees.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotation' # (optional)
+            displayText: 'getRotation()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the rotation of this Object in degrees.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotation'
           },
           {
             snippet: 'getScale()'
-            displayText: 'getScale()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the scale for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getScale' # (optional)
+            displayText: 'getScale()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the scale for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getScale'
           },
           {
             snippet: 'getStateId()'
-            displayText: 'getStateId()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns id of the active state for this object. Will return -1 if the object has no states.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStateId' # (optional)
+            displayText: 'getStateId()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns id of the active state for this object. Will return -1 if the object has no states.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStateId'
           },
           {
             snippet: 'getStates()'
-            displayText: 'getStates()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table with the keys “name”, “guid”, and “id”.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStates' # (optional)
+            displayText: 'getStates()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “name”, “guid”, and “id”.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStates'
           },
           {
             snippet: 'getStatesCount()'
-            displayText: 'getStatesCount()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the number of States on this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStatesCount' # (optional)
+            displayText: 'getStatesCount()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number of States on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStatesCount'
           },
           {
             snippet: 'getTable(${1:string|table_name})'
-            displayText: 'getTable(string table_name)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets a Lua Table for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable' # (optional)
+            displayText: 'getTable(string table_name)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets a Lua Table for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable'
           },
           {
             snippet: 'getTransformForward()'
-            displayText: 'getTransformForward()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the forward direction of this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformForward' # (optional)
+            displayText: 'getTransformForward()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the forward direction of this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformForward'
           },
           {
             snippet: 'getTransformRight()'
-            displayText: 'getTransformRight()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the right direction of this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformRight' # (optional)
+            displayText: 'getTransformRight()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the right direction of this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformRight'
           },
           {
             snippet: 'getTransformUp()'
-            displayText: 'getTransformUp()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Gets the up direction of this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp' # (optional)
+            displayText: 'getTransformUp()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets the up direction of this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp'
           },
           {
             snippet: 'getValue()'
-            displayText: 'getValue()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Returns the value for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getValue' # (optional)
+            displayText: 'getValue()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the value for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getValue'
           },
           {
             snippet: 'getVar(${1:string|variable_name})'
-            displayText: 'getVar(string variable_name)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'variable' # (optional)
-            description: 'Gets a Lua variable for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar' # (optional)
+            displayText: 'getVar(string variable_name)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Gets a Lua variable for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar'
           },
           {
             snippet: 'getVelocity()'
-            displayText: 'getVelocity()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns the current velocity vector of the Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVelocity' # (optional)
+            displayText: 'getVelocity()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the current velocity vector of the Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVelocity'
           },
           {
             snippet: 'highlightOff()'
-            displayText: 'highlightOff()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Stop highlighting this object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOff' # (optional)
+            displayText: 'highlightOff()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Stop highlighting this object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOff'
           },
           {
             snippet: 'highlightOn(${1:Table|color}, ${2:float|duration})'
-            displayText: 'highlightOn(Table color, float duration)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Highlight this object with color for an optional duration. Color values are between 0 and 1.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOn' # (optional)
+            displayText: 'highlightOn(Table color, float duration)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Highlight this object with color for an optional duration. Color values are between 0 and 1.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOn'
           },
           {
             snippet: 'isSmoothMoving()'
-            displayText: 'isSmoothMoving()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Is the object smoothly moving from our smooth functions.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving' # (optional)
+            displayText: 'isSmoothMoving()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Is the object smoothly moving from our smooth functions.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving'
           },
           {
             snippet: 'positionToLocal(${1:Table|vector})'
-            displayText: 'positionToLocal(Table vector)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Converts the world position to a local position of this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToLocal' # (optional)
+            displayText: 'positionToLocal(Table vector)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Converts the world position to a local position of this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToLocal'
           },
           {
             snippet: 'positionToWorld(${1:Table|vector})'
-            displayText: 'positionToWorld(Table vector)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Converts the local position of this Object to a world position.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToWorld' # (optional)
+            displayText: 'positionToWorld(Table vector)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Converts the local position of this Object to a world position.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToWorld'
           },
           {
             snippet: 'putObject(${1:Object|object})'
-            displayText: 'putObject(Object object)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Add this object to the current object. Works for stacking chips, decks, and bags.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#putObject' # (optional)
+            displayText: 'putObject(Object object)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add this object to the current object. Works for stacking chips, decks, and bags.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#putObject'
           },
           {
             snippet: 'randomize()'
-            displayText: 'randomize()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Same as pressing the ‘R’ key on an Object. Shuffles deck/bag, rolls dice/coin, lifts any other object up in the air.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#randomize' # (optional)
+            displayText: 'randomize()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Same as pressing the ‘R’ key on an Object. Shuffles deck/bag, rolls dice/coin, lifts any other object up in the air.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#randomize'
           },
           {
             snippet: 'reload()'
-            displayText: 'reload()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Reloads this object by destroying and spawning it place. Returns the newly spawned object. Very useful if using setCustomObject().' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reload' # (optional)
+            displayText: 'reload()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Reloads this object by destroying and spawning it place. Returns the newly spawned object. Very useful if using setCustomObject().'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reload'
           },
           {
             snippet: 'removeButton(${1:int|index})'
-            displayText: 'removeButton(int index)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Removes a 3D UI button from this Object by its index.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeButton' # (optional)
+            displayText: 'removeButton(int index)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Removes a 3D UI button from this Object by its index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeButton'
           },
           {
             snippet: 'reset()'
-            displayText: 'reset()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Resets this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rest' # (optional)
+            displayText: 'reset()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Resets this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rest'
           },
           {
             snippet: 'roll()'
-            displayText: 'roll()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Rolls this Object. Works on Dice and Coins.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#roll' # (optional)
+            displayText: 'roll()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Rolls this Object. Works on Dice and Coins.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#roll'
           },
           {
             snippet: 'rotate(${1:Table|rotation})'
-            displayText: 'rotate(Table rotation)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Smoothly rotates this Object with the given offset in degrees.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rotate' # (optional)
+            displayText: 'rotate(Table rotation)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Smoothly rotates this Object with the given offset in degrees.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rotate'
           },
           {
             snippet: 'scale(${1:Table|scale})'
-            displayText: 'scale(Table scale)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Scales this Object by the given amount.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scale' # (optional)
+            displayText: 'scale(Table scale)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Scales this Object by the given amount.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scale'
           },
           {
             snippet: 'scale(${1:float|scale})'
-            displayText: 'scale(float scale)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Scales this Object in all axes by the given amount.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scaleAllAxes' # (optional)
+            displayText: 'scale(float scale)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Scales this Object in all axes by the given amount.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scaleAllAxes'
           },
           {
             snippet: 'setAngularVelocity(${1:Table|vector})'
-            displayText: 'setAngularVelocity(Table vector)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the angular velocity of the object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setAngularVelocity' # (optional)
+            displayText: 'setAngularVelocity(Table vector)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the angular velocity of the object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setAngularVelocity'
           },
           {
             snippet: 'setColorTint(${1:Table|color})'
-            displayText: 'setColorTint(Table color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the color tint for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setColorTint' # (optional)
+            displayText: 'setColorTint(Table color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the color tint for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setColorTint'
           },
           {
             snippet: 'setCustomObject(${1:Table|parameters})'
-            displayText: 'setCustomObject(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Used to create a Custom Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setCustomObject' # (optional)
+            displayText: 'setCustomObject(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Used to create a Custom Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setCustomObject'
           },
           {
             snippet: 'setDescription(${1:string|description})'
-            displayText: 'setDescription(string description)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the description for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setDescription' # (optional)
+            displayText: 'setDescription(string description)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the description for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setDescription'
           },
           {
             snippet: 'setLock(${1:bool|lock})'
-            displayText: 'setLock(bool lock)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Set the lock status of an object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLock' # (optional)
+            displayText: 'setLock(bool lock)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Set the lock status of an object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLock'
           },
           {
             snippet: 'setLuaScript(${1:string|script})'
-            displayText: 'setLuaScript(string script)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the Lua script for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLuaScript' # (optional)
+            displayText: 'setLuaScript(string script)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the Lua script for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLuaScript'
           },
           {
             snippet: 'setName(${1:string|nickname})'
-            displayText: 'setName(string nickname)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the nickname for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setName' # (optional)
+            displayText: 'setName(string nickname)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the nickname for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setName'
           },
           {
             snippet: 'setPosition(${1:Table|position})'
-            displayText: 'setPosition(Table position)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the world space position for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPosition' # (optional)
+            displayText: 'setPosition(Table position)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the world space position for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPosition'
           },
           {
             snippet: 'setPositionSmooth(${1:Table|position}, ${2:bool|collide}, ${3:bool|fast})'
-            displayText: 'setPositionSmooth(Table position, bool collide, bool fast)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Smoothly moves this Object from its current position to a given world space position.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPositionSmooth' # (optional)
+            displayText: 'setPositionSmooth(Table position, bool collide, bool fast)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Smoothly moves this Object from its current position to a given world space position.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPositionSmooth'
           },
           {
             snippet: 'setRotation(${1:Table|rotation})'
-            displayText: 'setRotation(Table rotation)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the rotation of this Object in degrees.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotation' # (optional)
+            displayText: 'setRotation(Table rotation)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the rotation of this Object in degrees.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotation'
           },
           {
             snippet: 'setRotationSmooth(${1:Table|rotation}, ${2:bool|collide}, ${3:bool|fast})'
-            displayText: 'setRotationSmooth(Table rotation, bool collide, bool fast)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Smoothly rotates this Object to the given orientation in degrees.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationSmooth' # (optional)
+            displayText: 'setRotationSmooth(Table rotation, bool collide, bool fast)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Smoothly rotates this Object to the given orientation in degrees.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationSmooth'
           },
           {
             snippet: 'setScale(${1:Table|scale})'
-            displayText: 'setScale(Table scale)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the scale for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setScale' # (optional)
+            displayText: 'setScale(Table scale)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the scale for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setScale'
           },
           {
             snippet: 'setState(${1:int|state})'
-            displayText: 'setState(int state)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Sets the State on this Object and returns reference to the new State.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setState' # (optional)
+            displayText: 'setState(int state)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Sets the State on this Object and returns reference to the new State.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setState'
           },
           {
             snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
-            displayText: 'setTable(string table_name, Table table)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets a Lua Table for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable' # (optional)
+            displayText: 'setTable(string table_name, Table table)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets a Lua Table for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable'
           },
           {
             snippet: 'setValue(${1:variable|value})'
-            displayText: 'setValue(variable value)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the value for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setValue' # (optional)
+            displayText: 'setValue(variable value)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the value for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setValue'
           },
           {
             snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
-            displayText: 'setVar(string variable_name, variable value)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets a Lua variable for this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar' # (optional)
+            displayText: 'setVar(string variable_name, variable value)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets a Lua variable for this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
           },
           {
             snippet: 'setVelocity(${1:Table|vector})'
-            displayText: 'setVelocity(Table vector)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the velocity of the object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVelocity' # (optional)
+            displayText: 'setVelocity(Table vector)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the velocity of the object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVelocity'
           },
           {
             snippet: 'shuffle()'
-            displayText: 'shuffle()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Shuffles this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffle' # (optional)
+            displayText: 'shuffle()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Shuffles this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffle'
           },
           {
             snippet: 'shuffleStates()'
-            displayText: 'shuffleStates()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Shuffles the States on this Object and returns reference to the new State.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffleStates' # (optional)
+            displayText: 'shuffleStates()'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Shuffles the States on this Object and returns reference to the new State.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffleStates'
           },
           {
             snippet: 'takeObject(${1:Table|parameters})'
-            displayText: 'takeObject(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Takes an Object from this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject' # (optional)
+            displayText: 'takeObject(Table parameters)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Takes an Object from this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject'
           },
           {
             snippet:
@@ -2258,31 +2246,31 @@ module.exports =
               'index           = ${8:-- int},\n\t' +
               'top             = ${9:-- bool [true]},\n' +
               '})'
-            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Takes an Object from this container.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject' # (optional)
+            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Takes an Object from this container.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject'
           },
           {
             snippet: 'translate(${1:Table|position})'
-            displayText: 'translate(Table position)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Smoothly moves this Object from its current position to a given offset.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#translate' # (optional)
+            displayText: 'translate(Table position)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Smoothly moves this Object from its current position to a given offset.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#translate'
           },
         ]
       # Default Events
-      else if (line.match(/^\s*function/) && line.lastIndexOf("function") > line.lastIndexOf("("))
+      else if (line.startsWith('function') && not line.includes("("))
         #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
             snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
-            displayText: 'fixedUpdate()' # (optional)
-            type: 'function' # (optional)
-            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate' # (optional)
+            displayText: 'fixedUpdate()'
+            type: 'function'
+            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate'
           },
           {
             snippet:
@@ -2292,10 +2280,10 @@ module.exports =
               '--   contact_points      Table     {Vector, ...}\n\t' +
               '--   relative_velocity   Vector\n\t' +
               '$1\nend'
-            displayText: 'onCollisionEnter(Table collision_info)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object collides with another Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionEnter' # (optional)
+            displayText: 'onCollisionEnter(Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when this Object collides with another Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionEnter'
           },
           {
             snippet:
@@ -2305,10 +2293,10 @@ module.exports =
               '--   contact_points      Table     {Vector, ...}\n\t' +
               '--   relative_velocity   Vector\n\t' +
               '$1\nend'
-            displayText: 'onCollisionExit(Table collision_info)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object stops touching another Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionExit' # (optional)
+            displayText: 'onCollisionExit(Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when this Object stops touching another Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionExit'
           },
           {
             snippet:
@@ -2318,129 +2306,129 @@ module.exports =
               '--   contact_points      Table     {Vector, ...}\n\t' +
               '--   relative_velocity   Vector\n\t' +
               '$1\nend'
-            displayText: 'onCollisionStay(Table collision_info)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object is touching another Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionStay' # (optional)
+            displayText: 'onCollisionStay(Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when this Object is touching another Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionStay'
           },
           {
             snippet: 'onDestroy()\n\t${0:-- body...}\nend'
-            displayText: 'onDestroy()' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object is destroyed.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDestroy' # (optional)
+            displayText: 'onDestroy()'
+            type: 'function'
+            description: 'Automatically called when this Object is destroyed.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDestroy'
           },
           {
             snippet: 'onDropped(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onDropped(string player_color)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object is dropped.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDropped' # (optional)
+            displayText: 'onDropped(string player_color)'
+            type: 'function'
+            description: 'Automatically called when this Object is dropped.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDropped'
           },
           {
             snippet: 'onLoad(save_state)\n\t${0:-- body...}\nend'
-            displayText: 'onLoad(string save_state)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when a game save is finished loading every Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad' # (optional)
+            displayText: 'onLoad(string save_state)'
+            type: 'function'
+            description: 'Automatically called when a game save is finished loading every Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
           },
           {
             snippet: 'onObjectDestroyed(dying_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDestroyed(Object dying_object)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an Object is destroyed.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed' # (optional)
+            displayText: 'onObjectDestroyed(Object dying_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is destroyed.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed'
           },
           {
             snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDropped(string player_color, Object dropped_object)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an Object is dropped.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped' # (optional)
+            displayText: 'onObjectDropped(string player_color, Object dropped_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is dropped.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped'
           },
           {
             snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an Object enters a Scripting Zone.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone' # (optional)
+            displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)'
+            type: 'function'
+            description: 'Automatically called when an Object enters a Scripting Zone.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
           },
           {
             snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an Object leaves a Scripting Zone.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone' # (optional)
+            displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
+            type: 'function'
+            description: 'Automatically called when an Object leaves a Scripting Zone.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone'
           },
           {
             snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectLoopingEffect(Object object, int index)' # (optional)
-            type: 'function' # (optional)
-            description: "Automatically called when an asset Object's loop is started." # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect' # (optional)
+            displayText: 'onObjectLoopingEffect(Object object, int index)'
+            type: 'function'
+            description: "Automatically called when an asset Object's loop is started."
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect'
           },
           {
             snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an Object is picked up.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp' # (optional)
+            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)'
+            type: 'function'
+            description: 'Automatically called when an Object is picked up.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp'
           },
           {
             snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectRandomize(Object object, string player_color)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an asset Object is randomized by player_color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize' # (optional)
+            displayText: 'onObjectRandomize(Object object, string player_color)'
+            type: 'function'
+            description: 'Automatically called when an asset Object is randomized by player_color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
           },
           {
             snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectTriggerEffect(Object object, int index)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when an asset Object is triggered.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect' # (optional)
+            displayText: 'onObjectTriggerEffect(Object object, int index)'
+            type: 'function'
+            description: 'Automatically called when an asset Object is triggered.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect'
           },
           {
             snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPickedUp(string player_color)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when this Object is picked up.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickedUp' # (optional)
+            displayText: 'onPickedUp(string player_color)'
+            type: 'function'
+            description: 'Automatically called when this Object is picked up.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickedUp'
           },
           {
             snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerChangedColor(string player_color)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when a Player changes color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor' # (optional)
+            displayText: 'onPlayerChangedColor(string player_color)'
+            type: 'function'
+            description: 'Automatically called when a Player changes color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
           },
           {
             snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called at the end of a Player\'s turn.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnEnd' # (optional)
+            displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
+            type: 'function'
+            description: 'Automatically called at the end of a Player\'s turn.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnEnd'
           },
           {
             snippet: 'onPlayerTurnStart(player_color_start, player_color_previous)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called at the start of a Player\'s turn.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart' # (optional)
+            displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)'
+            type: 'function'
+            description: 'Automatically called at the start of a Player\'s turn.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart'
           },
           {
             snippet: 'onSave()\n\t${0:-- body...}\nend'
-            displayText: 'onSave()' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called when the game saves (including auto-save for Rewinding).' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave' # (optional)
+            displayText: 'onSave()'
+            type: 'function'
+            description: 'Automatically called when the game saves (including auto-save for Rewinding).'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
           },
           {
             snippet: 'update()\n\t${0:-- body...}\nend'
-            displayText: 'update()' # (optional)
-            type: 'function' # (optional)
-            description: 'Automatically called once every frame.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update' # (optional)
+            displayText: 'update()'
+            type: 'function'
+            description: 'Automatically called once every frame.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
           },
         ]
       # Globally accessible constants & functions
@@ -2450,82 +2438,82 @@ module.exports =
           # Constants
           {
             snippet: 'coroutine'
-            displayText: 'coroutine' # (optional)
-            type: 'constant' # (optional)
-            description: 'The coroutine class.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.2' # (optional)
+            displayText: 'coroutine'
+            type: 'constant'
+            description: 'The coroutine class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.2'
           },
           {
             snippet: 'Global'
-            displayText: 'Global' # (optional)
-            type: 'constant' # (optional)
-            description: 'A reference to the Global Script.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object' # (optional)
+            displayText: 'Global'
+            type: 'constant'
+            description: 'A reference to the Global Script.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object'
           },
           {
             snippet: 'JSON'
-            displayText: 'JSON' # (optional)
-            type: 'constant' # (optional)
-            description: 'The JSON class.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json' # (optional)
+            displayText: 'JSON'
+            type: 'constant'
+            description: 'The JSON class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json'
           },
           {
             snippet: 'Lighting'
-            displayText: 'Lighting' # (optional)
-            type: 'constant' # (optional)
-            description: 'The Lighting class.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/' # (optional)
+            displayText: 'Lighting'
+            type: 'constant'
+            description: 'The Lighting class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/'
           },
           {
             snippet: 'math'
-            displayText: 'math' # (optional)
-            type: 'constant' # (optional)
-            description: 'The math class.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.6' # (optional)
+            displayText: 'math'
+            type: 'constant'
+            description: 'The math class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.6'
           },
           {
             snippet: 'os'
-            displayText: 'os' # (optional)
-            type: 'constant' # (optional)
-            description: 'The os class.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.9' # (optional)
+            displayText: 'os'
+            type: 'constant'
+            description: 'The os class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.9'
           },
           {
             snippet: 'Physics'
-            displayText: 'Physics' # (optional)
-            type: 'constant' # (optional)
-            description: 'The Physics class.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/' # (optional)
+            displayText: 'Physics'
+            type: 'constant'
+            description: 'The Physics class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/'
           },
           {
             snippet: 'Player'
-            displayText: 'Player' # (optional)
-            type: 'constant' # (optional)
-            description: 'The Player class.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player' # (optional)
+            displayText: 'Player'
+            type: 'constant'
+            description: 'The Player class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player'
           },
           {
             snippet: 'self'
-            displayText: 'self' # (optional)
-            type: 'constant' # (optional)
-            description: 'A reference to this Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object' # (optional)
+            displayText: 'self'
+            type: 'constant'
+            description: 'A reference to this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object'
           },
           {
             snippet: 'Timer'
-            displayText: 'Timer' # (optional)
-            type: 'constant' # (optional)
-            description: 'The Timer class.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/' # (optional)
+            displayText: 'Timer'
+            type: 'constant'
+            description: 'The Timer class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/'
           },
           # Global Management Functions
           {
             snippet: 'addNotebookTab(${1:Table|parameters})'
-            displayText: 'addNotebookTab(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
+            displayText: 'addNotebookTab(Table parameters)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab'
           },
           {
             snippet:
@@ -2534,51 +2522,51 @@ module.exports =
               'body   = ${2:-- string (BBcode is allowed)},\n\t' +
               'color  = ${3:-- string [Grey]},\n' +
               '})'
-            displayText: 'addNotebookTab({string title, string body, string color})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'int' # (optional)
-            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab' # (optional)
+            displayText: 'addNotebookTab({string title, string body, string color})'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab'
           },
           {
             snippet: 'clearPixelPaint()'
-            displayText: 'clearPixelPaint()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Clears all pixel paint.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearPixelPaint' # (optional)
+            displayText: 'clearPixelPaint()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears all pixel paint.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearPixelPaint'
           },
           {
             snippet: 'clearVectorPaint()'
-            displayText: 'clearVectorPaint()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Clears all vector paint.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearVectorPaint' # (optional)
+            displayText: 'clearVectorPaint()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears all vector paint.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearVectorPaint'
           },
           {
             snippet: 'copy(${1:Table|objects})'
-            displayText: 'copy(Table objects)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Copies a list of Objects.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+            displayText: 'copy(Table objects)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Copies a list of Objects.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
           },
           {
             snippet: 'destroyObject(${1:Object|obj})'
-            displayText: 'destroyObject(Object obj)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Destroys an Object.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#destroyObject' # (optional)
+            displayText: 'destroyObject(Object obj)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Destroys an Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#destroyObject'
           },
           {
             snippet: 'editNotebookTab(${1:Table|parameters})'
-            displayText: 'editNotebookTab(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Edits an existing Tab on the Notebook.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
+            displayText: 'editNotebookTab(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits an existing Tab on the Notebook.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab'
           },
           {
             snippet:
@@ -2588,91 +2576,91 @@ module.exports =
               'body   = ${3:-- string (BBcode is allowed)},\n\t' +
               'color  = ${4:-- string [Grey]},\n' +
               '})'
-            displayText: 'editNotebookTab({int index, string title, string body, string color})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Edits an existing Tab on the Notebook.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab' # (optional)
+            displayText: 'editNotebookTab({int index, string title, string body, string color})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits an existing Tab on the Notebook.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab'
           },
           {
             snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
-            displayText: 'broadcastToAll(string message, Table text_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a message to the screen and chat window on all connected clients.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToAll' # (optional)
+            displayText: 'broadcastToAll(string message, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the screen and chat window on all connected clients.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToAll'
           },
           {
             snippet: 'broadcastToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
-            displayText: 'broadcastToColor(string message, string player_color, Table text_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a private message to the screen and chat window to the player matching the player color.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToColor' # (optional)
+            displayText: 'broadcastToColor(string message, string player_color, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a private message to the screen and chat window to the player matching the player color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToColor'
           },
           {
             snippet: 'flipTable()'
-            displayText: 'flipTable()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Flip the table in a fit of rage.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#flipTable' # (optional)
+            displayText: 'flipTable()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Flip the table in a fit of rage.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#flipTable'
           },
           {
             snippet: 'getAllObjects()'
-            displayText: 'getAllObjects()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table of all the spawned Objects in the game.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getAllObjects' # (optional)
+            displayText: 'getAllObjects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of all the spawned Objects in the game.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getAllObjects'
           },
           {
             snippet: 'getNotebookTabs()'
-            displayText: 'getNotebookTabs()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs' # (optional)
+            displayText: 'getNotebookTabs()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs'
           },
           {
             snippet: 'getNotebookTabs()$1\n\t-- getNotebookTabs returns:\n\t-- {{int index, string title, string body, string color}, ...}'
             displayText: 'getNotebookTabs() -- returns {{int index, string title, string body, string color}, ...}'
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs' # (optional)
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs'
           },
           {
             snippet: 'getNotes()'
-            displayText: 'getNotes()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'string' # (optional)
-            description: 'Returns the current on-screen notes as a string.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotes' # (optional)
+            displayText: 'getNotes()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the current on-screen notes as a string.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotes'
           },
           {
             snippet: 'getObjectFromGUID(${1:string|guid})'
-            displayText: 'getObjectFromGUID(string guid)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+            displayText: 'getObjectFromGUID(string guid)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
           },
           {
             snippet: 'getSeatedPlayers()'
-            displayText: 'getSeatedPlayers()' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Returns an indexed Lua Table of all the seated Player colors.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getSeatedPlayers' # (optional)
+            displayText: 'getSeatedPlayers()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns an indexed Lua Table of all the seated Player colors.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getSeatedPlayers'
           },
           {
             snippet: 'paste(${1:Table|parameters})'
-            displayText: 'paste(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Pastes copied Objects and returns a Table of references to the new Objects.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+            displayText: 'paste(Table parameters)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
           },
           {
             snippet:
@@ -2680,58 +2668,58 @@ module.exports =
               'position      = ${1:-- Vector  [x=0, y=3, z=0]},\n\t' +
               'snap_to_grid  = ${2:-- boolean [false]},\n' +
               '})'
-            displayText: 'paste({Vector position, bool snap_to_grid})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Pastes copied Objects and returns a Table of references to the new Objects.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy' # (optional)
+            displayText: 'paste({Vector position, bool snap_to_grid})'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
           },
           {
             snippet: 'print(${1:string|message})'
-            displayText: 'print(string message)' # (optional)
-            type: 'function' # (optional)
-            description: 'Prints a message to the chatin window only on the host.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print' # (optional)
+            displayText: 'print(string message)'
+            type: 'function'
+            description: 'Prints a message to the chatin window only on the host.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print'
           },
           {
             snippet: 'printToAll(${1:string|message}, ${2:Table|text_color})'
-            displayText: 'printToAll(string message, Table text_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a message to the chat window on all connected clients.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToAll' # (optional)
+            displayText: 'printToAll(string message, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the chat window on all connected clients.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToAll'
           },
           {
             snippet: 'printToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
-            displayText: 'printToColor(string message, string player_color, Table text_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Prints a message to the chat window of a specific Player.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToColor' # (optional)
+            displayText: 'printToColor(string message, string player_color, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the chat window of a specific Player.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToColor'
           },
           {
             snippet: 'removeNotebookTab(${1:int|index})'
-            displayText: 'removeNotebookTab(int index)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Removes a Tab from the Notebook at a given index.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab' # (optional)
+            displayText: 'removeNotebookTab(int index)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Removes a Tab from the Notebook at a given index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab'
           },
           {
             snippet: 'setNotes(${1:string|notes})'
-            displayText: 'setNotes(string notes)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Sets the current on-screen notes. BBCOde is allowed for styling.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#setNotes' # (optional)
+            displayText: 'setNotes(string notes)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current on-screen notes. BBCOde is allowed for styling.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#setNotes'
           },
           {
             snippet: 'spawnObject(${1:Table|paremeters})'
-            displayText: 'spawnObject(Table parameters)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Spawns an Object and returns a reference to it.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject' # (optional)
+            displayText: 'spawnObject(Table parameters)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object and returns a reference to it.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject'
           },
           {
             snippet:
@@ -2745,43 +2733,43 @@ module.exports =
               'params          = ${7:-- Table},\n\t' +
               'snap_to_grid    = ${8:-- bool},\n' +
               '})'
-            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, Table params, bool snap_to_grid})' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Object' # (optional)
-            description: 'Spawns an Object and returns a reference to it.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject' # (optional)
+            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, Table params, bool snap_to_grid})'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object and returns a reference to it.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject'
           },
           {
             snippet: 'startLuaCoroutine(${1:Object|func_owner}, ${2:string|func_name})'
-            displayText: 'startLuaCoroutine(Object func_owner, string func_name)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'bool' # (optional)
-            description: 'Starts a Lua function as a coroutine.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#startLuaCoroutine' # (optional)
+            displayText: 'startLuaCoroutine(Object func_owner, string func_name)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Starts a Lua function as a coroutine.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#startLuaCoroutine'
           },
           {
             snippet: 'stringColorToRGB(${1:string|player_color})'
-            displayText: 'stringColorToRGB(string player_color)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'Table' # (optional)
-            description: 'Converts a color string (player colors) to its RGB values.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#stringColorToRGB' # (optional)
+            displayText: 'stringColorToRGB(string player_color)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Converts a color string (player colors) to its RGB values.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#stringColorToRGB'
           },
           {
             snippet: 'tonumber(${1:e})'
-            displayText: 'tonumber(e [, base])' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'number' # (optional)
-            description: 'When called with no base, tonumber tries to convert its argument to a number.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber' # (optional)
+            displayText: 'tonumber(e [, base])'
+            type: 'function'
+            leftLabel: 'number'
+            description: 'When called with no base, tonumber tries to convert its argument to a number.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber'
           },
           {
             snippet: 'tostring(${1:v})'
-            displayText: 'tostring(v)' # (optional)
-            type: 'function' # (optional)
-            leftLabel: 'number' # (optional)
-            description: 'Receives a value of any type and converts it to a string in a reasonable format.' # (optional)
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring' # (optional)
+            displayText: 'tostring(v)'
+            type: 'function'
+            leftLabel: 'number'
+            description: 'Receives a value of any type and converts it to a string in a reasonable format.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring'
           },
         ]
         # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
@@ -2798,10 +2786,10 @@ module.exports =
                       {
                         snippet: 'getObjectFromGUID(' + suggestion + ')'
                         displayText: 'getObjectFromGUID(->' +  suggestion + ')'
-                        type: 'function' # (optional)
-                        leftLabel: 'Object' # (optional)
-                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
-                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                        type: 'function'
+                        leftLabel: 'Object'
+                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
+                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
                       }
                 )
               for c, i in identifier
@@ -2815,14 +2803,13 @@ module.exports =
                           {
                             snippet: 'getObjectFromGUID(' + suggestion + ')'
                             displayText: 'getObjectFromGUID(->' +  suggestion + ')'
-                            type: 'function' # (optional)
-                            leftLabel: 'Object' # (optional)
-                            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.' # (optional)
-                            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID' # (optional)
+                            type: 'function'
+                            leftLabel: 'Object'
+                            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
+                            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
                           }
                     )
               break
-
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
       replace_type = atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay')
       if replace_type == 'both'
@@ -2840,7 +2827,6 @@ module.exports =
       for suggestion in suggestions
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
       resolve(suggestions)
-
 # replacement patterns for autocomplete parameters
 parameter_patterns = {
   'type': '$${$1:$2}',
@@ -2848,6 +2834,5 @@ parameter_patterns = {
   'both': '$${$1:$2_$3}',
   'none': '$${$1:}',
 }
-
 capitalize = (s) ->
   return s.substring(0,1).toUpperCase() + s.substring(1)
