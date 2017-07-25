@@ -2,20 +2,25 @@ module.exports =
   selector: '.source.tts.lua'
   disableForSelector: '.source.tts.lua .comment'
   filterSuggestions: true
+
   # This will take priority over the default provider, which has a priority of 0.
   # `excludeLowerPriority` will suppress any providers with a lower priority
   # i.e. The default provider will be suppressed
   inclusionPriority: 2
   excludeLowerPriority: true
+
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     new Promise (resolve) ->
       # Find your suggestions here
       suggestions = []
+
       if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
         resolve([])
         return
+
       # Substring up until this position
       line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
+
       # Split line into bracket depths
       depths = {}
       depth = 0
@@ -44,6 +49,7 @@ module.exports =
             returned_to_depth = false
           depths[depth] += c
       depths[depth] += returning_from
+
       # Split relevant depth into tokens
       tokens = depths[depth].split(".")
       this_token = ""           # user is currently typing
@@ -64,14 +70,21 @@ module.exports =
               if part != ""
                 previous_token_2 = part
                 break
+
       #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
       #console.log scopeDescriptor.scopes[1]
-      # If we're in the middle of typing a number then suggest nothing on .
+
       if prefix == "." and previous_token.match(/^[0-9]$/)
+        # If we're in the middle of typing a number then suggest nothing on .
         resolve([])
         return
-      # Control blocks
+      else if (line.endsWith(" else") || line.endsWith(" elseif") || line.endsWith(" end") || line == "end")
+        # Short circuit some common lua keywords
+        resolve([])
+        return
+
+      # Section: Control blocks
       if (line.endsWith(" do"))
         suggestions = [
           {
@@ -107,12 +120,9 @@ module.exports =
             displayText: 'function...coroutine...end'
           },
         ]
-      # Short circuit some common lua keywords
-      else if (line.endsWith(" else") || line.endsWith(" elseif") || line.endsWith(" end") || line == "end")
-        suggestions = []
-      # Global object
+
+      # Section: Global object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || line.endsWith("Global.") || (previous_token == "Global" && this_token_intact)
-        #console.log "FOUND GLOBAL"
         suggestions = [
           # Member Variables
           {
@@ -180,9 +190,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
           },
         ]
-      # math Class
+
+      # Section: math Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "math") || line.endsWith("math.") || (previous_token == "math" && this_token_intact)
-        #console.log "FOUND MATH"
         suggestions = [
           # Member Variables
           {
@@ -418,9 +428,9 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tanh'
           },
         ]
-      # coroutine Class
+
+      # Section: coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
-        #console.log "FOUND COROUTINE"
         suggestions = [
           {
             snippet: 'create(${1:function|f})'
@@ -470,9 +480,9 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.yield'
           },
         ]
-      # os Class
+
+      # Section: os Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || (previous_token == "os" && this_token_intact)
-        #console.log "FOUND OS"
         suggestions = [
           {
             snippet: 'clock()'
@@ -507,9 +517,9 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time'
           },
         ]
-      # Clock Class
+
+      # Section: Clock Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || line.endsWith("Clock.") || (previous_token == "Clock" && this_token_intact)
-        #console.log "FOUND CLOCK"
         suggestions = [
           # Member Variables
           {
@@ -562,9 +572,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#showCurrentTime'
           },
         ]
-      # Counter Class
+
+      # Section: Counter Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Counter") || line.endsWith("Counter.") || (previous_token == "Counter" && this_token_intact)
-        #console.log "FOUND COUNTER"
         suggestions = [
           # Functions
           {
@@ -608,9 +618,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue'
           },
         ]
-      # Lighting
+
+      # Section: Lighting
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Lighting") || line.endsWith("Lighting.") || (previous_token == "Lighting" && this_token_intact)
         suggestions = [
+          # Member Variables
           {
             snippet: 'ambient_type'
             displayText: 'ambient_type'
@@ -643,6 +655,7 @@ module.exports =
             description: 'The strength of the reflections from the background. Range is 0-1.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#reflection_intensity'
           },
+          # Functions
           {
             snippet: 'apply()'
             displayText: 'apply()'
@@ -716,9 +729,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor'
           },
         ]
-      # Physics
+
+      # Section: Physics
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_intact)
         suggestions = [
+          # Functions
           {
             snippet: 'cast(${1:Table|info})'
             displayText: 'cast(Table info)'
@@ -761,10 +776,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setGravity'
           },
         ]
-      # Player Colors
+
+      # Section: Player Colors
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || line.endsWith("Player.") || (previous_token == "Player" && this_token_intact)
-        #console.log "FOUND Player"
         suggestions = [
+          # Constants
           {
             snippet: 'Black'
             displayText: 'Black'
@@ -871,9 +887,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getSpectators'
           },
         ]
-      # Player Class
+
+      # Section: Player Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token_2 == "Player") ||  previous_token.substring(0, 7) == "Player["
-        #console.log "FOUND Player Class"
         suggestions = [
           # Member Variables
           {
@@ -1159,9 +1175,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform'
           },
         ]
-      # JSON Class
+
+      # Section: JSON Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || (previous_token == "JSON" && this_token_intact)
-        #console.log "FOUND JSON"
         suggestions = [
           # Functions
           {
@@ -1189,9 +1205,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty'
           },
         ]
-      # Timer Class
+
+      # Section: Timer Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Timer") || line.endsWith("Timer.") || (previous_token == "Timer" && this_token_intact)
-        #console.log "FOUND Timer"
         suggestions = [
           # Functions
           {
@@ -1227,9 +1243,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy'
           },
         ]
-      # RPGFigurine Class
+
+      # Section: RPGFigurine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || line.endsWith("RPGFigurine.") || (previous_token == "RPGFigurine" && this_token_intact)
-        #console.log "FOUND RPGFigurine"
         suggestions = [
           # Functions
           {
@@ -1271,9 +1287,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onHit'
           },
         ]
-      # TextTool Class
+
+      # Section: TextTool Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "TextTool") || line.endsWith("TextTool.") || (previous_token == "TextTool" && this_token_intact)
-        #console.log "FOUND TextTool"
         suggestions = [
           # Functions
           {
@@ -1325,9 +1341,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setValue'
           },
         ]
-      # Object
+
+      # Section: Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_intact)))
-        #console.log "FOUND OBJECT"
         suggestions = [
           # Member Variables
           {
@@ -2261,9 +2277,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#translate'
           },
         ]
-      # Default Events
+
+      # Section: Default Events
       else if (line.startsWith('function') && not line.includes("("))
-        #console.log "FOUND DEFAULT EVENTS"
         suggestions = [
           {
             snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
@@ -2431,9 +2447,9 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
           },
         ]
-      # Globally accessible constants & functions
+
+      # Section: Globally accessible constants & functions
       else if (not (line.endsWith("}") || line.endsWith(")") || line.endsWith("]"))) and not line.includes("function ") and not this_token.includes("for ") and line.match(/\w$/)
-        #console.log "FOUND GLOBALLY ACCESSIBLE FUNCTIONS"
         suggestions = [
           # Constants
           {
@@ -2772,6 +2788,9 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring'
           },
         ]
+
+        # End of sections!
+
         # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
         if this_token.includes('=')
           for suggestion, index in suggestions
@@ -2810,6 +2829,8 @@ module.exports =
                           }
                     )
               break
+
+      # Convert function parameters to user desired output
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
       replace_type = atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay')
       if replace_type == 'both'
@@ -2826,13 +2847,19 @@ module.exports =
         replace_pattern = parameter_patterns[replace_type]
       for suggestion in suggestions
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
+
+      # Done!
       resolve(suggestions)
-# replacement patterns for autocomplete parameters
+
+
+# Replacement patterns for autocomplete parameters
 parameter_patterns = {
   'type': '$${$1:$2}',
   'name': '$${$1:$3}',
   'both': '$${$1:$2_$3}',
   'none': '$${$1:}',
 }
+
+# First letter to caps
 capitalize = (s) ->
   return s.substring(0,1).toUpperCase() + s.substring(1)
