@@ -72,7 +72,7 @@ class FileHandler
 
   handle_connection: (editor) ->
     # Replace \u character codes
-    if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
+    if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
         unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
       editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
@@ -98,31 +98,81 @@ class FileHandler
 module.exports = TabletopsimulatorLua =
   subscriptions: null
   config:
-    parameterToDisplay:
-      title: 'Autocomplete parameters'
-      description: 'This will determine how autocomplete inserts parameters into your script'
-      type: 'string'
-      default: 'type'
-      enum: [
-        {value: 'none', description: 'Do not insert most parameters'}
-        {value: 'type', description: 'Insert parameters as <TYPE>'}
-        {value: 'name', description: 'Insert parameters as <NAME>'}
-        {value: 'both', description: 'Insert parameters as <TYPE_NAME>'}
-      ]
-    convertUnicodeCharacters:
-      title: 'Convert between \\u{xx} and character when loading/saving'
-      description: 'When pulling script from TTS, automatically replace all instances of \\u{xx} with its relevant character.  When saving to TTS do the reverse.'
-      type: 'boolean'
-      default: false
-    #excludeLowerPriority:
-    #  title: 'Only autocomplete API suggestions'
-    #  description: 'This will disable the default autocomplete provider and any other providers with a lower priority.'
-    #  type: 'boolean'
-    #  default: true
+    loadSave:
+      title: 'Loading/Saving'
+      type: 'object'
+      order: 1
+      properties:
+        convertUnicodeCharacters:
+          title: 'Convert between unicode chacter and \\u{xxxx} escape sequence when loading/saving'
+          description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
+          order: 1
+          type: 'boolean'
+          default: false
+    autocomplete:
+      title: 'Autocomplete'
+      order: 2
+      type: 'object'
+      properties:
+        excludeLowerPriority:
+          title: 'Only autocomplete API suggestions'
+          order: 1
+          description: 'This will disable the default autocomplete provider and any other providers with a lower priority; try unticking it - you might like it!'
+          type: 'boolean'
+          default: true
+        parameterToDisplay:
+          title: 'Function Parameters'
+          description: 'This will determine how autocomplete inserts parameters into your script'
+          order: 2
+          type: 'string'
+          default: 'type'
+          enum: [
+            {value: 'none', description: 'Do not insert most parameters'}
+            {value: 'type', description: 'Insert parameters as TYPE'}
+            {value: 'name', description: 'Insert parameters as NAME'}
+            {value: 'both', description: 'Insert parameters as TYPE & NAME'}
+          ]
+    style:
+      title: 'Style'
+      order: 3
+      type: 'object'
+      properties:
+        parameterFormat:
+          title: 'Parameter TYPE & NAME Format'
+          description: "If you select ``TYPE & NAME`` above it will format like this. You may vary the case, e.g. ``typeName`` or ``name <TYPE>``"
+          order: 1
+          type: 'string'
+          default: 'type_name'
+        coroutinePostfix:
+          title: 'Coroutine Postfix'
+          description: "When automatically creating an internal coroutine function this is appended to the parent function's name"
+          order: 2
+          type: 'string'
+          default: '_routine'
+        guidPostfix:
+          title: 'GUID Postfix'
+          description: "When guessing the getObjectFromGUID parameter this is appended to the name of the variable being assigned to"
+          order: 3
+          type: 'string'
+          default: '_GUID'
 
   activate: (state) ->
     # See if there are any Updates
     @updatePackage()
+
+    # TODO
+    # 23/07/17 - config settings moved into groups.  This will orphan their old
+    # settings in user's config file if they had set them to non-default values.
+    # i.e. they'll be confusingly visible in settings until removed.  This code
+    # will remove them, but after a small amount of time has passed (and most
+    # users have updated) everyone will be clean and this will no longer be
+    # needed: remove this code at that point.
+    if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters') != undefined
+      atom.config.set('tabletopsimulator-lua.loadSave.convertUnicodeCharacters', atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters'))
+      atom.config.unset('tabletopsimulator-lua.convertUnicodeCharacters')
+    if atom.config.get('tabletopsimulator-lua.parameterToDisplay') != undefined
+      atom.config.set('tabletopsimulator-lua.autocomplete.parameterToDisplay', atom.config.get('tabletopsimulator-lua.parameterToDisplay'))
+      atom.config.unset('tabletopsimulator-lua.parameterToDisplay')
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -130,6 +180,7 @@ module.exports = TabletopsimulatorLua =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
 
     # Close any open files
     for editor,i in atom.workspace.getTextEditors()
@@ -242,7 +293,7 @@ module.exports = TabletopsimulatorLua =
         @luaObject.guid = tokens[tokens.length-2]
         @luaObject.script = fs.readFileSync(fname, 'utf8')
         # Replace with \u character codes
-        if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters')
+        if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
           replace_character = (character) ->
             return "\\u{" + character.codePointAt(0).toString(16) + "}"
           @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
@@ -254,6 +305,9 @@ module.exports = TabletopsimulatorLua =
       @connection.write JSON.stringify(@luaObjects)
     catch error
       console.log error
+
+  excludeChange: (newValue) ->
+    provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
 
   startConnection: ->
     if @if_connected
