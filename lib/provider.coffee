@@ -2391,6 +2391,13 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
           },
           {
+            snippet: 'onObjectLeaveContainer(container, leave_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLeaveContainer(Object container, Object leave_object)'
+            type: 'function'
+            description: 'Automatically called when an Object leaves any container(Deck, Bag, Chip Stack, etc).'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveContainer'
+          },
+          {
             snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
             type: 'function'
@@ -2417,6 +2424,13 @@ module.exports =
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
+          },
+          {
+            snippet: 'onObjectSpawn(object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSpawn(Object object)'
+            type: 'function'
+            description: 'Automatically called when an Object is spawned.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectSpawn'
           },
           {
             snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
