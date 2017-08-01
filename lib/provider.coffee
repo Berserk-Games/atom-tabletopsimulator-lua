@@ -1813,6 +1813,22 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
           },
           {
+            snippet: 'getLoopingEffectIndex()'
+            displayText: 'getLoopingEffectIndex()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the index of the currently looping effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffectIndex'
+          },
+          {
+            snippet: 'getLoopingEffects()'
+            displayText: 'getLoopingEffects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “index” and “name” for each looping effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffects'
+          },
+          {
             snippet: 'getLock()'
             displayText: 'getLock()'
             type: 'function'
@@ -1957,6 +1973,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp'
           },
           {
+            snippet: 'getTriggerEffects()'
+            displayText: 'getTriggerEffects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “index” and “name” for each trigger effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getTriggerEffects'
+          },
+          {
             snippet: 'getValue()'
             displayText: 'getValue()'
             type: 'function'
@@ -2003,6 +2027,22 @@ module.exports =
             leftLabel: 'bool'
             description: 'Is the object smoothly moving from our smooth functions.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving'
+          },
+          {
+            snippet: 'playLoopingEffect(${1:int|index})'
+            displayText: 'playLoopingEffect(int index)'
+            type: 'function'
+            leftLabel: 'void'
+            description: 'Starts playing a looping effect. Index starts at 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playLoopingEffect'
+          },
+          {
+            snippet: 'playTriggerEffect(${1:int|index})'
+            displayText: 'playTriggerEffect(int index)'
+            type: 'function'
+            leftLabel: 'void'
+            description: 'Starts playing a trigger effect. Index starts at 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playTriggerEffect'
           },
           {
             snippet: 'positionToLocal(${1:Table|vector})'
