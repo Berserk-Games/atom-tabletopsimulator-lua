@@ -155,6 +155,24 @@ module.exports = TabletopsimulatorLua =
           order: 3
           type: 'string'
           default: '_GUID'
+    hacks:
+      title: 'Hacks (Experimental!)'
+      order: 4
+      type: 'object'
+      properties:
+        incrementals:
+          title: 'Expand Compound Assignments'
+          description: 'Convert operators +=, -=, etc. into their Lua equivalents'
+          order: 1
+          type: 'string'
+          default: 'off'
+          enum: [
+            {value: 'off', description: 'Disabled'}
+            {value: 'on', description: 'Enabled'}
+            {value: 'spaced', description: 'Enabled (add spacing)'}
+          ]
+
+
 
   activate: (state) ->
     # See if there are any Updates
