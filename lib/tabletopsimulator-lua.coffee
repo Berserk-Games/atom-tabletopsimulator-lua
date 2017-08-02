@@ -276,7 +276,7 @@ module.exports = TabletopsimulatorLua =
         cursors[editor.getPath()] = editor.getCursorBufferPosition()
       catch error
       try
-        editor.save()
+        await editor.save()
       catch error
 
     # Read all files into JSON object
