@@ -27,6 +27,8 @@ module.exports =
             spacing = ' '
           operator   = matches[3]
           postfix    = matches[5]
+          if postfix != ''
+            postfix += '\n'
           resolve([{
             snippet: spacing + '=' + spacing + identifier + spacing + operator + spacing + postfix + '$1'
             displayText: '=' + spacing + identifier + spacing + operator + spacing + postfix
