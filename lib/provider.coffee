@@ -32,7 +32,7 @@ module.exports =
           resolve([{
             snippet: spacing + '=' + spacing + identifier + spacing + operator + spacing + postfix + '$1'
             displayText: '=' + spacing + identifier + spacing + operator + spacing + postfix
-            replacementPrefix: matches[2] + matches[3] + '=' + matches[4]+ matches[5]
+            replacementPrefix: matches[2] + matches[3] + '=' + matches[4] + matches[5]
             neverFilter: true
           }])
           return
