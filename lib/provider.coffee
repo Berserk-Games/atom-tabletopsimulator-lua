@@ -19,7 +19,7 @@ module.exports =
 
       # Hacks. Make Lua nicer.
       if atom.config.get('tabletopsimulator-lua.hacks.incrementals') != 'off'
-        matches = line.match(/^\s*([\w.:\[\]]+)(\s*)([-+*\u002f])=(\s*)(.*)$/)
+        matches = line.match(/^\s*([\w.:\[\]"'#]+)(\s*)([-+*\u002f])=(\s*)(.*)$/)
         if matches
           identifier = matches[1]
           spacing    = matches[2]
