@@ -14,6 +14,14 @@ serverport = 39998
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
 
+# Check atom version; if 1.19+ then editor.save has become async
+# TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
+async_save = true
+try
+  if parseFloat(atom.getVersion()) < 1.19
+    async_save = false
+catch error
+
 # Store cursor positions between loads
 cursors = {}
 
@@ -294,7 +302,10 @@ module.exports = TabletopsimulatorLua =
         cursors[editor.getPath()] = editor.getCursorBufferPosition()
       catch error
       try
-        await editor.save()
+        if async_save
+          await editor.save()
+        else
+          editor.save()
       catch error
 
     # Read all files into JSON object
