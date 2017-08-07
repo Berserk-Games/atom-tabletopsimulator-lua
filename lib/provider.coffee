@@ -2782,7 +2782,7 @@ module.exports =
             snippet: 'print(${1:string|message})'
             displayText: 'print(string message)'
             type: 'function'
-            description: 'Prints a message to the chatin window only on the host.'
+            description: 'Prints a message to the chat window only on the host.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print'
           },
           {
