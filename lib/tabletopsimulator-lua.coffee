@@ -288,13 +288,13 @@ module.exports = TabletopsimulatorLua =
             row += 1
             while row <= event.newBufferPosition.row
               line = editor.lineTextForBufferRow(row)
-              m = line.match(/(.*)function ([^(]*)/)
+              m = line.match(/^(\s*)function ([^(]*)/)
               if m
                 indent = m[1].length
                 if not(indent of function_names)
                   function_names[indent] = m[2]
               else if row < event.newBufferPosition.row
-                m = line.match(/(\s*)end($|\s)/)
+                m = line.match(/^(\s*)end($|\s)/)
                 if m #previous function may have ended
                   indent = m[1].length
                   if indent of function_names
