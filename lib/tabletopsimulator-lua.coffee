@@ -260,31 +260,34 @@ module.exports = TabletopsimulatorLua =
     if event and @statusBarActive
       editor = event.cursor.editor
       if not editor.getPath().endsWith('.ttslua')
-        @statusBarFunctionView.updateFunction('')
+        @statusBarFunctionView.updateFunction(null)
       else if editor.getPath() == @statusBarPreviousPath && event.newBufferPosition.row == @statusBarPreviousRow
         return
       else
         line = editor.lineTextForBufferRow(event.newBufferPosition.row)
         m = line.match(/^function ([^(]*)/)
         if m # on row of root function
-          @statusBarFunctionView.updateFunction(m[1])
+          @statusBarFunctionView.updateFunction([m[1]], [event.newBufferPosition.row])
         else
           function_names = {}
+          function_rows = {}
           row = event.newBufferPosition.row - 1
           while (row >= 0)
             line = editor.lineTextForBufferRow(row)
-            m = line.match(/^end($|\s)/)
+            m = line.match(/^end($|\s|--)/)
             if m #in no function
-              @statusBarFunctionView.updateFunction('')
+              @statusBarFunctionView.updateFunction(null)
               return
             m = line.match(/^function ([^(]*)/)
             if m # root function found
               function_names[0] = m[1]
+              function_rows[0] = row
               break
             row -= 1
           if row == -1 #no root function found
-            @statusBarFunctionView.updateFunction('')
+            @statusBarFunctionView.updateFunction(null)
           else
+            root_row = row
             row += 1
             while row <= event.newBufferPosition.row
               line = editor.lineTextForBufferRow(row)
@@ -293,21 +296,26 @@ module.exports = TabletopsimulatorLua =
                 indent = m[1].length
                 if not(indent of function_names)
                   function_names[indent] = m[2]
+                  function_rows[indent]  = row
               else if row < event.newBufferPosition.row
-                m = line.match(/^(\s*)end($|\s)/)
+                m = line.match(/^(\s*)end($|\s|--)/)
                 if m #previous function may have ended
                   indent = m[1].length
                   if indent of function_names
                     delete function_names[indent]
+                    delete function_rows[indent]
               row += 1
             keys = []
             for k,v of function_names
               keys.push(k)
-            keys.sort()
+            keys.sort (a, b) ->
+              return if parseInt(a) >= parseInt(b) then 1 else -1
             names = []
+            rows = []
             for indent in keys
               names.push(function_names[indent])
-            @statusBarFunctionView.updateFunction(names.join(' > '))
+              rows.push(function_rows[indent])
+            @statusBarFunctionView.updateFunction(names, rows)
 
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
@@ -423,7 +431,7 @@ module.exports = TabletopsimulatorLua =
   showFunctionChange: (newValue) ->
     @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
     if not @statusBarActive
-      @statusBarFunctionView.updateFunction('')
+      @statusBarFunctionView.updateFunction(null)
 
   startConnection: ->
     if @if_connected
