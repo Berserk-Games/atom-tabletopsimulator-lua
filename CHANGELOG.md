@@ -1,4 +1,4 @@
-## 1.2.0
+## 1.2.1
 * Merged more pull requests with async saving
 
 ## 1.1.9
