@@ -7,12 +7,21 @@ os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
 provider = require './provider'
+StatusBarFunctionView = require './status-bar-function-view'
 
 domain = 'localhost'
 clientport = 39999
 serverport = 39998
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
+
+# Check atom version; if 1.19+ then editor.save has become async
+# TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
+async_save = true
+try
+  if parseFloat(atom.getVersion()) < 1.19
+    async_save = false
+catch error
 
 # Store cursor positions between loads
 cursors = {}
@@ -155,6 +164,35 @@ module.exports = TabletopsimulatorLua =
           order: 3
           type: 'string'
           default: '_GUID'
+    editor:
+      title: 'Editor'
+      order: 4
+      type: 'object'
+      properties:
+        showFunctionName:
+          title: 'Show function name in status bar'
+          order: 1
+          description: 'Display the name of the function the cursor is currently inside'
+          type: 'boolean'
+          default: false
+    hacks:
+      title: 'Hacks (Experimental!)'
+      order: 5
+      type: 'object'
+      properties:
+        incrementals:
+          title: 'Expand Compound Assignments'
+          description: 'Convert operators +=, -=, etc. into their Lua equivalents'
+          order: 1
+          type: 'string'
+          default: 'off'
+          enum: [
+            {value: 'off', description: 'Disabled'}
+            {value: 'on', description: 'Enabled'}
+            {value: 'spaced', description: 'Enabled (add spacing)'}
+          ]
+
+
 
   activate: (state) ->
     # See if there are any Updates
@@ -174,13 +212,25 @@ module.exports = TabletopsimulatorLua =
       atom.config.set('tabletopsimulator-lua.autocomplete.parameterToDisplay', atom.config.get('tabletopsimulator-lua.parameterToDisplay'))
       atom.config.unset('tabletopsimulator-lua.parameterToDisplay')
 
+    # StatusBarFunctionView to display current function in status bar
+    @statusBarFunctionView = new StatusBarFunctionView()
+    @statusBarFunctionView.init()
+    @statusBarActive = false
+    @statusBarPreviousPath = ''
+    @statusBarPreviousRow  = 0
+
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
-    # Register command that toggles this view
+    # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
+    @subscriptions.add atom.workspace.observeTextEditors (editor) =>
+      @subscriptions.add editor.onDidChangeCursorPosition (event) =>
+        @cursorChangeEvent(event)
 
     # Close any open files
     for editor,i in atom.workspace.getTextEditors()
@@ -203,6 +253,72 @@ module.exports = TabletopsimulatorLua =
 
   deactivate: ->
     @subscriptions.dispose()
+    @statusBarFunctionView.destroy()
+    @statusBarTile?.destroy()
+
+  cursorChangeEvent: (event) ->
+    if event and @statusBarActive
+      editor = event.cursor.editor
+      if not editor.getPath().endsWith('.ttslua')
+        @statusBarFunctionView.updateFunction(null)
+      else if editor.getPath() == @statusBarPreviousPath && event.newBufferPosition.row == @statusBarPreviousRow
+        return
+      else
+        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
+        m = line.match(/^function ([^(]*)/)
+        if m # on row of root function
+          @statusBarFunctionView.updateFunction([m[1]], [event.newBufferPosition.row])
+        else
+          function_names = {}
+          function_rows = {}
+          row = event.newBufferPosition.row - 1
+          while (row >= 0)
+            line = editor.lineTextForBufferRow(row)
+            m = line.match(/^end($|\s|--)/)
+            if m #in no function
+              @statusBarFunctionView.updateFunction(null)
+              return
+            m = line.match(/^function ([^(]*)/)
+            if m # root function found
+              function_names[0] = m[1]
+              function_rows[0] = row
+              break
+            row -= 1
+          if row == -1 #no root function found
+            @statusBarFunctionView.updateFunction(null)
+          else
+            root_row = row
+            row += 1
+            while row <= event.newBufferPosition.row
+              line = editor.lineTextForBufferRow(row)
+              m = line.match(/^(\s*)function ([^(]*)/)
+              if m
+                indent = m[1].length
+                if not(indent of function_names)
+                  function_names[indent] = m[2]
+                  function_rows[indent]  = row
+              else if row < event.newBufferPosition.row
+                m = line.match(/^(\s*)end($|\s|--)/)
+                if m #previous function may have ended
+                  indent = m[1].length
+                  if indent of function_names
+                    delete function_names[indent]
+                    delete function_rows[indent]
+              row += 1
+            keys = []
+            for k,v of function_names
+              keys.push(k)
+            keys.sort (a, b) ->
+              return if parseInt(a) >= parseInt(b) then 1 else -1
+            names = []
+            rows = []
+            for indent in keys
+              names.push(function_names[indent])
+              rows.push(function_rows[indent])
+            @statusBarFunctionView.updateFunction(names, rows)
+
+  consumeStatusBar: (statusBar) ->
+    @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
 
   serialize: ->
 
@@ -268,46 +384,73 @@ module.exports = TabletopsimulatorLua =
           TabletopsimulatorLua.connection.write '{ messageID: 0 }'
         No: -> return
 
-  saveAndPlay: ->
-    # Save any open files
-    for editor,i in atom.workspace.getTextEditors()
-      try
-        # Store cursor positions
-        cursors[editor.getPath()] = editor.getCursorBufferPosition()
-      catch error
+  # hack needed because atom 1.19 makes save() async
+  blocking_save: (editor) =>
+    if async_save
+      if editor.isModified()
+        return Promise.resolve(editor.save())
+      else
+        return Promise.resolve()
+    else
       try
         editor.save()
       catch error
+      return Promise.resolve()
 
-    # Read all files into JSON object
-    @luaObjects = {}
-    @luaObjects.messageID = 1
-    @luaObjects.scriptStates = []
-    @luafiles = fs.readdirSync(ttsLuaDir)
-    for luafile,i in @luafiles
-      fname = path.join(ttsLuaDir, luafile)
-      if not fs.statSync(fname).isDirectory()
-        @luaObject = {}
-        tokens = luafile.split "."
-        @luaObject.name = luafile
-        @luaObject.guid = tokens[tokens.length-2]
-        @luaObject.script = fs.readFileSync(fname, 'utf8')
-        # Replace with \u character codes
-        if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-          replace_character = (character) ->
-            return "\\u{" + character.codePointAt(0).toString(16) + "}"
-          @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
-        @luaObjects.scriptStates.push(@luaObject)
 
-    if not @if_connected
-      @startConnection()
-    try
-      @connection.write JSON.stringify(@luaObjects)
-    catch error
-      console.log error
+  saveAndPlay: ->
+    # Save any open files
+    openFiles = 0
+    savedFiles = 0
+    for editor,i in atom.workspace.getTextEditors()
+      openFiles += 1
+      # Store cursor positions
+      try
+        cursors[editor.getPath()] = editor.getCursorBufferPosition()
+      catch error
+
+    for editor, i in atom.workspace.getTextEditors()
+      @blocking_save(editor).then =>
+        savedFiles += 1
+        if savedFiles == openFiles
+          # This is a horrible hack I feel - we see how many editors are open, then
+          # run this block after each save, but only do the below code if the
+          # number of files we have saved is the number of files open.  Urgh.
+
+          # Read all files into JSON object
+          @luaObjects = {}
+          @luaObjects.messageID = 1
+          @luaObjects.scriptStates = []
+          @luafiles = fs.readdirSync(ttsLuaDir)
+          for luafile,i in @luafiles
+            fname = path.join(ttsLuaDir, luafile)
+            if not fs.statSync(fname).isDirectory()
+              @luaObject = {}
+              tokens = luafile.split "."
+              @luaObject.name = luafile
+              @luaObject.guid = tokens[tokens.length-2]
+              @luaObject.script = fs.readFileSync(fname, 'utf8')
+              # Replace with \u character codes
+              if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
+                replace_character = (character) ->
+                  return "\\u{" + character.codePointAt(0).toString(16) + "}"
+                @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
+              @luaObjects.scriptStates.push(@luaObject)
+
+          if not @if_connected
+            @startConnection()
+          try
+            @connection.write JSON.stringify(@luaObjects)
+          catch error
+            console.log error
 
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
+
+  showFunctionChange: (newValue) ->
+    @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
+    if not @statusBarActive
+      @statusBarFunctionView.updateFunction(null)
 
   startConnection: ->
     if @if_connected

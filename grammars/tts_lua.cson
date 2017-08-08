@@ -162,7 +162,7 @@
     'name': 'support.function.tts.global-functions.lua'
   }
   {
-    'match': '(?<![^.]\\.|:)\\b(onCollisionEnter|onCollisionExit|onCollisionStay|onDestroy|onDropped|onload|onObjectDestroyed|onObjectEnterScriptingZone|onObjectLeaveScriptingZone|onPickedUp|onPlayerChangedColor|onPlayerTurnEnd|onPlayerTurnStart|update)\\b(?=\\s*(?:[({"\']|\\[\\[))'
+    'match': '(?<![^.]\\.|:)\\b(fixedUpdate|onCollisionEnter|onCollisionExit|onCollisionStay|onDestroy|onDropped|onLoad|onObjectDestroyed|onObjectDropped|onObjectEnterScriptingZone|onObjectLeaveContainer|onObjectLeaveScriptingZone|onObjectLoopingEffect|onObjectPickedUp|onObjectRandomize|onObjectSpawn|onObjectTriggerEffect|onPickedUp|onPlayerChangedColor|onPlayerTurnEnd|onPlayerTurnStart|onSave|onload|update)\\b(?=\\s*(?:[({"\']|\\[\\[))'
     'name': 'support.function.tts.events.lua'
   }
   {

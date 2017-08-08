@@ -14,15 +14,36 @@ module.exports =
       # Find your suggestions here
       suggestions = []
 
+      # Substring up until this position
+      line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
+
+      # Hacks. Make Lua nicer.
+      if atom.config.get('tabletopsimulator-lua.hacks.incrementals') != 'off'
+        matches = line.match(/^\s*([\w.:\[\]"'#]+)(\s*)([-+*\u002f])=(\s*)(.*)$/)
+        if matches
+          identifier = matches[1]
+          spacing    = matches[2]
+          if spacing == '' and atom.config.get('tabletopsimulator-lua.hacks.incrementals') == 'spaced'
+            spacing = ' '
+          operator   = matches[3]
+          postfix    = matches[5]
+          if postfix != ''
+            postfix += '\n'
+          resolve([{
+            snippet: spacing + '=' + spacing + identifier + spacing + operator + spacing + postfix + '$1'
+            displayText: '=' + spacing + identifier + spacing + operator + spacing + postfix
+            replacementPrefix: matches[2] + matches[3] + '=' + matches[4] + matches[5]
+            neverFilter: true
+          }])
+          return
+
+      #console.log scopeDescriptor.scopes[1]
       if scopeDescriptor.scopes[1] == "keyword.operator.lua" || scopeDescriptor.scopes[1] == "string.quoted.double.lua" || scopeDescriptor.scopes[1] == "string.quoted.single.lua"
         resolve([])
         return
 
       # Are we in the global script or an object script?
       global_script = editor.getPath().endsWith('-1.ttslua')
-
-      # Substring up until this position
-      line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
 
       # Split line into bracket depths
       depths = {}
@@ -76,7 +97,6 @@ module.exports =
 
       #console.log tokens
       #console.log this_token, "(", this_token_intact, ") <- ", previous_token, " <- ", previous_token_2
-      #console.log scopeDescriptor.scopes[1]
 
       if prefix == "." and previous_token.match(/^[0-9]$/)
         # If we're in the middle of typing a number then suggest nothing on .
@@ -1813,6 +1833,22 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
           },
           {
+            snippet: 'getLoopingEffectIndex()'
+            displayText: 'getLoopingEffectIndex()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the index of the currently looping effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffectIndex'
+          },
+          {
+            snippet: 'getLoopingEffects()'
+            displayText: 'getLoopingEffects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “index” and “name” for each looping effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffects'
+          },
+          {
             snippet: 'getLock()'
             displayText: 'getLock()'
             type: 'function'
@@ -1957,6 +1993,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp'
           },
           {
+            snippet: 'getTriggerEffects()'
+            displayText: 'getTriggerEffects()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “index” and “name” for each trigger effect.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getTriggerEffects'
+          },
+          {
             snippet: 'getValue()'
             displayText: 'getValue()'
             type: 'function'
@@ -2003,6 +2047,22 @@ module.exports =
             leftLabel: 'bool'
             description: 'Is the object smoothly moving from our smooth functions.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving'
+          },
+          {
+            snippet: 'playLoopingEffect(${1:int|index})'
+            displayText: 'playLoopingEffect(int index)'
+            type: 'function'
+            leftLabel: 'void'
+            description: 'Starts playing a looping effect. Index starts at 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playLoopingEffect'
+          },
+          {
+            snippet: 'playTriggerEffect(${1:int|index})'
+            displayText: 'playTriggerEffect(int index)'
+            type: 'function'
+            leftLabel: 'void'
+            description: 'Starts playing a trigger effect. Index starts at 0.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playTriggerEffect'
           },
           {
             snippet: 'positionToLocal(${1:Table|vector})'
@@ -2391,6 +2451,13 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
           },
           {
+            snippet: 'onObjectLeaveContainer(container, leave_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLeaveContainer(Object container, Object leave_object)'
+            type: 'function'
+            description: 'Automatically called when an Object leaves any container(Deck, Bag, Chip Stack, etc).'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveContainer'
+          },
+          {
             snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
             type: 'function'
@@ -2417,6 +2484,13 @@ module.exports =
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
+          },
+          {
+            snippet: 'onObjectSpawn(object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSpawn(Object object)'
+            type: 'function'
+            description: 'Automatically called when an Object is spawned.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectSpawn'
           },
           {
             snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
@@ -2708,7 +2782,7 @@ module.exports =
             snippet: 'print(${1:string|message})'
             displayText: 'print(string message)'
             type: 'function'
-            description: 'Prints a message to the chatin window only on the host.'
+            description: 'Prints a message to the chat window only on the host.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print'
           },
           {
@@ -2805,44 +2879,44 @@ module.exports =
 
         # End of sections!
 
-        # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
-        if this_token.includes('=')
-          for suggestion, index in suggestions
-            if suggestion.snippet.startsWith('getObjectFromGUID')
-              identifier = line.match(/([^\s]+)\s*=[^=]*$/)[1]
-              guid_string =  atom.config.get('tabletopsimulator-lua.style.guidPostfix')
-              insertion_point = index
-              if identifier.match(/.*\w$/)
-                insertion_point = insertion_point + 1
-                suggestion = identifier + guid_string
-                suggestions.splice(insertion_point, 0,
-                      {
-                        snippet: 'getObjectFromGUID(' + suggestion + ')'
-                        displayText: 'getObjectFromGUID(->' +  suggestion + ')'
-                        type: 'function'
-                        leftLabel: 'Object'
-                        description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
-                        descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
-                      }
-                )
-              for c, i in identifier
-                if c.match(/[^\w]/)
-                  pre  = identifier.substring(0, i)
-                  post = identifier.substring(i)
-                  if pre.match(/.*\w$/)
-                    insertion_point = insertion_point + 1
-                    suggestion = pre + guid_string + post
-                    suggestions.splice(insertion_point, 0,
-                          {
-                            snippet: 'getObjectFromGUID(' + suggestion + ')'
-                            displayText: 'getObjectFromGUID(->' +  suggestion + ')'
-                            type: 'function'
-                            leftLabel: 'Object'
-                            description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
-                            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
-                          }
-                    )
-              break
+      # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
+      if this_token.includes('=')
+        for suggestion, index in suggestions
+          if suggestion.snippet.startsWith('getObjectFromGUID')
+            identifier = line.match(/([^\s]+)\s*=[^=]*$/)[1]
+            guid_string =  atom.config.get('tabletopsimulator-lua.style.guidPostfix')
+            insertion_point = index
+            if identifier.match(/.*\w$/)
+              insertion_point = insertion_point + 1
+              suggestion = identifier + guid_string
+              suggestions.splice(insertion_point, 0,
+                    {
+                      snippet: 'getObjectFromGUID(' + suggestion + ')'
+                      displayText: 'getObjectFromGUID(->' +  suggestion + ')'
+                      type: 'function'
+                      leftLabel: 'Object'
+                      description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
+                      descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
+                    }
+              )
+            for c, i in identifier
+              if c.match(/[^\w]/)
+                pre  = identifier.substring(0, i)
+                post = identifier.substring(i)
+                if pre.match(/.*\w$/)
+                  insertion_point = insertion_point + 1
+                  suggestion = pre + guid_string + post
+                  suggestions.splice(insertion_point, 0,
+                        {
+                          snippet: 'getObjectFromGUID(' + suggestion + ')'
+                          displayText: 'getObjectFromGUID(->' +  suggestion + ')'
+                          type: 'function'
+                          leftLabel: 'Object'
+                          description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
+                          descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
+                        }
+                  )
+            break
 
       # Convert function parameters to user desired output
       match_pattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g
