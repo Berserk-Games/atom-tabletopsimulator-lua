@@ -384,46 +384,65 @@ module.exports = TabletopsimulatorLua =
           TabletopsimulatorLua.connection.write '{ messageID: 0 }'
         No: -> return
 
+  # hack needed because atom 1.19 makes save() async
+  blocking_save: (editor) =>
+    if async_save
+      if editor.isModified()
+        return Promise.resolve(editor.save())
+      else
+        return Promise.resolve()
+    else
+      try
+        editor.save()
+      catch error
+      return Promise.resolve()
+
+
   saveAndPlay: ->
     # Save any open files
+    openFiles = 0
+    savedFiles = 0
     for editor,i in atom.workspace.getTextEditors()
+      openFiles += 1
+      # Store cursor positions
       try
-        # Store cursor positions
         cursors[editor.getPath()] = editor.getCursorBufferPosition()
       catch error
-      try
-        if async_save
-          await editor.save()
-        else
-          editor.save()
-      catch error
 
-    # Read all files into JSON object
-    @luaObjects = {}
-    @luaObjects.messageID = 1
-    @luaObjects.scriptStates = []
-    @luafiles = fs.readdirSync(ttsLuaDir)
-    for luafile,i in @luafiles
-      fname = path.join(ttsLuaDir, luafile)
-      if not fs.statSync(fname).isDirectory()
-        @luaObject = {}
-        tokens = luafile.split "."
-        @luaObject.name = luafile
-        @luaObject.guid = tokens[tokens.length-2]
-        @luaObject.script = fs.readFileSync(fname, 'utf8')
-        # Replace with \u character codes
-        if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-          replace_character = (character) ->
-            return "\\u{" + character.codePointAt(0).toString(16) + "}"
-          @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
-        @luaObjects.scriptStates.push(@luaObject)
+    for editor, i in atom.workspace.getTextEditors()
+      @blocking_save(editor).then =>
+        savedFiles += 1
+        if savedFiles == openFiles
+          # This is a horrible hack I feel - we see how many editors are open, then
+          # run this block after each save, but only do the below code if the
+          # number of files we have saved is the number of files open.  Urgh.
 
-    if not @if_connected
-      @startConnection()
-    try
-      @connection.write JSON.stringify(@luaObjects)
-    catch error
-      console.log error
+          # Read all files into JSON object
+          @luaObjects = {}
+          @luaObjects.messageID = 1
+          @luaObjects.scriptStates = []
+          @luafiles = fs.readdirSync(ttsLuaDir)
+          for luafile,i in @luafiles
+            fname = path.join(ttsLuaDir, luafile)
+            if not fs.statSync(fname).isDirectory()
+              @luaObject = {}
+              tokens = luafile.split "."
+              @luaObject.name = luafile
+              @luaObject.guid = tokens[tokens.length-2]
+              @luaObject.script = fs.readFileSync(fname, 'utf8')
+              # Replace with \u character codes
+              if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
+                replace_character = (character) ->
+                  return "\\u{" + character.codePointAt(0).toString(16) + "}"
+                @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
+              @luaObjects.scriptStates.push(@luaObject)
+
+          if not @if_connected
+            @startConnection()
+          try
+            @connection.write JSON.stringify(@luaObjects)
+          catch error
+            console.log error
 
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
