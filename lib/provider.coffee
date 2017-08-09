@@ -1025,7 +1025,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast'
           },
           {
-            snippet: 'broadcast(${1:string|message}, $(2:string|color))'
+            snippet: 'broadcast(${1:string|message}, ${2:string|color})'
             displayText: 'broadcast(string message, string color)'
             type: 'function'
             leftLabel: 'bool'
@@ -1041,6 +1041,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeColor'
           },
           {
+            snippet: 'getHandCount()'
+            displayText: 'getHandCount()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number of hands that exist for this player color.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandCount'
+          },
+          {
             snippet: 'getHandObjects()'
             displayText: 'getHandObjects()'
             type: 'function'
@@ -1049,8 +1057,8 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects'
           },
           {
-            snippet: 'getHandTransform()'
-            displayText: 'getHandTransform()'
+            snippet: 'getHandTransform(${1:int|hand_index})'
+            displayText: 'getHandTransform(int hand_index = 1)'
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Transform of the player’s hand.'
@@ -1058,14 +1066,14 @@ module.exports =
           },
           {
             snippet:
-              'getHandTransform() -- returns table:\n\t' +
+              'getHandTransform(${1:int|hand_index}) -- returns table:\n\t' +
                 '-- position     Vector    (World position)\n\t' +
                 '-- rotation     Vector    (World rotation)\n\t' +
                 '-- scale        Vector    (Local scale)\n\t' +
                 '-- forward      Vector    (Forward direction)\n\t' +
                 '-- right        Vector    (Right direction)\n\t' +
                 '-- up           Vector    (Up direction)'
-            displayText: 'getHandTransform() -- returns {...'
+            displayText: 'getHandTransform(int hand_index = 1) -- returns {...'
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Transform of the player’s hand.'
@@ -1158,7 +1166,7 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print'
           },
           {
-            snippet: 'print(${1:string|message}, $(2:string|color))'
+            snippet: 'print(${1:string|message}, ${2:string|color})'
             displayText: 'print(string message, string color)'
             type: 'function'
             leftLabel: 'bool'
@@ -1174,8 +1182,8 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote'
           },
           {
-            snippet: 'setHandTransform(${1:Table|transform})'
-            displayText: 'setHandTransform(Table transform)'
+            snippet: 'setHandTransform(${1:Table|transform}, ${2:int|hand_index})'
+            displayText: 'setHandTransform(Table transform, int hand_index = 1)'
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Transform of the player’s hand.'
@@ -1378,6 +1386,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#angular_drag'
           },
           {
+            snippet: 'AssetBundle'
+            displayText: 'AssetBundle'
+            type: 'property'
+            leftLabel: 'AssetBundle'
+            description: 'A reference to the AssetBundle class attached to this Object, or nil. Read only.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#AssetBundle'
+          },
+          {
             snippet: 'auto_raise'
             displayText: 'auto_raise'
             type: 'property'
@@ -1562,6 +1578,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_grid'
           },
           {
+            snippet: 'use_hands'
+            displayText: 'use_hands'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Should this Object go into player hands?'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_hands'
+          },
+          {
             snippet: 'use_snap_points'
             displayText: 'use_snap_points'
             type: 'property'
@@ -1660,24 +1684,32 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#cut'
           },
           {
-            snippet: 'dealToAll(${1:int|num_cards})'
-            displayText: 'dealToAll(int num_cards)'
+            snippet: 'deal(${1:int|number}, ${2:string|player_color}, ${3:int|hand_index})'
+            displayText: 'deal(int number, [string player], [int hand_index])'
             type: 'function'
             leftLabel: 'bool'
-            description: 'Deals a number of Cards from a this Deck to all seated players.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll'
+            description: 'Deals to player’s hand. If no player_color supplied it will deal to all seated players.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#deal'
           },
+          #{ DEPRECATED v9.6
+          #  snippet: 'dealToAll(${1:int|num_cards})'
+          #  displayText: 'dealToAll(int num_cards)'
+          #  type: 'function'
+          #  leftLabel: 'bool'
+          #  description: 'Deals a number of Cards from a this Deck to all seated players.'
+          #  descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll'
+          #},
+          #{ DEPRECATED v9.6
+          #  snippet: 'dealToColor(${1:int|num_cards}, ${2:string|player_color})'
+          #  displayText: 'dealToColor(int num_cards, string player_color)'
+          #  type: 'function'
+          #  leftLabel: 'bool'
+          #  description: 'Deals a number of Cards from this Deck to a specific player.'
+          #  descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor'
+          #},
           {
-            snippet: 'dealToColor(${1:int|num_cards}, ${2:string|player_color})'
-            displayText: 'dealToColor(int num_cards, string player_color)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Deals a number of Cards from this Deck to a specific player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor'
-          },
-          {
-            snippet: 'dealToColorWithOffset(${1:Table|position}, ${2:bool|flip}, ${3:string|player_color})'
-            displayText: 'dealToColorWithOffset(Table position, bool flip, string player_color)'
+            snippet: 'dealToColorWithOffset(${1:Vector|offset}, ${2:bool|flip}, ${3:string|player_color})'
+            displayText: 'dealToColorWithOffset(Vector offset, bool flip, string player_color)'
             type: 'function'
             leftLabel: 'Object'
             description: 'Deals a Card to a player with an offset from their hand.'
@@ -1927,6 +1959,22 @@ module.exports =
             leftLabel: 'Table'
             description: 'Gets the rotation of this Object in degrees.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotation'
+          },
+          {
+            snippet: 'getRotationValues()'
+            displayText: 'getRotationValues()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the rotation values for this Object. List of Tables with Keys: “value” and “rotation”.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotationValues'
+          },
+          {
+            snippet: 'getRotationValues()$1\n\t-- getRotationValues returns:\n\t-- {{int value, Vector rotation}, ...}'
+            displayText: 'getRotationValues() -- returns {{int value, Vector rotation}, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the rotation values for this Object. List of Tables with Keys: “value” and “rotation”.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotationValues'
           },
           {
             snippet: 'getScale()'
@@ -2239,6 +2287,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Smoothly rotates this Object to the given orientation in degrees.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationSmooth'
+          },
+          {
+            snippet: 'setRotationValues(${1:Table|rotation_values})'
+            displayText: 'setRotationValues(Table rotation_values)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the rotation values of this Object: {{int value, Vector rotation}, ...}'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationValues'
           },
           {
             snippet: 'setScale(${1:Table|scale})'
