@@ -9,3 +9,7 @@
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
 #'atom-workspace':
 #  'ctrl-alt-o': 'tabletopsimulator-lua:toggle'
+
+'atom-text-editor':
+  'ctrl-g':       'tabletopsimulator-lua:gotoFunction'
+  'ctrl-shift-/': 'tabletopsimulator-lua:selectFunction'

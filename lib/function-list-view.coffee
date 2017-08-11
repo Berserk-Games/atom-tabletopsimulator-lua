@@ -4,7 +4,7 @@
 
 module.exports =
 class FunctionListView extends SelectListView
-  maxItems: 1000
+  maxItems: 99999
   minFilterLength: 3
 
   initialize: ->
