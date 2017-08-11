@@ -80,23 +80,11 @@ class StatusBarFunctionView extends HTMLElement
     row = parseInt(event.target.target)
     if row >= 0
       editor = atom.workspace.getActiveTextEditor()
+      editor.setCursorBufferPosition([row, 0])
       if event.shiftKey
-        startRow = row
-        lastRow = editor.getLastBufferRow()
-        line = editor.lineTextForBufferRow(row)
-        m = line.match(/^(\s*)function/)
-        indent = m[1].length
-        while row <= lastRow
-          line = editor.lineTextForBufferRow(row)
-          m = line.match(/^(\s*)end($|\s|--)/)
-          if m and m[1].length == indent
-            editor.setCursorBufferPosition([row, editor.lineTextForBufferRow(row).length])
-            editor.selectToBufferPosition([startRow, 0])
-            editor.scrollToCursorPosition()
-            return
-          row += 1
+        editorElement = atom.views.getView(editor)
+        atom.commands.dispatch(editorElement, 'tabletopsimulator-lua:selectFunction')
       else
-        editor.setCursorBufferPosition([row, 0])
         editor.scrollToCursorPosition()
 
 

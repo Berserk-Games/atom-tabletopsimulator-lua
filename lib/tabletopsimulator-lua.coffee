@@ -236,6 +236,8 @@ module.exports = TabletopsimulatorLua =
       }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
+    @blockSelectLock = false
+    @isBlockSelecting = false
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -279,7 +281,10 @@ module.exports = TabletopsimulatorLua =
     @statusBarFunctionView.destroy()
     @statusBarTile?.destroy()
 
+
   cursorChangeEvent: (event) ->
+    if event and @isBlockSelecting and not @blockSelectLock
+      @isBlockSelecting = false
     if event and @statusBarActive
       editor = event.cursor.editor
       if not editor.getPath().endsWith('.ttslua')
@@ -287,58 +292,62 @@ module.exports = TabletopsimulatorLua =
       else if editor.getPath() == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
         return
       else
-        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
+        [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
+        @statusBarFunctionView.updateFunction(names, rows)
+
+  getFunctions: (editor, startRow) ->
+    line = editor.lineTextForBufferRow(startRow)
+    m = line.match(/^function ([^(]*)/)
+    if m # on row of root function
+      return [[m[1]], [startRow]]
+    else
+      function_names = {}
+      function_rows = {}
+      row = startRow - 1
+      while (row >= 0)
+        line = editor.lineTextForBufferRow(row)
+        m = line.match(/^end($|\s|--)/)
+        if m #in no function
+          return [null, null]
         m = line.match(/^function ([^(]*)/)
-        if m # on row of root function
-          @statusBarFunctionView.updateFunction([m[1]], [event.newBufferPosition.row])
-        else
-          function_names = {}
-          function_rows = {}
-          row = event.newBufferPosition.row - 1
-          while (row >= 0)
-            line = editor.lineTextForBufferRow(row)
-            m = line.match(/^end($|\s|--)/)
-            if m #in no function
-              @statusBarFunctionView.updateFunction(null)
-              return
-            m = line.match(/^function ([^(]*)/)
-            if m # root function found
-              function_names[0] = m[1]
-              function_rows[0] = row
-              break
-            row -= 1
-          if row == -1 #no root function found
-            @statusBarFunctionView.updateFunction(null)
-          else
-            root_row = row
-            row += 1
-            while row <= event.newBufferPosition.row
-              line = editor.lineTextForBufferRow(row)
-              m = line.match(/^(\s*)function ([^(]*)/)
-              if m
-                indent = m[1].length
-                if not(indent of function_names)
-                  function_names[indent] = m[2]
-                  function_rows[indent]  = row
-              else if row < event.newBufferPosition.row
-                m = line.match(/^(\s*)end($|\s|--)/)
-                if m #previous function may have ended
-                  indent = m[1].length
-                  if indent of function_names
-                    delete function_names[indent]
-                    delete function_rows[indent]
-              row += 1
-            keys = []
-            for k,v of function_names
-              keys.push(k)
-            keys.sort (a, b) ->
-              return if parseInt(a) >= parseInt(b) then 1 else -1
-            names = []
-            rows = []
-            for indent in keys
-              names.push(function_names[indent])
-              rows.push(function_rows[indent])
-            @statusBarFunctionView.updateFunction(names, rows)
+        if m # root function found
+          function_names[0] = m[1]
+          function_rows[0] = row
+          break
+        row -= 1
+      if row == -1 #no root function found
+        return [null, null]
+      else
+        root_row = row
+        row += 1
+        while row <= startRow
+          line = editor.lineTextForBufferRow(row)
+          m = line.match(/^(\s*)function ([^(]*)/)
+          if m
+            indent = m[1].length
+            if not(indent of function_names)
+              function_names[indent] = m[2]
+              function_rows[indent]  = row
+          else if row < startRow
+            m = line.match(/^(\s*)end($|\s|--)/)
+            if m #previous function may have ended
+              indent = m[1].length
+              if indent of function_names
+                delete function_names[indent]
+                delete function_rows[indent]
+          row += 1
+        keys = []
+        for k,v of function_names
+          keys.push(k)
+        keys.sort (a, b) ->
+          return if parseInt(a) >= parseInt(b) then 1 else -1
+        names = []
+        rows = []
+        for indent in keys
+          names.push(function_names[indent])
+          rows.push(function_rows[indent])
+        return [names, rows]
+
 
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
@@ -480,48 +489,47 @@ module.exports = TabletopsimulatorLua =
     @functionListView = new FunctionListView().toggle()
 
 
-  # TODO refector this to be an optional form of expandSelection
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith(".ttslua")
       return
     pos = editor.getCursorBufferPosition()
-    storeCursor = true
     row = pos.row
-    col = pos.column
     line = editor.lineTextForBufferRow(row)
     m = line.match(/^(\s*)function/)
-    if m and m[1].length > 0 and not editor.getLastCursor().selection.isEmpty() # already selected, move up a row to get parent
-        row -= 1
-        storeCursor = false
-    while row >= 0
-      line = editor.lineTextForBufferRow(row)
-      m = line.match(/^end($|\s|--)/)
-      if m #in no function
+    if m and @isBlockSelecting and @blockSelectTop == row
+      if row == 0 or @blockSelectIndent == 0
         return
-      m = line.match(/^(\s*)function/)
-      if m
-        indent = m[1].length
-        break
       row -= 1
-    if row < 0
-      return
-    startRow = row
-    row += 1
-    lastRow = editor.getLastBufferRow()
-    while row <= lastRow
+    [names, rows] = @getFunctions(editor, row)
+    if rows
+      row = rows[rows.length-1]
+      startRow = row
+      lastRow = editor.getLastBufferRow()
       line = editor.lineTextForBufferRow(row)
-      m = line.match(/^(\s*)end($|\s|--)/)
-      if m and m[1].length == indent
-        editor.setCursorBufferPosition([row, editor.lineTextForBufferRow(row).length])
-        editor.selectToBufferPosition([startRow, 0])
-        editor.scrollToCursorPosition()
-        if storeCursor
-          @blockSelectCursorPosition = pos
-          @blockSelectStack = []
-        return
-      row += 1
-
+      m = line.match(/^(\s*)function/)
+      indent = m[1].length
+      while row <= lastRow
+        line = editor.lineTextForBufferRow(row)
+        m = line.match(/^(\s*)end($|\s|--)/)
+        if m and m[1].length == indent
+          if @isBlockSelecting
+            previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent]
+            @blockSelectStack.push(previousBlock)
+          else
+            @blockSelectCursorPosition = pos
+            @blockSelectStack = []
+            @isBlockSelecting = true
+          @blockSelectTop = startRow
+          @blockSelectBottom = row
+          @blockSelectIndent = indent
+          @blockSelectLock = true
+          editor.setCursorBufferPosition([@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length])
+          editor.selectToBufferPosition([@blockSelectTop, 0])
+          @blockSelectLock = false
+          editor.scrollToCursorPosition()
+          return
+        row += 1
 
   expandSelection: ->
     editor = atom.workspace.getActiveTextEditor()
@@ -529,10 +537,11 @@ module.exports = TabletopsimulatorLua =
       return
     cursor = editor.getLastCursor()
     pos = cursor.getBufferPosition()
-    if cursor.selection.isEmpty()
+    if not @isBlockSelecting
       @blockSelectCursorPosition = pos
       @blockSelectStack = []
       row = pos.row
+      blankRow = false
       while row >= 0
         line = editor.lineTextForBufferRow(row)
         #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
@@ -550,10 +559,15 @@ module.exports = TabletopsimulatorLua =
               @blockSelectTop = row
               @blockSelectBottom = pos.row - 2
             else
-              @blockSelectIndent = m[1].length
+              if blankRow and m[2].match(/^(if($|\()|for($|\()|while($|\()|repeat($|--)|function$)/)
+                @blockSelectIndent = m[1].length + 1
+              else
+                @blockSelectIndent = m[1].length
               @blockSelectTop = row + 1
               @blockSelectBottom = pos.row - 1
           break
+        else
+          blankRow = true
         row -= 1
       if row < 0
         return
@@ -574,7 +588,7 @@ module.exports = TabletopsimulatorLua =
       return
     row = @blockSelectBottom + 1
     lastRow = editor.getLastBufferRow()
-    while row < lastRow
+    while row <= lastRow
       line = editor.lineTextForBufferRow(row)
       #m = line.match(/^(\s*)(end($|\s|--)|until[\s\)])/)  #strict control blocks
       m = line.match(/^(\s*)([^\s]+)/)
@@ -583,23 +597,30 @@ module.exports = TabletopsimulatorLua =
         @blockSelectIndent = m[1].length
         break
       row += 1
-    if row == lastRow
-      @blockSelectBottom = lastRow - 1
+    if @isBlockSelecting
+      @blockSelectStack.push(previousBlock)
+    else
+      @isBlockSelecting = true
+    @blockSelectLock = true
     editor.setCursorBufferPosition([@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length])
     editor.selectToBufferPosition([@blockSelectTop, 0])
+    @blockSelectLock = false
     editor.scrollToCursorPosition()
-    @blockSelectStack.push(previousBlock)
 
   retractSelection: ->
     editor = atom.workspace.getActiveTextEditor()
-    if not editor or not editor.getPath().endsWith(".ttslua")
+    if not editor or not editor.getPath().endsWith(".ttslua") or not @isBlockSelecting
       return
-    if @blockSelectStack and @blockSelectStack.length > 1
+    if @blockSelectStack and @blockSelectStack.length > 0
       [@blockSelectTop, @blockSelectBottom, @blockSelectIndent] = @blockSelectStack.pop()
+      @blockSelectLock = true
       editor.setSelectedBufferRange([[@blockSelectTop, 0], [@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length]])
-    else if @blockSelectCursorPosition
-      editor.setCursorBufferPosition(@blockSelectCursorPosition)
+      @blockSelectLock = false
+    else
+      if @blockSelectCursorPosition
+        editor.setCursorBufferPosition(@blockSelectCursorPosition)
       @blockSelectCursorPosition = null
+      @isBlockSelecting = false
 
 
   startConnection: ->

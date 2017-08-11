@@ -13,7 +13,8 @@
 #'atom-text-editor':
 
 'atom-workspace atom-text-editor:not([mini])':
-  'ctrl-g': 'tabletopsimulator-lua:gotoFunction'
-  'ctrl-?': 'tabletopsimulator-lua:selectFunction'
-  'ctrl-<': 'tabletopsimulator-lua:expandSelection'
-  'ctrl->': 'tabletopsimulator-lua:retractSelection'
+  'ctrl-g':     'tabletopsimulator-lua:gotoFunction'
+  'ctrl-<':     'tabletopsimulator-lua:expandSelection'
+  'ctrl->':     'tabletopsimulator-lua:retractSelection'
+  'ctrl-alt-<': 'tabletopsimulator-lua:selectFunction'
+  'ctrl-alt->': 'tabletopsimulator-lua:retractSelection'
