@@ -10,8 +10,10 @@
 #'atom-workspace':
 #  'ctrl-alt-o': 'tabletopsimulator-lua:toggle'
 
-'atom-text-editor':
-  'ctrl-g':       'tabletopsimulator-lua:gotoFunction'
-  'ctrl-shift-/': 'tabletopsimulator-lua:selectFunction'
-  'ctrl-shift-,': 'tabletopsimulator-lua:expandSelection'
-  'ctrl-shift-.': 'tabletopsimulator-lua:retractSelection'
+#'atom-text-editor':
+
+'atom-workspace atom-text-editor:not([mini])':
+  'ctrl-g': 'tabletopsimulator-lua:gotoFunction'
+  'ctrl-?': 'tabletopsimulator-lua:selectFunction'
+  'ctrl-<': 'tabletopsimulator-lua:expandSelection'
+  'ctrl->': 'tabletopsimulator-lua:retractSelection'
