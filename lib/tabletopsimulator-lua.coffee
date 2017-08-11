@@ -249,6 +249,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:expandSelection': => @expandSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:retractSelection': => @retractSelection()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleSelectionCursor': => @toggleCursorSelectionEnd()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -620,12 +621,28 @@ module.exports = TabletopsimulatorLua =
       @blockSelectLock = true
       editor.setSelectedBufferRange([[@blockSelectTop, 0], [@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length]])
       @blockSelectLock = false
+      editor.scrollToCursorPosition()
     else
       if @blockSelectCursorPosition
         editor.setCursorBufferPosition(@blockSelectCursorPosition)
+        editor.scrollToCursorPosition()
       @blockSelectCursorPosition = null
       @isBlockSelecting = false
 
+  toggleCursorSelectionEnd: ->
+    editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith(".ttslua")
+      return
+    selected = editor.getSelectedBufferRange()
+    if selected
+      position = editor.getCursorBufferPosition()
+      if position.row == selected.start.row and position.column == selected.start.column
+        editor.setCursorBufferPosition(selected.start)
+        editor.selectToBufferPosition(selected.end)
+      else
+        editor.setCursorBufferPosition(selected.end)
+        editor.selectToBufferPosition(selected.start)
+      editor.scrollToCursorPosition()
 
   startConnection: ->
     if @if_connected

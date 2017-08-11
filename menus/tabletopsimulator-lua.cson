@@ -29,6 +29,10 @@
           'label': 'Block Retract Selection'
           'command': 'tabletopsimulator-lua:retractSelection'
         },
+        {
+          'label': 'Toggle Selection Cursor Position'
+          'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
       ]
     }
   ]
@@ -62,6 +66,10 @@
         {
           'label': 'Block Retract Selection'
           'command': 'tabletopsimulator-lua:retractSelection'
+        },
+        {
+          'label': 'Toggle Selection Cursor Position'
+          'command': 'tabletopsimulator-lua:toggleSelectionCursor'
         },
       ]
     ]
