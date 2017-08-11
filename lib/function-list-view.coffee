@@ -95,10 +95,11 @@ class FunctionListView extends SelectListView
     @subscriptions = null
     @detach()
 
-  toggle: ->
+  toggle: (searchText = '') ->
     if @panel?.isVisible()
       @panel?.show()
     else
       @storeFocusedElement()
+      @filterEditorView.setText(searchText)
       @panel.show()
       @focusFilterEditor()

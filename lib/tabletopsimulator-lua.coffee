@@ -486,8 +486,12 @@ module.exports = TabletopsimulatorLua =
 
 
   gotoFunction: ->
-    @functionListView = new FunctionListView().toggle()
-
+    editor = atom.workspace.getActiveTextEditor()
+    text = editor.getSelectedText()
+    if text.match(/^\w+$/)
+      @functionListView = new FunctionListView().toggle(text)
+    else
+      @functionListView = new FunctionListView().toggle()
 
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
