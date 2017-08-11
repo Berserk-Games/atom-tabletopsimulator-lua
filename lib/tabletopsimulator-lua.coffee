@@ -483,6 +483,8 @@ module.exports = TabletopsimulatorLua =
   # TODO refector this to be an optional form of expandSelection
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith(".ttslua")
+      return
     pos = editor.getCursorBufferPosition()
     storeCursor = true
     row = pos.row
@@ -523,6 +525,8 @@ module.exports = TabletopsimulatorLua =
 
   expandSelection: ->
     editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith(".ttslua")
+      return
     cursor = editor.getLastCursor()
     pos = cursor.getBufferPosition()
     if cursor.selection.isEmpty()
@@ -588,6 +592,8 @@ module.exports = TabletopsimulatorLua =
 
   retractSelection: ->
     editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith(".ttslua")
+      return
     if @blockSelectStack and @blockSelectStack.length > 1
       [@blockSelectTop, @blockSelectBottom, @blockSelectIndent] = @blockSelectStack.pop()
       editor.setSelectedBufferRange([[@blockSelectTop, 0], [@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length]])
