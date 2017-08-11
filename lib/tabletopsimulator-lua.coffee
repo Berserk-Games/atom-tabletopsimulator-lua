@@ -546,7 +546,7 @@ module.exports = TabletopsimulatorLua =
         line = editor.lineTextForBufferRow(row)
         #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
         m = line.match(/^(\s*)([^\s]+)/)
-        if m and m[2] != 'else' and not m[2].startsWith('--')
+        if m and not m[2].match(/^(else|elseif|--.*)/)
           n = editor.lineTextForBufferRow(row+1).match(/^(\s*)([^\s]+)/)
           if n and n[1].length > m[1].length
             @blockSelectIndent = n[1].length
@@ -579,7 +579,7 @@ module.exports = TabletopsimulatorLua =
       line = editor.lineTextForBufferRow(row)
       #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
       m = line.match(/^(\s*)([^\s]+)/)
-      if m and m[1].length < @blockSelectIndent and m[2] != 'else' and not m[2].startsWith('--')
+      if m and m[1].length < @blockSelectIndent and not m[2].match(/^(else|elseif|--.*)/)
         @blockSelectTop = row
         @blockSelectIndent = m[1].length
         break
@@ -592,7 +592,7 @@ module.exports = TabletopsimulatorLua =
       line = editor.lineTextForBufferRow(row)
       #m = line.match(/^(\s*)(end($|\s|--)|until[\s\)])/)  #strict control blocks
       m = line.match(/^(\s*)([^\s]+)/)
-      if m and m[1].length <= @blockSelectIndent and m[2] != 'else' and not m[2].startsWith('--')
+      if m and m[1].length <= @blockSelectIndent and not m[2].match(/^(else|elseif|--.*)/)
         @blockSelectBottom = row
         @blockSelectIndent = m[1].length
         break
