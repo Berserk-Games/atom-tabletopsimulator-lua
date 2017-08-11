@@ -21,6 +21,14 @@
           'label': 'Select Current Function'
           'command': 'tabletopsimulator-lua:selectFunction'
         },
+        {
+          'label': 'Block Expand Selection'
+          'command': 'tabletopsimulator-lua:expandSelection'
+        },
+        {
+          'label': 'Block Retract Selection'
+          'command': 'tabletopsimulator-lua:retractSelection'
+        },
       ]
     }
   ]
@@ -46,6 +54,14 @@
         {
           'label': 'Select Current Function'
           'command': 'tabletopsimulator-lua:selectFunction'
+        },
+        {
+          'label': 'Block Expand Selection'
+          'command': 'tabletopsimulator-lua:expandSelection'
+        },
+        {
+          'label': 'Block Retract Selection'
+          'command': 'tabletopsimulator-lua:retractSelection'
         },
       ]
     ]

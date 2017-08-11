@@ -245,6 +245,8 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:expandSelection': => @expandSelection()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:retractSelection': => @retractSelection()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -282,7 +284,7 @@ module.exports = TabletopsimulatorLua =
       editor = event.cursor.editor
       if not editor.getPath().endsWith('.ttslua')
         @statusBarFunctionView.updateFunction(null)
-      else if editor.getPath() == @statusBarPreviousPath && event.newBufferPosition.row == @statusBarPreviousRow
+      else if editor.getPath() == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
         return
       else
         line = editor.lineTextForBufferRow(event.newBufferPosition.row)
@@ -473,18 +475,23 @@ module.exports = TabletopsimulatorLua =
     if not @statusBarActive
       @statusBarFunctionView.updateFunction(null)
 
+
   gotoFunction: ->
     @functionListView = new FunctionListView().toggle()
 
+
+  # TODO refector this to be an optional form of expandSelection
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
-    cursor = editor.getCursorBufferPosition()
-    row = cursor.row
-    col = cursor.column
+    pos = editor.getCursorBufferPosition()
+    storeCursor = true
+    row = pos.row
+    col = pos.column
     line = editor.lineTextForBufferRow(row)
     m = line.match(/^(\s*)function/)
-    if m && m[1].length > 0 && not editor.getLastCursor().selection.isEmpty() # already selected, move up a row to get parent
+    if m and m[1].length > 0 and not editor.getLastCursor().selection.isEmpty() # already selected, move up a row to get parent
         row -= 1
+        storeCursor = false
     while row >= 0
       line = editor.lineTextForBufferRow(row)
       m = line.match(/^end($|\s|--)/)
@@ -507,8 +514,87 @@ module.exports = TabletopsimulatorLua =
         editor.setCursorBufferPosition([row, editor.lineTextForBufferRow(row).length])
         editor.selectToBufferPosition([startRow, 0])
         editor.scrollToCursorPosition()
+        if storeCursor
+          @blockSelectCursorPosition = pos
+          @blockSelectStack = []
         return
       row += 1
+
+
+  expandSelection: ->
+    editor = atom.workspace.getActiveTextEditor()
+    cursor = editor.getLastCursor()
+    pos = cursor.getBufferPosition()
+    if cursor.selection.isEmpty()
+      @blockSelectCursorPosition = pos
+      @blockSelectStack = []
+      row = pos.row
+      while row >= 0
+        line = editor.lineTextForBufferRow(row)
+        #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
+        m = line.match(/^(\s*)([^\s]+)/)
+        if m and m[2] != 'else' and not m[2].startsWith('--')
+          n = editor.lineTextForBufferRow(row+1).match(/^(\s*)([^\s]+)/)
+          if n and n[1].length > m[1].length
+            @blockSelectIndent = n[1].length
+            @blockSelectTop = row + 2
+            @blockSelectBottom = pos.row
+          else
+            n = editor.lineTextForBufferRow(row-1).match(/^(\s*)([^\s]+)/)
+            if n and n[1].length > m[1].length
+              @blockSelectIndent = n[1].length
+              @blockSelectTop = row
+              @blockSelectBottom = pos.row - 2
+            else
+              @blockSelectIndent = m[1].length
+              @blockSelectTop = row + 1
+              @blockSelectBottom = pos.row - 1
+          break
+        row -= 1
+      if row < 0
+        return
+    if @blockSelectIndent == 0
+      return
+    previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent]
+    row = @blockSelectTop - 1
+    while row >= 0
+      line = editor.lineTextForBufferRow(row)
+      #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
+      m = line.match(/^(\s*)([^\s]+)/)
+      if m and m[1].length < @blockSelectIndent and m[2] != 'else' and not m[2].startsWith('--')
+        @blockSelectTop = row
+        @blockSelectIndent = m[1].length
+        break
+      row -= 1
+    if row < 0
+      return
+    row = @blockSelectBottom + 1
+    lastRow = editor.getLastBufferRow()
+    while row < lastRow
+      line = editor.lineTextForBufferRow(row)
+      #m = line.match(/^(\s*)(end($|\s|--)|until[\s\)])/)  #strict control blocks
+      m = line.match(/^(\s*)([^\s]+)/)
+      if m and m[1].length <= @blockSelectIndent and m[2] != 'else' and not m[2].startsWith('--')
+        @blockSelectBottom = row
+        @blockSelectIndent = m[1].length
+        break
+      row += 1
+    if row == lastRow
+      @blockSelectBottom = lastRow - 1
+    editor.setCursorBufferPosition([@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length])
+    editor.selectToBufferPosition([@blockSelectTop, 0])
+    editor.scrollToCursorPosition()
+    @blockSelectStack.push(previousBlock)
+
+  retractSelection: ->
+    editor = atom.workspace.getActiveTextEditor()
+    if @blockSelectStack and @blockSelectStack.length > 1
+      [@blockSelectTop, @blockSelectBottom, @blockSelectIndent] = @blockSelectStack.pop()
+      editor.setSelectedBufferRange([[@blockSelectTop, 0], [@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length]])
+    else if @blockSelectCursorPosition
+      editor.setCursorBufferPosition(@blockSelectCursorPosition)
+      @blockSelectCursorPosition = null
+
 
   startConnection: ->
     if @if_connected

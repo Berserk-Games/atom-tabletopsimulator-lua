@@ -13,3 +13,5 @@
 'atom-text-editor':
   'ctrl-g':       'tabletopsimulator-lua:gotoFunction'
   'ctrl-shift-/': 'tabletopsimulator-lua:selectFunction'
+  'ctrl-shift-,': 'tabletopsimulator-lua:expandSelection'
+  'ctrl-shift-.': 'tabletopsimulator-lua:retractSelection'
