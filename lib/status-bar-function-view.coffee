@@ -92,10 +92,12 @@ class StatusBarFunctionView extends HTMLElement
           if m and m[1].length == indent
             editor.setCursorBufferPosition([row, editor.lineTextForBufferRow(row).length])
             editor.selectToBufferPosition([startRow, 0])
+            editor.scrollToCursorPosition()
             return
           row += 1
       else
         editor.setCursorBufferPosition([row, 0])
+        editor.scrollToCursorPosition()
 
 
 module.exports = document.registerElement('status-bar-function', prototype: StatusBarFunctionView.prototype, extends: 'div')

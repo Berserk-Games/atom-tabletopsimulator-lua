@@ -11,7 +11,16 @@
         {
           label: 'Save And Play',
           command:'tabletopsimulator-lua:saveAndPlay'
-        }
+        },
+        {type: 'separator'},
+        {
+          'label': 'Go To Function'
+          'command': 'tabletopsimulator-lua:gotoFunction'
+        },
+        {
+          'label': 'Select Current Function'
+          'command': 'tabletopsimulator-lua:selectFunction'
+        },
       ]
     }
   ]
@@ -28,7 +37,16 @@
         {
           'label': 'Save And Play'
           'command': 'tabletopsimulator-lua:saveAndPlay'
-        }
+        },
+        {type: 'separator'},
+        {
+          'label': 'Go To Function'
+          'command': 'tabletopsimulator-lua:gotoFunction'
+        },
+        {
+          'label': 'Select Current Function'
+          'command': 'tabletopsimulator-lua:selectFunction'
+        },
       ]
     ]
   }

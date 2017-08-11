@@ -8,6 +8,7 @@ path = require 'path'
 mkdirp = require 'mkdirp'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
+FunctionListView = require './function-list-view'
 
 domain = 'localhost'
 clientport = 39999
@@ -175,6 +176,12 @@ module.exports = TabletopsimulatorLua =
           description: 'Display the name of the function the cursor is currently inside'
           type: 'boolean'
           default: false
+        showFunctionInGoto:
+          title: 'Show ``function`` prefix during Go To Function'
+          order: 2
+          description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
+          type: 'boolean'
+          default: true
     hacks:
       title: 'Hacks (Experimental!)'
       order: 5
@@ -219,12 +226,26 @@ module.exports = TabletopsimulatorLua =
     @statusBarPreviousPath = ''
     @statusBarPreviousRow  = 0
 
+    # Set font for Go To Function UI
+    styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
+    fontFamily = atom.config.get('editor.fontFamily')
+    styleSheetSource += """
+
+      .tabletopsimulator-lua-goto-function {
+        font-family: #{fontFamily};
+      }
+    """
+    atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
+
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
     # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
+
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
@@ -451,6 +472,43 @@ module.exports = TabletopsimulatorLua =
     @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
     if not @statusBarActive
       @statusBarFunctionView.updateFunction(null)
+
+  gotoFunction: ->
+    @functionListView = new FunctionListView().toggle()
+
+  selectCurrentFunction: ->
+    editor = atom.workspace.getActiveTextEditor()
+    cursor = editor.getCursorBufferPosition()
+    row = cursor.row
+    col = cursor.column
+    line = editor.lineTextForBufferRow(row)
+    m = line.match(/^(\s*)function/)
+    if m && m[1].length > 0 && not editor.getLastCursor().selection.isEmpty() # already selected, move up a row to get parent
+        row -= 1
+    while row >= 0
+      line = editor.lineTextForBufferRow(row)
+      m = line.match(/^end($|\s|--)/)
+      if m #in no function
+        return
+      m = line.match(/^(\s*)function/)
+      if m
+        indent = m[1].length
+        break
+      row -= 1
+    if row < 0
+      return
+    startRow = row
+    row += 1
+    lastRow = editor.getLastBufferRow()
+    while row <= lastRow
+      line = editor.lineTextForBufferRow(row)
+      m = line.match(/^(\s*)end($|\s|--)/)
+      if m and m[1].length == indent
+        editor.setCursorBufferPosition([row, editor.lineTextForBufferRow(row).length])
+        editor.selectToBufferPosition([startRow, 0])
+        editor.scrollToCursorPosition()
+        return
+      row += 1
 
   startConnection: ->
     if @if_connected
