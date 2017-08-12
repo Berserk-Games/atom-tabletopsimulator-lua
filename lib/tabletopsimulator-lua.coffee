@@ -510,6 +510,7 @@ module.exports = TabletopsimulatorLua =
       m = line.match(re)
       if m
         editor.setCursorBufferPosition([row, 0])
+        editor.scrollToCursorPosition()
         return
       row += 1
     # If we didn't find it then open Go To Function panel
