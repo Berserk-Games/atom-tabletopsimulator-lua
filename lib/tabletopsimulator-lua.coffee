@@ -251,6 +251,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:expandSelection': => @expandSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:retractSelection': => @retractSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleSelectionCursor': => @toggleCursorSelectionEnd()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:displayCurrentFunction': => @displayFunction()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -486,6 +487,17 @@ module.exports = TabletopsimulatorLua =
     if not @statusBarActive
       @statusBarFunctionView.updateFunction(null)
 
+  displayFunction: ->
+    editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith('.ttslua')
+      return
+    [names, rows] = @getFunctions(editor, editor.getCursorBufferPosition().row)
+    output = ""
+    for name, i in names
+      if i > 0
+        output += ' → '
+      output += name
+    atom.notifications.addInfo(output)
 
   gotoFunction: ->
     editor = atom.workspace.getActiveTextEditor()
