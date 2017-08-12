@@ -492,12 +492,13 @@ module.exports = TabletopsimulatorLua =
     if not editor or not editor.getPath().endsWith('.ttslua')
       return
     [names, rows] = @getFunctions(editor, editor.getCursorBufferPosition().row)
-    output = ""
+    output = '`'
     for name, i in names
       if i > 0
         output += ' → '
       output += name
-    atom.notifications.addInfo(output)
+    output += '`'
+    atom.notifications.addInfo(output, {icon: 'type-function'})
 
   gotoFunction: ->
     editor = atom.workspace.getActiveTextEditor()
