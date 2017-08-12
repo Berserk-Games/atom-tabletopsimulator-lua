@@ -246,6 +246,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:jumpToFunction': => @jumpToCursorFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:expandSelection': => @expandSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:retractSelection': => @retractSelection()
@@ -493,6 +494,27 @@ module.exports = TabletopsimulatorLua =
       @functionListView = new FunctionListView().toggle(text)
     else
       @functionListView = new FunctionListView().toggle()
+
+  jumpToCursorFunction: ->
+    editor = atom.workspace.getActiveTextEditor()
+    if not editor or not editor.getPath().endsWith(".ttslua")
+      return
+    function_name = editor.getWordUnderCursor()
+    if not function_name or function_name == ''
+      return
+    lineCount = editor.getLineCount()
+    row = 0
+    while (row < lineCount)
+      line = editor.lineTextForBufferRow(row)
+      re = new RegExp('^\\s*function\\s+' + function_name)
+      m = line.match(re)
+      if m
+        editor.setCursorBufferPosition([row, 0])
+        return
+      row += 1
+    # If we didn't find it then open Go To Function panel
+    editor.selectWordsContainingCursors()
+    @gotoFunction()
 
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()

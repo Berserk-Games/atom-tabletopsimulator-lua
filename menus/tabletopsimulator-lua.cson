@@ -18,6 +18,11 @@
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
         {
+          'label': 'Jump To Cursor Function'
+          'command': 'tabletopsimulator-lua:jumpToFunction'
+        },
+        {type: 'separator'},
+        {
           'label': 'Select Current Function'
           'command': 'tabletopsimulator-lua:selectFunction'
         },
@@ -55,6 +60,11 @@
           'label': 'Go To Function'
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
+        {
+          'label': 'Jump To Cursor Function'
+          'command': 'tabletopsimulator-lua:jumpToFunction'
+        },
+        {type: 'separator'},
         {
           'label': 'Select Current Function'
           'command': 'tabletopsimulator-lua:selectFunction'
