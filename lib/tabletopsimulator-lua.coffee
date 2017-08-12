@@ -519,7 +519,7 @@ module.exports = TabletopsimulatorLua =
         m = line.match(/^(\s*)end($|\s|--)/)
         if m and m[1].length == indent
           if @isBlockSelecting
-            previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent]
+            previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent, @blockSelectUntilBlank]
             @blockSelectStack.push(previousBlock)
           else
             @blockSelectCursorPosition = pos
@@ -528,6 +528,7 @@ module.exports = TabletopsimulatorLua =
           @blockSelectTop = startRow
           @blockSelectBottom = row
           @blockSelectIndent = indent
+          @blockSelectUntilBlank = false
           @blockSelectLock = true
           editor.setCursorBufferPosition([@blockSelectBottom, editor.lineTextForBufferRow(@blockSelectBottom).length])
           editor.selectToBufferPosition([@blockSelectTop, 0])
@@ -552,24 +553,31 @@ module.exports = TabletopsimulatorLua =
         #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
         m = line.match(/^(\s*)([^\s]+)/)
         if m and not m[2].match(/^(else|elseif|--.*)/)
-          n = editor.lineTextForBufferRow(row+1).match(/^(\s*)([^\s]+)/)
-          if n and n[1].length > m[1].length
-            @blockSelectIndent = n[1].length
-            @blockSelectTop = row + 2
-            @blockSelectBottom = pos.row
+          if m[1].length == 0 and not m[2].match(/^(function|end($|\s|--))/)
+              @blockSelectIndent = 1
+              @blockSelectTop = row + 1
+              @blockSelectBottom = pos.row
+              @blockSelectUntilBlank = true
           else
-            n = editor.lineTextForBufferRow(row-1).match(/^(\s*)([^\s]+)/)
+            @blockSelectUntilBlank = false
+            n = editor.lineTextForBufferRow(row+1).match(/^(\s*)([^\s]+)/)
             if n and n[1].length > m[1].length
               @blockSelectIndent = n[1].length
-              @blockSelectTop = row
-              @blockSelectBottom = pos.row - 2
+              @blockSelectTop = row + 2
+              @blockSelectBottom = pos.row
             else
-              if blankRow and m[2].match(/^(if($|\()|for($|\()|while($|\()|repeat($|--)|function$)/)
-                @blockSelectIndent = m[1].length + 1
+              n = editor.lineTextForBufferRow(row-1).match(/^(\s*)([^\s]+)/)
+              if n and n[1].length > m[1].length
+                @blockSelectIndent = n[1].length
+                @blockSelectTop = row
+                @blockSelectBottom = pos.row - 2
               else
-                @blockSelectIndent = m[1].length
-              @blockSelectTop = row + 1
-              @blockSelectBottom = pos.row - 1
+                if blankRow and m[2].match(/^(if($|\()|for($|\()|while($|\()|repeat($|--)|function$)/)
+                  @blockSelectIndent = m[1].length + 1
+                else
+                  @blockSelectIndent = m[1].length
+                @blockSelectTop = row + 1
+                @blockSelectBottom = pos.row - 1
           break
         else
           blankRow = true
@@ -578,14 +586,20 @@ module.exports = TabletopsimulatorLua =
         return
     if @blockSelectIndent == 0
       return
-    previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent]
+    previousBlock = [@blockSelectTop, @blockSelectBottom, @blockSelectIndent, @blockSelectUntilBlank]
     row = @blockSelectTop - 1
     while row >= 0
       line = editor.lineTextForBufferRow(row)
       #m = line.match(/^(\s*)(if[\s\(]|for[\s\(]|while[\s\(]|repeat($|\s|--)|function[\s])/) #strict control blocks
-      m = line.match(/^(\s*)([^\s]+)/)
+      if @blockSelectUntilBlank
+        m = line.match(/^()(\s*)$/)
+      else
+        m = line.match(/^(\s*)([^\s]+)/)
       if m and m[1].length < @blockSelectIndent and not m[2].match(/^(else|elseif|--.*)/)
-        @blockSelectTop = row
+        if @blockSelectUntilBlank
+          @blockSelectTop = row + 1
+        else
+          @blockSelectTop = row
         @blockSelectIndent = m[1].length
         break
       row -= 1
@@ -593,10 +607,20 @@ module.exports = TabletopsimulatorLua =
       return
     row = @blockSelectBottom + 1
     lastRow = editor.getLastBufferRow()
+    if @blockSelectUntilBlank and blankRow
+      while row < lastRow
+        line = editor.lineTextForBufferRow(row)
+        m = line.match(/^\s*$/)
+        if not m
+          break
+        row += 1
     while row <= lastRow
       line = editor.lineTextForBufferRow(row)
       #m = line.match(/^(\s*)(end($|\s|--)|until[\s\)])/)  #strict control blocks
-      m = line.match(/^(\s*)([^\s]+)/)
+      if @blockSelectUntilBlank
+        m = line.match(/^()(\s*)$/)
+      else
+        m = line.match(/^(\s*)([^\s]+)/)
       if m and m[1].length <= @blockSelectIndent and not m[2].match(/^(else|elseif|--.*)/)
         @blockSelectBottom = row
         @blockSelectIndent = m[1].length
