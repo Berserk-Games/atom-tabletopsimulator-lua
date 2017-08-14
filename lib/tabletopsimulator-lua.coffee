@@ -79,31 +79,41 @@ class FileHandler
   open: ->
     #atom.focus()
     # register events
-    row = 0
-    col = 0
-    try
-      row = cursors[filepath].row
-      col = cursors[filepath].col
-    catch error
-    active = activeEditorPath == @tempFile
-    #atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
-    atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
-      @handle_connection(editor)
+    if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
+      row = 0
+      col = 0
+      try
+        row = cursors[filepath].row
+        col = cursors[filepath].col
+      catch error
+      active = (activeEditorPath == @tempFile)
+      atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
+        @handle_connection(editor)
+    else
+      atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
+        @handle_connection(editor)
 
   handle_connection: (editor) ->
     # Remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       keyword =  atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword')
       text = editor.getText()
-      regexp = RegExp('^(-- INCLUDED (.*))$', 'm')
-      found = true
-      while(found)
-        found = text.match(regexp)
+      regexp = RegExp('^----(--\\s*' + keyword + '\\s+([^\\s].*))')
+      lines = text.split('\n')
+      inside = null
+      output = []
+      for line, i in lines
+        found = line.match(regexp)
         if found
-          filename = found[2].replace(/.ttslua$/, '')
-          s = text.split(found[1])
-          text = s[0] + '-- ' + keyword + ' ' + filename + s[2]
-      editor.setText(text)
+          if inside == null
+            inside = found[1]
+          else
+            output.push(inside)
+            inside = null
+        else
+          if inside == null
+            output.push(line)
+      editor.setText(output.join('\n'))
     # Replace \u character codes
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
@@ -157,16 +167,22 @@ module.exports = TabletopsimulatorLua =
           order: 1
           type: 'boolean'
           default: false
+        openOtherFiles:
+          title: 'Experimental: Re-open files from outwith the TTS folder'
+          description: 'When you Save And Play attempt to re-open files you had open which are not in the TTS temp folder'
+          order: 2
+          type: 'boolean'
+          default: false
         includeOtherFiles:
           title: 'Experimental: Insert other files specified in source code'
           description: 'Convert lines containing the below commented keyword with text from the file specified'
-          order: 2
+          order: 3
           type: 'boolean'
           default: false
         includeKeyword:
           title: 'Insertion keyword to use'
           description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
-          order: 3
+          order: 4
           type: 'string'
           default: 'include'
     autocomplete:
@@ -540,10 +556,10 @@ module.exports = TabletopsimulatorLua =
 
 
   insertFiles: (text, keyword, dir, alreadyInserted = {}, ignore_marker = false) ->
-    regexp = RegExp('^(--\\s*' + keyword + '\\s+([^\\s].*))$', 'm')
-    found = true
-    while(found)
-      found = text.match(regexp)
+    regexp = RegExp('^(--\\s*' + keyword + '\\s+([^\\s].*))')
+    lines = text.split('\n')
+    for line, i in lines
+      found = line.match(regexp)
       if found
         filepath = found[2]
         if not filepath.toLowerCase().endsWith('.ttslua')
@@ -555,23 +571,20 @@ module.exports = TabletopsimulatorLua =
           filetext = fs.readFileSync(filepath, 'utf8')
         catch error
           atom.notifications.addError(error.message, {icon: 'file-icon', detail: filepath})
-          found = false
         if filetext
           if filepath of alreadyInserted
             atom.notifications.addWarning(keyword + " used for same file twice.", {icon: 'file-icon', detail: filepath})
             filetext = ''
           else
             alreadyInserted[filepath] = true
-            filetext = filetext.replace(/\s*$/g, '')
+            filetext = filetext.replace(/[\s\n\r]*$/, '')
           if ignore_marker
             marker = ''
           else
-            marker = '-- INCLUDED ' + found[2].replace(/\s*$/g, '')
+            marker = '----' + found[1]
           newDir = path.dirname(filepath)
-          text = text.replace(found[1], marker + '\n' + @insertFiles(filetext, keyword, newDir, alreadyInserted, true) + '\n' + marker)
-        else
-          found = false
-    return text
+          lines[i] = marker + '\n' + @insertFiles(filetext, keyword, newDir, alreadyInserted, true) + '\n' + marker
+    return lines.join('\n')
 
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
@@ -933,15 +946,16 @@ module.exports = TabletopsimulatorLua =
               @file = null
 
             # Load any further files that were previously open
-            for filepath in editors
-              row = 0
-              col = 0
-              try
-                row = cursors[filepath].row
-                col = cursors[filepath].col
-              catch error
-              active = activeEditorPath == filepath
-              atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
+            if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
+              for filepath in editors
+                row = 0
+                col = 0
+                try
+                  row = cursors[filepath].row
+                  col = cursors[filepath].col
+                catch error
+                active = activeEditorPath == filepath
+                atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
 
           # Print/Debug message
           else if @data.messageID == 2
