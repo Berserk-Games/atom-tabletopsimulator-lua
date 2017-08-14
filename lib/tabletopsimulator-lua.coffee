@@ -570,20 +570,20 @@ module.exports = TabletopsimulatorLua =
         try
           filetext = fs.readFileSync(filepath, 'utf8')
         catch error
-          atom.notifications.addError(error.message, {icon: 'file-icon', detail: filepath})
+          atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
         if filetext
           if filepath of alreadyInserted
-            atom.notifications.addWarning(keyword + " used for same file twice.", {icon: 'file-icon', detail: filepath})
-            filetext = ''
+            atom.notifications.addWarning(keyword + " used for same file twice.", {dismissable: true, icon: 'type-file', detail: filepath})
+            lines[i] = ''
           else
             alreadyInserted[filepath] = true
             filetext = filetext.replace(/[\s\n\r]*$/, '')
-          if ignore_marker
-            marker = ''
-          else
-            marker = '----' + found[1]
-          newDir = path.dirname(filepath)
-          lines[i] = marker + '\n' + @insertFiles(filetext, keyword, newDir, alreadyInserted, true) + '\n' + marker
+            if ignore_marker
+              marker = ''
+            else
+              marker = '----' + found[1]
+            newDir = path.dirname(filepath)
+            lines[i] = marker + '\n' + @insertFiles(filetext, keyword, newDir, alreadyInserted, true) + '\n' + marker
     return lines.join('\n')
 
   excludeChange: (newValue) ->
