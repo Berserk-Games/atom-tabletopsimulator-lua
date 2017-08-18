@@ -78,7 +78,7 @@ class FunctionListView extends SelectListView
             else if lineNumbers.endRow < row
               offset += lineNumbers.endRow - lineNumbers.startRow
         if currentFile != @editor.getPath()
-          row -= (currentRow + offset + 1) 
+          row -= (currentRow + offset + 1)
           atom.workspace.open(currentFile, {initialLine: row, initialColumn: 0}).then (editor) ->
             editor.setCursorBufferPosition([row, 0])
             editor.scrollToCursorPosition()
@@ -119,6 +119,7 @@ class FunctionListView extends SelectListView
       @panel?.show()
     else
       #@storeFocusedElement()
-      #@filterEditorView.setText(searchText)
+      @filterEditorView.setText(searchText)
+      @filterEditorView.model.selectAll()
       @panel.show()
       @focusFilterEditor()
