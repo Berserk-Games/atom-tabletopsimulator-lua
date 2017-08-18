@@ -1,13 +1,13 @@
 {$$, View} = require 'space-pen'
 {SelectListView} = require 'atom-space-pen-views'
-{BufferedProcess, CompositeDisposable} = require 'atom'
+path = require 'path'
 
 module.exports =
 class FunctionListView extends SelectListView
   maxItems: 99999
   minFilterLength: 3
 
-  initialize: ->
+  initialize: (functionByName, expandedLineNumbers) ->
     super
     @editor = atom.workspace.getActiveTextEditor()
     @pane = atom.workspace.paneForItem(@editor)
@@ -15,24 +15,18 @@ class FunctionListView extends SelectListView
     @panel = atom.workspace.addModalPanel(item: this, visible: false)
     @showFunctionName = atom.config.get('tabletopsimulator-lua.editor.showFunctionInGoto')
     @addClass 'tabletopsimulator-lua-goto-function'
+    @functionByName = functionByName
+    @expandedLineNumbers = expandedLineNumbers
     @addItems()
 
   addItems: () =>
-    if @editor
-      @lineCount = @editor.getLineCount()
-      if @editor.getPath().endsWith('.ttslua')
-        row = 0
-        functions = []
-        while (row < @lineCount)
-          line = @editor.lineTextForBufferRow(row)
-          m = line.match(/^\s*function\s+([^\s\(]*)\s*[\(]([^\)]*)\)/)
-          if m
-            functions.push({functionName:m[1], parameters:m[2], line:row})
-          row += 1
-        functions.sort (a, b) -> return if a.functionName.toLowerCase() > b.functionName.toLowerCase() then 1 else -1
-        @setItems(functions)
+    functions = []
+    for functionName, functionDescription of @functionByName
+      functions.push(functionDescription)
+    functions.sort (a, b) -> return if a.functionName.toLowerCase() > b.functionName.toLowerCase() then 1 else -1
+    @setItems(functions)
 
-  viewForItem: ({functionName, parameters, line}) ->
+  viewForItem: ({functionName, parameters, filepath, line}) ->
     li = document.createElement('li')
     addSpan = (classNames, text) ->
       span = document.createElement('span')
@@ -46,6 +40,7 @@ class FunctionListView extends SelectListView
     addSpan(['syntax--punctuation', 'syntax--definition', 'syntax--parameters', 'syntax--begin',  'syntax--lua'], '(')
     addSpan(['syntax--variable', 'syntax--parameter', 'syntax--function', 'syntax--lua'], parameters)
     addSpan(['syntax--punctuation', 'syntax--definition', 'syntax--parameters', 'syntax--end',  'syntax--lua'], ')')
+    addSpan(['syntax--comment', 'syntax--lua', 'right'], path.basename(filepath.replace(/\.ttslua$/,'')))
     return li
 
   gotoLine: (line, relative=false) ->
@@ -70,7 +65,25 @@ class FunctionListView extends SelectListView
       if m[1]
         @gotoLine(parseInt(m[1]+m[2]), true)
       else
-        @gotoLine(parseInt(m[2])-1)
+        row = parseInt(m[2])-1
+        currentFile = @editor.getPath()
+        currentRow = 0
+        offset = 0
+        if @expandedLineNumbers
+          for filepath, lineNumbers of @expandedLineNumbers
+            if filepath != currentFile and lineNumbers.startRow > currentRow and
+               row > lineNumbers.startRow and row < lineNumbers.endRow
+              currentRow = lineNumbers.startRow
+              currentFile = filepath
+            else if lineNumbers.endRow < row
+              offset += lineNumbers.endRow - lineNumbers.startRow
+        if currentFile != @editor.getPath()
+          row -= (currentRow + offset + 1) 
+          atom.workspace.open(currentFile, {initialLine: row, initialColumn: 0}).then (editor) ->
+            editor.setCursorBufferPosition([row, 0])
+            editor.scrollToCursorPosition()
+        else
+          @gotoLine(row)
       @cancelled()
     else
       item = @getSelectedItem()
@@ -80,13 +93,19 @@ class FunctionListView extends SelectListView
         @cancel()
 
   confirmed: (item)->
-    if @editor
+    if @editor and @editor.getPath() == item.filepath
       @gotoLine(item.line)
+    else
+      atom.workspace.open(item.filepath, {initialLine: item.line, initialColumn: 0}).then (editor) ->
+        editor.setCursorBufferPosition([item.line, 0])
+        editor.scrollToCursorPosition()
     @cancelled()
+
 
   cancelled: ->
     @items = []
     @panel.hide()
+    #@focusStoredElement()
     if @pane
       @pane.activate()
 
@@ -99,7 +118,7 @@ class FunctionListView extends SelectListView
     if @panel?.isVisible()
       @panel?.show()
     else
-      @storeFocusedElement()
-      @filterEditorView.setText(searchText)
+      #@storeFocusedElement()
+      #@filterEditorView.setText(searchText)
       @panel.show()
       @focusFilterEditor()

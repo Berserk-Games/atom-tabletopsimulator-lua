@@ -10,6 +10,18 @@ provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
 
+###
+https://github.com/randy3k/remote-atom/blob/master/lib/remote-atom.coffee
+
+Copyright (c) Randy Lai 2014
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+###
+
 domain = 'localhost'
 clientport = 39999
 serverport = 39998
@@ -36,17 +48,20 @@ ping = (socket, delay) ->
   nextPing = -> ping(socket, delay)
   setTimeout nextPing, delay
 
-###
-https://github.com/randy3k/remote-atom/blob/master/lib/remote-atom.coffee
+insertFileKeyword = '#include'
+insertFileMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
+insertFileRegexp = RegExp('^' + insertFileMarkerString)
+insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
+expandedLineNumbers = {}
 
-Copyright (c) Randy Lai 2014
+completeFilepath = (fn, dir) ->
+  label = fn
+  if not label.endsWith('.ttslua')
+    label += '.ttslua'
+  if not label.match(/[\\/:]/) # isn't full path
+    label = path.join(dir, label)
+  return label
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-###
 class FileHandler
   constructor: ->
     @readbytes = 0
@@ -96,23 +111,32 @@ class FileHandler
   handle_connection: (editor) ->
     # Remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-      keyword =  atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword')
+      filepath = editor.getPath()
+      expandedLineNumbers[filepath] = {}
+      lineNumbers = expandedLineNumbers[filepath]
       text = editor.getText()
-      regexp = RegExp('^----(--\\s*' + keyword + '\\s+([^\\s].*))')
       lines = text.split('\n')
       inside = null
       output = []
-      for line, i in lines
-        found = line.match(regexp)
+      stack = []
+      for line, row in lines
+        found = line.match(insertedFileRegexp)
         if found
-          if inside == null
-            inside = found[1]
+          if stack.length == 0
+            dir = path.dirname(filepath)
           else
-            output.push(inside)
-            inside = null
-        else
-          if inside == null
-            output.push(line)
+            dir = path.dirname(stack[stack.length-1])
+          label = completeFilepath(found[2], dir)
+          if stack.length > 0 and stack[stack.length-1] == label
+            lineNumbers[label].endRow = row
+            stack.pop()
+            if stack.length == 0
+              output.push(found[1])
+          else
+            lineNumbers[label] = {startRow: row}
+            stack.push(label)
+        else if stack.length == 0
+          output.push(line)
       editor.setText(output.join('\n'))
     # Replace \u character codes
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
@@ -135,17 +159,6 @@ class FileHandler
       @save()
     @subscriptions.add buffer.onDidDestroy =>
       @close()
-
-
-
-  removeIncludes: (editor, keyword) ->
-    regexp = RegExp( '^(--(--\s*' + keyword + '\s.*)$' +
-                    '.*' +
-                    '^----\s*' + keyword + '\s.*)$', 'g')
-    replace_include = (include) ->
-      include.replace(include.match[2])
-    editor.scan(regexp, replace_include)
-
 
   save: ->
 
@@ -175,16 +188,16 @@ module.exports = TabletopsimulatorLua =
           default: false
         includeOtherFiles:
           title: 'Experimental: Insert other files specified in source code'
-          description: 'Convert lines containing the below commented keyword with text from the file specified'
+          description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
           order: 3
           type: 'boolean'
           default: false
-        includeKeyword:
-          title: 'Insertion keyword to use'
-          description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
-          order: 4
-          type: 'string'
-          default: 'include'
+#        includeKeyword:
+#          title: 'Insertion keyword to use'
+#          description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
+#          order: 4
+#          type: 'string'
+#          default: 'include'
     autocomplete:
       title: 'Autocomplete'
       order: 2
@@ -292,6 +305,11 @@ module.exports = TabletopsimulatorLua =
     @statusBarPreviousPath = ''
     @statusBarPreviousRow  = 0
 
+    # Function name lookup
+    @functionByName = {}
+    @functionPaths = {}
+    @expandedLineNumbers = {}
+
     # Set font for Go To Function UI
     styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
     fontFamily = atom.config.get('editor.fontFamily')
@@ -299,6 +317,9 @@ module.exports = TabletopsimulatorLua =
 
       .tabletopsimulator-lua-goto-function {
         font-family: #{fontFamily};
+      }
+      .tabletopsimulator-lua-goto-function .right {
+        float: right;
       }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
@@ -322,9 +343,12 @@ module.exports = TabletopsimulatorLua =
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
+    @subscriptions.add atom.workspace.onDidOpen (event) => @onLoad(event)
     @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       @subscriptions.add editor.onDidChangeCursorPosition (event) =>
         @cursorChangeEvent(event)
+      @subscriptions.add editor.onDidSave (event) =>
+        @onSave(event)
 
     # Close any open files
     for editor,i in atom.workspace.getTextEditors()
@@ -350,6 +374,36 @@ module.exports = TabletopsimulatorLua =
     @statusBarFunctionView.destroy()
     @statusBarTile?.destroy()
 
+  onLoad: (event) ->
+    editor = event.item
+    if not atom.workspace.isTextEditor(editor)
+      return
+    filepath = editor.getPath()
+    if not filepath.endsWith('.ttslua')
+      return
+    if not (filepath of @functionPaths)
+      @doCatalog(editor.getText(), filepath, true)
+
+  onSave: (event) ->
+    if not event.path.endsWith('.ttslua')
+      return
+    for editor in atom.workspace.getTextEditors()
+      if editor.getPath() == event.path
+        @doCatalog(editor.getText(), event.path)
+        break
+
+  doCatalog: (text, filepath, includeSiblings = false) ->
+    otherFiles = @catalogFunctions(text, filepath)
+    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+      if includeSiblings
+        files = fs.readdirSync(path.dirname(filepath))
+        for filename in files
+          filename = path.join(path.dirname(filepath), filename)
+          if filename.endsWith('.ttslua') and not fs.statSync(filename).isDirectory()
+            otherFiles[filename] = true
+      for otherFile, v of otherFiles
+        if not (otherFile of @functionPaths)
+          @catalogFileFunctions(otherFile)
 
   cursorChangeEvent: (event) ->
     if event and @isBlockSelecting and not @blockSelectLock
@@ -391,7 +445,7 @@ module.exports = TabletopsimulatorLua =
         row += 1
         while row <= startRow
           line = editor.lineTextForBufferRow(row)
-          m = line.match(/^(\s*)function ([^(]*)/)
+          m = line.match(/^(\s*)function\s+([^\s(]*)/)
           if m
             indent = m[1].length
             if not(indent of function_names)
@@ -539,7 +593,7 @@ module.exports = TabletopsimulatorLua =
               @luaObject.script = fs.readFileSync(fname, 'utf8')
               # Insert included files
               if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-                @luaObject.script = @insertFiles(@luaObject.script, atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword'), ttsLuaDir)
+                @luaObject.script = @insertFiles(@luaObject.script, ttsLuaDir)
               # Replace with \u character codes
               if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
                 replace_character = (character) ->
@@ -555,11 +609,10 @@ module.exports = TabletopsimulatorLua =
             console.log error
 
 
-  insertFiles: (text, keyword, dir, alreadyInserted = {}, ignore_marker = false) ->
-    regexp = RegExp('^(--\\s*' + keyword + '\\s+([^\\s].*))')
+  insertFiles: (text, dir, alreadyInserted = {}) ->
     lines = text.split('\n')
     for line, i in lines
-      found = line.match(regexp)
+      found = line.match(insertFileRegexp)
       if found
         filepath = found[2]
         if not filepath.toLowerCase().endsWith('.ttslua')
@@ -573,17 +626,14 @@ module.exports = TabletopsimulatorLua =
           atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
         if filetext
           if filepath of alreadyInserted
-            atom.notifications.addWarning(keyword + " used for same file twice.", {dismissable: true, icon: 'type-file', detail: filepath})
+            atom.notifications.addWarning(atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword') + " used for same file twice.", {dismissable: true, icon: 'type-file', detail: filepath})
             lines[i] = ''
           else
             alreadyInserted[filepath] = true
             filetext = filetext.replace(/[\s\n\r]*$/, '')
-            if ignore_marker
-              marker = ''
-            else
-              marker = '----' + found[1]
+            marker = '----' + found[1]
             newDir = path.dirname(filepath)
-            lines[i] = marker + '\n' + @insertFiles(filetext, keyword, newDir, alreadyInserted, true) + '\n' + marker
+            lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
     return lines.join('\n')
 
   excludeChange: (newValue) ->
@@ -614,31 +664,96 @@ module.exports = TabletopsimulatorLua =
     editor = atom.workspace.getActiveTextEditor()
     text = editor.getSelectedText()
     if text.match(/^\w+$/)
-      @functionListView = new FunctionListView().toggle(text)
+      @functionListView = new FunctionListView(@functionByName, expandedLineNumbers[editor.getPath()]).toggle(text)
     else
-      @functionListView = new FunctionListView().toggle()
+      @functionListView = new FunctionListView(@functionByName, expandedLineNumbers[editor.getPath()]).toggle()
+
+  catalogFileFunctions: (filepath) ->
+    if filepath of @functionPaths
+      return {}
+    text = fs.readFileSync(filepath, 'utf8')
+    otherFiles = @catalogFunctions(text, filepath)
+    for otherFile, v of otherFiles
+      if not (otherFile of @functionPaths)
+        @catalogFileFunctions(otherFile)
+
+  catalogFunctions: (text, filepath) ->
+    @functionPaths[filepath] = {}
+    otherFiles = {}
+    stack = []
+    lines = text.split('\n')
+    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+      for line, row in lines
+        if stack.length == 0
+          dir = path.dirname(filepath)
+        else
+          dir = path.dirname(stack[stack.length-1])
+        insert = line.match(insertFileRegexp)
+        if insert
+          label = completeFilepath(insert[2], dir)
+          otherFiles[label] = true
+        else
+          inserted = line.match(insertedFileRegexp)
+          if inserted
+            label = completeFilepath(inserted[2], dir)
+            if stack.length > 0 and stack[stack.length-1] == label #closing marker
+              stack.pop()
+            else #opening marker
+              if not (label of @functionPaths)
+                otherFiles[label] = true
+              stack.push(label)
+          else
+            if not stack.length
+              m = line.match(/^\s*function\s+([^\s\(]+)\s*\(([^\)]*)\)/)
+              if m
+                functionDescription = {functionName: m[1], parameters: m[2], line: row, filepath: filepath}
+                @functionByName[functionDescription.functionName] = functionDescription
+                @functionPaths[filepath][functionDescription.functionName] = row
+    else
+      for line, row in lines
+        m = line.match(/^\s*function\s+([^\s\(]+)\s*\(([^\)]*)\)/)
+        if m
+          functionDescription = {functionName: m[1], parameters: m[2], line: row, filepath: filepath}
+          @functionByName[functionDescription.functionName] = functionDescription
+          @functionPaths[filepath][functionDescription.functionName] = row
+    return otherFiles
 
   jumpToCursorFunction: ->
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith(".ttslua")
       return
     function_name = editor.getWordUnderCursor()
-    if not function_name or function_name == ''
+    if not function_name
       return
+    function_name = function_name.match(/\w*/)[0]
+    if function_name == ''
+      return
+    if function_name of @functionByName
+      item = @functionByName[function_name]
+      if editor.getPath() == item.filepath
+          editor.setCursorBufferPosition([item.line, 0])
+          editor.scrollToCursorPosition()
+      else
+        atom.workspace.open(item.filepath, {initialLine: item.line, initialColumn: 0}).then (other) ->
+          other.setCursorBufferPosition([item.line, 0])
+          other.scrollToCursorPosition()
+    else
+      # If we didn't find it then open Go To Function panel
+      editor.selectWordsContainingCursors()
+      @gotoFunction()
+
+  getFunctionRow: (text, function_name) ->
+    #deprecated: TODO remove
     lineCount = editor.getLineCount()
     row = 0
     while (row < lineCount)
       line = editor.lineTextForBufferRow(row)
-      re = new RegExp('^\\s*function\\s+' + function_name)
+      re = new RegExp('^\\s*function\\s+' + function_name + '\\s*\\(')
       m = line.match(re)
       if m
-        editor.setCursorBufferPosition([row, 0])
-        editor.scrollToCursorPosition()
-        return
+        return row
       row += 1
-    # If we didn't find it then open Go To Function panel
-    editor.selectWordsContainingCursors()
-    @gotoFunction()
+    return null
 
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
