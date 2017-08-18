@@ -26,7 +26,7 @@ domain = 'localhost'
 clientport = 39999
 serverport = 39998
 
-ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
+ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 
 # Check atom version; if 1.19+ then editor.save has become async
 # TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
@@ -39,6 +39,7 @@ catch error
 # Store cursor positions and open editors between loads
 cursors = {}
 editors = []
+ttsEditors = {}
 activeEditorPath = ''
 
 # Ping function not used at the moment
@@ -61,6 +62,9 @@ completeFilepath = (fn, dir) ->
   if not label.match(/[\\/:]/) # isn't full path
     label = path.join(dir, label)
   return label
+
+isGlobalScript = (fn) ->
+  return path.basename(fn) == 'Global.-1.ttslua'
 
 class FileHandler
   constructor: ->
@@ -93,7 +97,6 @@ class FileHandler
 
   open: ->
     #atom.focus()
-    # register events
     if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
       row = 0
       col = 0
@@ -180,22 +183,28 @@ module.exports = TabletopsimulatorLua =
           order: 1
           type: 'boolean'
           default: false
+        openGlobalOnly:
+          title: 'Open only the Global script automatically'
+          description: 'You can still manually open your scripts from the package view'
+          order: 2
+          type: 'boolean'
+          default: false
         openOtherFiles:
           title: 'Experimental: Re-open files from outwith the TTS folder'
           description: 'When you Save And Play attempt to re-open files you had open which are not in the TTS temp folder'
-          order: 2
+          order: 3
           type: 'boolean'
           default: false
         includeOtherFiles:
           title: 'Experimental: Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
-          order: 3
+          order: 4
           type: 'boolean'
           default: false
 #        includeKeyword:
 #          title: 'Insertion keyword to use'
 #          description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
-#          order: 4
+#          order: 5
 #          type: 'string'
 #          default: 'include'
     autocomplete:
@@ -566,7 +575,10 @@ module.exports = TabletopsimulatorLua =
     for editor,i in atom.workspace.getTextEditors()
       openFiles += 1
       # Store cursor positions
-      if path.dirname(editor.getPath()) != ttsLuaDir
+      ttsEditors = {}
+      if path.dirname(editor.getPath()) == ttsLuaDir
+        ttsEditors[path.basename(editor.getPath())] = true
+      else
         editors.push(editor.getPath())
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
 
@@ -943,6 +955,8 @@ module.exports = TabletopsimulatorLua =
       #console.log "Opened connection to #{domain}:#{port}"
 
     @connection.on 'data', (data) ->
+      # getObjects results in this
+
       try
         @data = JSON.parse(@data_cache + data)
       catch error
@@ -971,7 +985,8 @@ module.exports = TabletopsimulatorLua =
               line = line + "\n"
             #@parse_line(line)
             @file.append(line)
-          @file.open()
+          if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            @file.open()
           @file = null
 
       @data_cache = ""
@@ -1000,89 +1015,92 @@ module.exports = TabletopsimulatorLua =
       #socket.parse_line = @parse_line
 
       socket.on 'data', (data) ->
-          #console.log "#{socket.remoteAddress} sent: #{data}"
+        # saveAndPlay and making a new script in TTS results in this
 
-          try
-            @data = JSON.parse(@data_cache + data)
-          catch error
-            @data_cache = @data_cache + data
-            return
+        #console.log "#{socket.remoteAddress} sent: #{data}"
 
-          # Pushing new Object
-          if @data.messageID == 0
-            for f,i in @data.scriptStates
-              @file = new FileHandler()
-              f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".ttslua")
-              @file.setDatasize(f.script.length)
-              @file.create()
+        try
+          @data = JSON.parse(@data_cache + data)
+        catch error
+          @data_cache = @data_cache + data
+          return
 
-              lines = f.script.split "\n"
-              for line,i in lines
-                if i < lines.length-1
-                  line = line + "\n"
-                #@parse_line(line)
-                @file.append(line)
+        # Pushing new Object
+        if @data.messageID == 0
+          for f,i in @data.scriptStates
+            @file = new FileHandler()
+            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+            @file.setBasename(f.name + "." + f.guid + ".ttslua")
+            @file.setDatasize(f.script.length)
+            @file.create()
+
+            lines = f.script.split "\n"
+            for line,i in lines
+              if i < lines.length-1
+                line = line + "\n"
+              #@parse_line(line)
+              @file.append(line)
               @file.open()
-              @file = null
+            @file = null
 
-          # Loading a new game
-          else if @data.messageID == 1
-            for editor,i in atom.workspace.getTextEditors()
-              try
-                #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-                editor.destroy()
-              catch error
-                console.log error
-
-            # Delete any existing cached Lua files
+        # Loading a new game
+        else if @data.messageID == 1
+          for editor,i in atom.workspace.getTextEditors()
             try
-              @oldfiles = fs.readdirSync(ttsLuaDir)
-              for oldfile,i in @oldfiles
-                @deletefile = path.join(ttsLuaDir, oldfile)
-                fs.unlinkSync(@deletefile)
+              #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+              editor.destroy()
             catch error
+              console.log error
 
-            # Load scripts from new game
-            for f,i in @data.scriptStates
-              @file = new FileHandler()
-              f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-              @file.setBasename(f.name + "." + f.guid + ".ttslua")
-              @file.setDatasize(f.script.length)
-              @file.create()
+          # Delete any existing cached Lua files
+          try
+            @oldfiles = fs.readdirSync(ttsLuaDir)
+            for oldfile,i in @oldfiles
+              @deletefile = path.join(ttsLuaDir, oldfile)
+              fs.unlinkSync(@deletefile)
+          catch error
 
-              lines = f.script.split "\n"
-              for line,i in lines
-                if i < lines.length-1
-                  line = line + "\n"
-                #@parse_line(line)
-                @file.append(line)
+          # Load scripts from new game
+          for f,i in @data.scriptStates
+            @file = new FileHandler()
+            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+            @file.setBasename(f.name + "." + f.guid + ".ttslua")
+            @file.setDatasize(f.script.length)
+            @file.create()
+
+            lines = f.script.split "\n"
+            for line,i in lines
+              if i < lines.length-1
+                line = line + "\n"
+              #@parse_line(line)
+              @file.append(line)
+            if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
               @file.open()
-              @file = null
+            @file = null
 
-            # Load any further files that were previously open
-            if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-              for filepath in editors
-                row = 0
-                col = 0
-                try
-                  row = cursors[filepath].row
-                  col = cursors[filepath].col
-                catch error
-                active = activeEditorPath == filepath
-                atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
+          # Load any further files that were previously open
+          if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
+            for filepath in editors
+              row = 0
+              col = 0
+              try
+                row = cursors[filepath].row
+                col = cursors[filepath].col
+              catch error
+              active = activeEditorPath == filepath
+              atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
 
-          # Print/Debug message
-          else if @data.messageID == 2
-            console.log @data.message
+        # Print/Debug message
+        else if @data.messageID == 2
+          console.log @data.message
 
-          # Error message
-          # Might change this from a string to a struct with more info
-          else if @data.messageID == 3
-            console.error @data.errorMessagePrefix + @data.error
-            #console.error @data.message
+        # Error message
+        # Might change this from a string to a struct with more info
+        else if @data.messageID == 3
+          console.error @data.errorMessagePrefix + @data.error
+          #console.error @data.message
 
-          @data_cache = ""
+        @data_cache = ""
 
       socket.on 'error', (e) ->
         console.log e
