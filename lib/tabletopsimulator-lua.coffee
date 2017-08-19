@@ -141,7 +141,6 @@ class FileHandler
         else if stack.length == 0
           output.push(line)
       editor.setText(output.join('\n'))
-      console.log expandedLineNumbers
     # Replace \u character codes
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
