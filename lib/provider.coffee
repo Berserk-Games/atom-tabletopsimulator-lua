@@ -142,6 +142,10 @@ module.exports =
             snippet: '\n\tfunction ' + function_name + "()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
             displayText: 'function...coroutine...end'
           },
+          {
+            snippet: '\n\tfunction ' + function_name + "()\n\t\trepeat\n\t\t\tcoroutine.yield(0)\n\t\tuntil $1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
+            displayText: 'function...coroutine...repeat...end'
+          },
         ]
 
       # Section: Global object
