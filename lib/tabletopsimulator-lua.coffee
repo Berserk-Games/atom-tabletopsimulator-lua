@@ -136,11 +136,12 @@ class FileHandler
             if stack.length == 0
               output.push(found[1])
           else
-            lineNumbers[label] = {startRow: row}
+            lineNumbers[label] = {startRow: row + 1}
             stack.push(label)
         else if stack.length == 0
           output.push(line)
       editor.setText(output.join('\n'))
+      console.log expandedLineNumbers
     # Replace \u character codes
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
@@ -660,17 +661,25 @@ module.exports = TabletopsimulatorLua =
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith('.ttslua')
       return
-    [names, rows] = @getFunctions(editor, editor.getCursorBufferPosition().row)
+    row = editor.getCursorBufferPosition().row
+    [names, rows] = @getFunctions(editor, row)
     if names == null
-      atom.notifications.addInfo("Not in a function!", {icon: 'type-function'})
+      info = "Not in a function!"
     else
-      output = '`'
+      info = 'Function: `'
       for name, i in names
         if i > 0
-          output += ' → '
-        output += name
-      output += '`'
-      atom.notifications.addInfo(output, {icon: 'type-function'})
+          info += ' → '
+        info += name
+        row = rows[i]
+      info += '`'
+    filepath = editor.getPath()
+    details = path.basename(filepath) + " line " + (row + 1)
+    for parentFile of expandedLineNumbers
+      lineNumbers = expandedLineNumbers[parentFile]
+      if filepath of lineNumbers
+        details += '\n' + path.basename(parentFile) + " line " + (lineNumbers[filepath].startRow + row + 1)
+    atom.notifications.addInfo(info, {icon: 'type-function', detail: details})
 
   gotoFunction: ->
     editor = atom.workspace.getActiveTextEditor()

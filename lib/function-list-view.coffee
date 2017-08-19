@@ -68,17 +68,14 @@ class FunctionListView extends SelectListView
         row = parseInt(m[2])-1
         currentFile = @editor.getPath()
         currentRow = 0
-        offset = 0
         if @expandedLineNumbers
           for filepath, lineNumbers of @expandedLineNumbers
             if filepath != currentFile and lineNumbers.startRow > currentRow and
-               row > lineNumbers.startRow and row < lineNumbers.endRow
+               row >= lineNumbers.startRow and row < lineNumbers.endRow
               currentRow = lineNumbers.startRow
               currentFile = filepath
-            else if lineNumbers.endRow < row
-              offset += lineNumbers.endRow - lineNumbers.startRow
         if currentFile != @editor.getPath()
-          row -= (currentRow + offset + 1)
+          row -= currentRow
           atom.workspace.open(currentFile, {initialLine: row, initialColumn: 0}).then (editor) ->
             editor.setCursorBufferPosition([row, 0])
             editor.scrollToCursorPosition()
