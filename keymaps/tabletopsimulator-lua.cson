@@ -20,4 +20,3 @@
   'ctrl-alt->':       'tabletopsimulator-lua:retractSelection'
   'ctrl-?':           'tabletopsimulator-lua:toggleSelectionCursor'
   'ctrl-i':           'tabletopsimulator-lua:displayCurrentFunction'
-	'ctrl-alt-shift-g': 'go-to-line:toggle'
