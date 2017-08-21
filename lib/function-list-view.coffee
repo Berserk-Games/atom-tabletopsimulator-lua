@@ -7,16 +7,16 @@ class FunctionListView extends SelectListView
   maxItems: 99999
   minFilterLength: 3
 
-  initialize: (functionByName, expandedLineNumbers) ->
+  initialize: (functionByName, fileMap) ->
     super
+    @addClass 'tabletopsimulator-lua-goto-function'
     @editor = atom.workspace.getActiveTextEditor()
     @pane = atom.workspace.paneForItem(@editor)
     @currentRow = @editor.getCursorBufferPosition().row
     @panel = atom.workspace.addModalPanel(item: this, visible: false)
     @showFunctionName = atom.config.get('tabletopsimulator-lua.editor.showFunctionInGoto')
-    @addClass 'tabletopsimulator-lua-goto-function'
     @functionByName = functionByName
-    @expandedLineNumbers = expandedLineNumbers
+    @fileMap = fileMap
     @addItems()
 
   addItems: () =>
@@ -65,21 +65,22 @@ class FunctionListView extends SelectListView
       if m[1]
         @gotoLine(parseInt(m[1]+m[2]), true)
       else
-        row = parseInt(m[2])-1
-        currentFile = @editor.getPath()
-        currentRow = 0
-        offset = 0
-        if @expandedLineNumbers
-          for filepath, lineNumbers of @expandedLineNumbers
-            if filepath != currentFile and lineNumbers.startRow > currentRow and
-               row >= lineNumbers.startRow and row < lineNumbers.endRow
-              currentRow = lineNumbers.startRow
-              currentFile = filepath
-            else if lineNumbers.endRow < row
-              offset += (lineNumbers.endRow - lineNumbers.startRow) + 1
-        if currentFile != @editor.getPath()
-          row -= (currentRow + offset)
-          atom.workspace.open(currentFile, {initialLine: row, initialColumn: 0}).then (editor) ->
+        filepath = @editor.getPath()
+        row = parseInt(m[2]) - 1
+        if @fileMap
+          walkFileMap = (row, node) ->
+            if node.startRow <= row <= node.endRow
+              offset = 0
+              for child in node.children
+                if child.endRow < row
+                  offset += (child.endRow - child.startRow) + 1
+                else if row >= child.startRow
+                  return walkFileMap(row, child)
+              # not in any children, so is only in this file
+            return [node.label, row - (node.startRow + offset)]
+          [filepath, row] = walkFileMap(row, @fileMap)
+        if filepath != @editor.getPath()
+          atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
             editor.setCursorBufferPosition([row, 0])
             editor.scrollToCursorPosition()
         else

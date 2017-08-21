@@ -55,11 +55,13 @@ ping = (socket, delay) ->
   nextPing = -> ping(socket, delay)
   setTimeout nextPing, delay
 
+# #include system for inserting one file into another
 insertFileKeyword = '#include'
 insertFileMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
 insertFileRegexp = RegExp('^' + insertFileMarkerString)
 insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
-expandedLineNumbers = {}
+fileMap = {}
+appearsInFile = {}
 
 completeFilepath = (fn, dir) ->
   label = fn
@@ -68,6 +70,7 @@ completeFilepath = (fn, dir) ->
   if not label.match(/[\\/:]/) # isn't full path
     label = path.join(dir, label)
   return label
+
 
 isGlobalScript = (fn) ->
   return path.basename(fn) == 'Global.-1.ttslua'
@@ -118,16 +121,15 @@ class FileHandler
         @handle_connection(editor)
 
   handle_connection: (editor) ->
-    # Remove included files
+    # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       filepath = editor.getPath()
-      expandedLineNumbers[filepath] = {}
-      lineNumbers = expandedLineNumbers[filepath]
       text = editor.getText()
       lines = text.split('\n')
+      tree = fileMap[filepath] = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
       inside = null
       output = []
-      stack = []
+      stack = [] #TODO remove and simply use tree for everything
       for line, row in lines
         found = line.match(insertedFileRegexp)
         if found
@@ -136,14 +138,19 @@ class FileHandler
           else
             dir = path.dirname(stack[stack.length-1])
           label = completeFilepath(found[2], dir)
-          if stack.length > 0 and stack[stack.length-1] == label
-            lineNumbers[label].endRow = row
+          if stack.length > 0 and stack[stack.length-1] == label #closing include
+            tree.endRow = row
+            tree = tree.parent
             stack.pop()
             if stack.length == 0
               output.push(found[1])
-          else
-            lineNumbers[label] = {startRow: row + 1}
+          else #opening include
+            tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
+            tree = tree.children[tree.children.length-1]
             stack.push(label)
+            if not (label of appearsInFile)
+              appearsInFile[label] = {}
+            appearsInFile[label][filepath] = tree.depth
         else if stack.length == 0
           output.push(line)
       editor.setText(output.join('\n'))
@@ -323,7 +330,6 @@ module.exports = TabletopsimulatorLua =
     # Function name lookup
     @functionByName = {}
     @functionPaths = {}
-    @expandedLineNumbers = {}
 
     # Set font for Go To Function UI
     styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
@@ -679,21 +685,22 @@ module.exports = TabletopsimulatorLua =
         info += name
         row = rows[i]
       info += '`'
+    '''
     filepath = editor.getPath()
     details = path.basename(filepath) + " line " + (row + 1)
     for parentFile of expandedLineNumbers
       lineNumbers = expandedLineNumbers[parentFile]
       if filepath of lineNumbers
         details += '\n' + path.basename(parentFile) + " line " + (lineNumbers[filepath].startRow + row + 1)
+    '''
     atom.notifications.addInfo(info, {icon: 'type-function', detail: details})
 
   gotoFunction: ->
     editor = atom.workspace.getActiveTextEditor()
     text = editor.getSelectedText()
-    if text.match(/^\w+$/)
-      @functionListView = new FunctionListView(@functionByName, expandedLineNumbers[editor.getPath()]).toggle(text)
-    else
-      @functionListView = new FunctionListView(@functionByName, expandedLineNumbers[editor.getPath()]).toggle()
+    if not text.match(/^\w+$/)
+      text = ''
+    @functionListView = new FunctionListView(@functionByName, fileMap[editor.getPath()]).toggle(text)
 
   catalogFileFunctions: (filepath) ->
     if filepath of @functionPaths
