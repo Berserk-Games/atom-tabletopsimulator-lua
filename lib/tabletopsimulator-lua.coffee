@@ -27,6 +27,12 @@ clientport = 39999
 serverport = 39998
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
+# remove old name for temp dir, for people who have used previous versions (21/08/17)
+# TODO remove this at some later date
+try
+  atom.project.removePath(path.join(os.tmpdir(), "TabletopSimulator", "Lua"))
+catch error
+
 
 # Check atom version; if 1.19+ then editor.save has become async
 # TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
@@ -541,13 +547,7 @@ module.exports = TabletopsimulatorLua =
               fs.unlinkSync(@deletefile)
           catch error
 
-          # remove old name for temp dir, for people who have used previous versions (21/08/17)
-          # TODO remove this at some later date
-          oldttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
-          try
-            atom.project.removePath(oldttsLuaDir)
-          catch error
-          # Add temp dir to atom 
+          # Add temp dir to atom
           atom.project.addPath(ttsLuaDir)
 
           if not TabletopsimulatorLua.if_connected
