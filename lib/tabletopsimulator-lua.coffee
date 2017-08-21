@@ -541,6 +541,13 @@ module.exports = TabletopsimulatorLua =
               fs.unlinkSync(@deletefile)
           catch error
 
+          # remove old name for temp dir, for people who have used previous versions (21/08/17)
+          # TODO remove this at some later date
+          oldttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Lua")
+          try
+            atom.project.removePath(oldttsLuaDir)
+          catch error
+          # Add temp dir to atom 
           atom.project.addPath(ttsLuaDir)
 
           if not TabletopsimulatorLua.if_connected
