@@ -33,7 +33,6 @@ try
   atom.project.removePath(path.join(os.tmpdir(), "TabletopSimulator", "Lua"))
 catch error
 
-
 # Check atom version; if 1.19+ then editor.save has become async
 # TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
 async_save = true
@@ -57,6 +56,7 @@ ping = (socket, delay) ->
 
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
+insertFileSeperator = '|'
 insertFileMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
 insertFileRegexp = RegExp('^' + insertFileMarkerString)
 insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
@@ -64,16 +64,49 @@ fileMap = {}
 appearsInFile = {}
 
 completeFilepath = (fn, dir) ->
-  label = fn
-  if not label.endsWith('.ttslua')
-    label += '.ttslua'
-  if not label.match(/[\\/:]/) # isn't full path
-    label = path.join(dir, label)
-  return label
+  filepath = fn
+  if not filepath.endsWith('.ttslua')
+    filepath += '.ttslua'
+  if filepath.match(/[\\/]/) # describes path
+    rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath')
+    #if rootpath == ''
+    #  rootpath = app.getPath('documents')
+    filepath = path.join(rootpath, filepath)
+  else
+    filepath = path.join(dir, filepath)
+  return filepath
 
+extractFileMap = (text, filepath) ->
+  lines = text.split('\n')
+  tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
+  stack = [] #TODO remove and simply use tree for everything
+  for line, row in lines
+    found = line.match(insertedFileRegexp)
+    if found
+      if tree.parent
+        dir = path.dirname(tree.parent.label)
+      else # root node
+        dir = path.dirname(filepath)
+      label = completeFilepath(found[2], dir)
+      if tree.parent and tree.parent.label == label #closing include
+        tree.endRow = row
+        tree = tree.parent
+        if tree.parent == null
+          output.push(found[1])
+      else #opening include
+        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
+        tree = tree.children[tree.children.length-1]
+        if not (label of appearsInFile)
+          appearsInFile[label] = {}
+        appearsInFile[label][filepath] = tree.depth
+
+
+isFromTTS = (fn) ->
+  return path.dirname(fn) == ttsLuaDir
 
 isGlobalScript = (fn) ->
   return path.basename(fn) == 'Global.-1.ttslua'
+
 
 class FileHandler
   constructor: ->
@@ -127,31 +160,28 @@ class FileHandler
       text = editor.getText()
       lines = text.split('\n')
       tree = fileMap[filepath] = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
-      inside = null
       output = []
-      stack = [] #TODO remove and simply use tree for everything
       for line, row in lines
         found = line.match(insertedFileRegexp)
         if found
-          if stack.length == 0
+          if tree.parent
+            dir = path.dirname(tree.parent.label)
+          else # root node
             dir = path.dirname(filepath)
-          else
-            dir = path.dirname(stack[stack.length-1])
           label = completeFilepath(found[2], dir)
-          if stack.length > 0 and stack[stack.length-1] == label #closing include
+          console.log label
+          if tree.parent and tree.parent.label == label #closing include
             tree.endRow = row
             tree = tree.parent
-            stack.pop()
-            if stack.length == 0
+            if tree.parent == null
               output.push(found[1])
           else #opening include
             tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
             tree = tree.children[tree.children.length-1]
-            stack.push(label)
             if not (label of appearsInFile)
               appearsInFile[label] = {}
             appearsInFile[label][filepath] = tree.depth
-        else if stack.length == 0
+        else if tree.parent == null
           output.push(line)
       editor.setText(output.join('\n'))
     # Replace \u character codes
@@ -214,6 +244,12 @@ module.exports = TabletopsimulatorLua =
           order: 4
           type: 'boolean'
           default: false
+        includeOtherFilesPath:
+          title: 'Experimental: Base path for files you wish to ``include``'
+          description: 'If left blank this will default to your Documents folder'
+          order: 5
+          type: 'string'
+          default: ''
 #        includeKeyword:
 #          title: 'Insertion keyword to use'
 #          description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
@@ -639,11 +675,7 @@ module.exports = TabletopsimulatorLua =
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
-        filepath = found[2]
-        if not filepath.toLowerCase().endsWith('.ttslua')
-          filepath += ".ttslua"
-        if not filepath.match(/[\\/:]/)
-          filepath = path.join(dir, filepath)
+        filepath = completeFilepath(found[2], dir)
         filetext = null
         try
           filetext = fs.readFileSync(filepath, 'utf8')
