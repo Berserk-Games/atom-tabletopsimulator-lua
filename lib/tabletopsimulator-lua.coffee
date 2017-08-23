@@ -63,23 +63,38 @@ insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
 fileMap = {}
 appearsInFile = {}
 
+if os.platform() == 'win32'
+  PATH_SEPERATOR = '\\'
+else
+  PATH_SEPERATOR = '/'
+
 completeFilepath = (fn, dir) ->
   filepath = fn
   if not filepath.endsWith('.ttslua')
     filepath += '.ttslua'
-  if filepath.match(/[\\/]/) # describes path
-    rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath')
-    #if rootpath == ''
-    #  rootpath = app.getPath('documents')
-    filepath = path.join(rootpath, filepath)
+  if filepath.match(/^~[\\/]/) # home dir selector
+    filepath = path.join(os.homedir(), filepath[2..])
+  if os.platform() == 'win32'
+    fullPathPattern = /\:/
   else
-    filepath = path.join(dir, filepath)
-  return filepath
+    fullPathPattern = /^\//
+  if filepath.match(fullPathPattern)
+    return filepath
+  if not dir
+    dir = getRootPath()
+  return path.join(dir, filepath)
+
+getRootPath = () ->
+  rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath')
+  if rootpath == ''
+    rootpath = '~/Documents/Tabletop Simulator'
+  if rootpath.match(/^~[\\/]/) # home dir selector ~
+    rootpath = path.join(os.homedir(), rootpath[2..])
+  return rootpath
 
 extractFileMap = (text, filepath) ->
   lines = text.split('\n')
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
-  stack = [] #TODO remove and simply use tree for everything
   for line, row in lines
     found = line.match(insertedFileRegexp)
     if found
@@ -159,24 +174,23 @@ class FileHandler
       filepath = editor.getPath()
       text = editor.getText()
       lines = text.split('\n')
-      tree = fileMap[filepath] = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
+      tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
       output = []
       for line, row in lines
         found = line.match(insertedFileRegexp)
+        #console.log tree
         if found
-          if tree.parent
-            dir = path.dirname(tree.parent.label)
-          else # root node
-            dir = path.dirname(filepath)
+          dir = null
+          if tree.label
+            dir = path.dirname(tree.label)
           label = completeFilepath(found[2], dir)
-          console.log label
-          if tree.parent and tree.parent.label == label #closing include
+          if found[2] == tree.closeTag #closing include
             tree.endRow = row
             tree = tree.parent
             if tree.parent == null
               output.push(found[1])
           else #opening include
-            tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
+            tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1, closeTag: found[2]})
             tree = tree.children[tree.children.length-1]
             if not (label of appearsInFile)
               appearsInFile[label] = {}
@@ -245,14 +259,14 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: false
         includeOtherFilesPath:
-          title: 'Experimental: Base path for files you wish to ``include``'
-          description: 'If left blank this will default to your Documents folder'
+          title: 'Experimental: Base path for files you wish to #include'
+          description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``'
           order: 5
           type: 'string'
           default: ''
 #        includeKeyword:
 #          title: 'Insertion keyword to use'
-#          description: 'Example (using dfault keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
+#          description: 'Example (using default keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
 #          order: 5
 #          type: 'string'
 #          default: 'include'
@@ -460,6 +474,7 @@ module.exports = TabletopsimulatorLua =
             otherFiles[filename] = true
       for otherFile, v of otherFiles
         if not (otherFile of @functionPaths)
+          console.log otherFile
           @catalogFileFunctions(otherFile)
 
   cursorChangeEvent: (event) ->
@@ -717,14 +732,22 @@ module.exports = TabletopsimulatorLua =
         info += name
         row = rows[i]
       info += '`'
-    '''
     filepath = editor.getPath()
     details = path.basename(filepath) + " line " + (row + 1)
-    for parentFile of expandedLineNumbers
-      lineNumbers = expandedLineNumbers[parentFile]
-      if filepath of lineNumbers
-        details += '\n' + path.basename(parentFile) + " line " + (lineNumbers[filepath].startRow + row + 1)
-    '''
+    walkFileMap = (filepath, node) ->
+      if node.label == filepath
+        return [true, node.startRow]
+      else
+        for child in node.children
+          [found, r] = walkFileMap(filepath, child)
+          if found
+            return [true, r]
+        return [false, 0]
+    if filepath of appearsInFile
+      for parentFilePath of appearsInFile[filepath]
+        [found, parentRow] = walkFileMap(filepath, fileMap[parentFilePath])
+        if found
+          details += '\n' + path.basename(parentFilePath) + " line " + (parentRow + row + 1)
     atom.notifications.addInfo(info, {icon: 'type-function', detail: details})
 
   gotoFunction: ->
@@ -738,20 +761,21 @@ module.exports = TabletopsimulatorLua =
     if filepath of @functionPaths
       return {}
     text = fs.readFileSync(filepath, 'utf8')
-    otherFiles = @catalogFunctions(text, filepath)
-    for otherFile, v of otherFiles
+    otherFiles = @catalogFunctions(text, filepath, path.dirname(filepath))
+    for otherFile of otherFiles
       if not (otherFile of @functionPaths)
         @catalogFileFunctions(otherFile)
 
-  catalogFunctions: (text, filepath) ->
+  catalogFunctions: (text, filepath, root = null) ->
     @functionPaths[filepath] = {}
     otherFiles = {}
     stack = []
     lines = text.split('\n')
+    closingTag = []
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       for line, row in lines
         if stack.length == 0
-          dir = path.dirname(filepath)
+          dir = root
         else
           dir = path.dirname(stack[stack.length-1])
         insert = line.match(insertFileRegexp)
@@ -762,12 +786,14 @@ module.exports = TabletopsimulatorLua =
           inserted = line.match(insertedFileRegexp)
           if inserted
             label = completeFilepath(inserted[2], dir)
-            if stack.length > 0 and stack[stack.length-1] == label #closing marker
+            if closingTag.length > 0 and inserted[2] == closingTag[closingTag.length - 1]
               stack.pop()
+              closingTag.pop()
             else #opening marker
               if not (label of @functionPaths)
                 otherFiles[label] = true
               stack.push(label)
+              closingTag.push(inserted[2])
           else
             if not stack.length
               m = line.match(/^\s*function\s+([^\s\(]+)\s*\(([^\)]*)\)/)
