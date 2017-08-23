@@ -453,7 +453,7 @@ module.exports = TabletopsimulatorLua =
     if not filepath.endsWith('.ttslua')
       return
     if not (filepath of @functionPaths)
-      @doCatalog(editor.getText(), filepath, true)
+      @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -472,10 +472,13 @@ module.exports = TabletopsimulatorLua =
           filename = path.join(path.dirname(filepath), filename)
           if filename.endsWith('.ttslua') and not fs.statSync(filename).isDirectory()
             otherFiles[filename] = true
-      for otherFile, v of otherFiles
-        if not (otherFile of @functionPaths)
-          console.log otherFile
-          @catalogFileFunctions(otherFile)
+      for otherFile of otherFiles
+        if fs.existsSync(otherFile)
+          if not (otherFile of @functionPaths)
+            a = 0
+            @catalogFileFunctions(otherFile)
+        else
+          atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
 
   cursorChangeEvent: (event) ->
     if event and @isBlockSelecting and not @blockSelectLock
@@ -669,7 +672,7 @@ module.exports = TabletopsimulatorLua =
               @luaObject.script = fs.readFileSync(fname, 'utf8')
               # Insert included files
               if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-                @luaObject.script = @insertFiles(@luaObject.script, ttsLuaDir)
+                @luaObject.script = @insertFiles(@luaObject.script)
               # Replace with \u character codes
               if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
                 replace_character = (character) ->
@@ -685,13 +688,16 @@ module.exports = TabletopsimulatorLua =
             console.log error
 
 
-  insertFiles: (text, dir, alreadyInserted = {}) ->
+  insertFiles: (text, dir = null, alreadyInserted = {}) ->
     lines = text.split('\n')
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
         filepath = completeFilepath(found[2], dir)
         filetext = null
+        #if not fs.existsSync(filepath)
+        #  atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
+        #  continue
         try
           filetext = fs.readFileSync(filepath, 'utf8')
         catch error
@@ -758,13 +764,12 @@ module.exports = TabletopsimulatorLua =
     @functionListView = new FunctionListView(@functionByName, fileMap[editor.getPath()]).toggle(text)
 
   catalogFileFunctions: (filepath) ->
-    if filepath of @functionPaths
-      return {}
-    text = fs.readFileSync(filepath, 'utf8')
-    otherFiles = @catalogFunctions(text, filepath, path.dirname(filepath))
-    for otherFile of otherFiles
-      if not (otherFile of @functionPaths)
-        @catalogFileFunctions(otherFile)
+    if not (filepath of @functionPaths)
+      text = fs.readFileSync(filepath, 'utf8')
+      otherFiles = @catalogFunctions(text, filepath, path.dirname(filepath))
+      for otherFile of otherFiles
+        if not (otherFile of @functionPaths)
+          @catalogFileFunctions(otherFile)
 
   catalogFunctions: (text, filepath, root = null) ->
     @functionPaths[filepath] = {}
@@ -772,6 +777,8 @@ module.exports = TabletopsimulatorLua =
     stack = []
     lines = text.split('\n')
     closingTag = []
+    if not isFromTTS(filepath) and root == null
+      root = path.dirname(filepath)
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       for line, row in lines
         if stack.length == 0
