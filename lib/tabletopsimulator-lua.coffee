@@ -156,24 +156,24 @@ class FileHandler
 
   open: ->
     #atom.focus()
-    if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-      row = 0
-      col = 0
-      try
-        row = cursors[filepath].row
-        col = cursors[filepath].col
-      catch error
-      active = (activeEditorPath == @tempFile)
-      atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
-        @handle_connection(editor)
+    row = 0
+    col = 0
+    try
+      row = cursors[@tempfile].row
+      col = cursors[@tempfile].column
+    catch error
+    if activeEditorPath
+      active = (activeEditorPath == @tempfile)
     else
-      atom.workspace.open(@tempfile, activatePane:true).then (editor) =>
-        @handle_connection(editor)
+      active = true
+    atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active}).then (editor) =>
+      @handle_connection(editor)
 
   handle_connection: (editor) ->
+    cursorPosition =  editor.getCursorBufferPosition()
+    filepath = editor.getPath()
     # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-      filepath = editor.getPath()
       text = editor.getText()
       lines = text.split('\n')
       tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
@@ -205,15 +205,15 @@ class FileHandler
       replace_unicode = (unicode) ->
         unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
       editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
-
     if editor.isModified()
       editor.save()
 
-    # Restore cursor position TODO remove this as it's handled in workspace.open?
+    # Restore cursor position (may have been curtailed due to include)
     try
-      editor.setCursorBufferPosition(cursors[editor.getPath()])
-      editor.scrollToCursorPosition()
+      editor.setCursorBufferPosition(cursors[filepath])
     catch error
+      editor.setCursorBufferPosition(cursorPosition)
+    editor.scrollToCursorPosition()
 
     buffer = editor.getBuffer()
     @subscriptions = new CompositeDisposable
@@ -1177,9 +1177,9 @@ module.exports = TabletopsimulatorLua =
               col = 0
               try
                 row = cursors[filepath].row
-                col = cursors[filepath].col
+                col = cursors[filepath].column
               catch error
-              active = activeEditorPath == filepath
+              active = (activeEditorPath == filepath)
               atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
 
         # Print/Debug message
