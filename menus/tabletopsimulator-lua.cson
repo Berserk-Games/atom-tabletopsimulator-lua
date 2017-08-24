@@ -11,7 +11,37 @@
         {
           label: 'Save And Play',
           command:'tabletopsimulator-lua:saveAndPlay'
-        }
+        },
+        {type: 'separator'},
+        {
+          'label': 'Go To Function'
+          'command': 'tabletopsimulator-lua:gotoFunction'
+        },
+        {
+          'label': 'Jump To Cursor Function'
+          'command': 'tabletopsimulator-lua:jumpToFunction'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Display Current Function Name'
+          'command': 'tabletopsimulator-lua:displayCurrentFunction'
+        },
+        {
+          'label': 'Select Current Function'
+          'command': 'tabletopsimulator-lua:selectFunction'
+        },
+        {
+          'label': 'Block Expand Selection'
+          'command': 'tabletopsimulator-lua:expandSelection'
+        },
+        {
+          'label': 'Block Retract Selection'
+          'command': 'tabletopsimulator-lua:retractSelection'
+        },
+        {
+          'label': 'Toggle Selection Cursor Position'
+          'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
       ]
     }
   ]
@@ -28,7 +58,37 @@
         {
           'label': 'Save And Play'
           'command': 'tabletopsimulator-lua:saveAndPlay'
-        }
+        },
+        {type: 'separator'},
+        {
+          'label': 'Go To Function'
+          'command': 'tabletopsimulator-lua:gotoFunction'
+        },
+        {
+          'label': 'Jump To Cursor Function'
+          'command': 'tabletopsimulator-lua:jumpToFunction'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Display Current Function Name'
+          'command': 'tabletopsimulator-lua:displayCurrentFunction'
+        },
+        {
+          'label': 'Select Current Function'
+          'command': 'tabletopsimulator-lua:selectFunction'
+        },
+        {
+          'label': 'Block Expand Selection'
+          'command': 'tabletopsimulator-lua:expandSelection'
+        },
+        {
+          'label': 'Block Retract Selection'
+          'command': 'tabletopsimulator-lua:retractSelection'
+        },
+        {
+          'label': 'Toggle Selection Cursor Position'
+          'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
       ]
     ]
   }

@@ -27,8 +27,8 @@ module.exports =
             spacing = ' '
           operator   = matches[3]
           postfix    = matches[5]
-          if postfix != ''
-            postfix += '\n'
+          #if postfix != ''
+          #  postfix += '\n'
           resolve([{
             snippet: spacing + '=' + spacing + identifier + spacing + operator + spacing + postfix + '$1'
             displayText: '=' + spacing + identifier + spacing + operator + spacing + postfix
@@ -141,6 +141,10 @@ module.exports =
           {
             snippet: '\n\tfunction ' + function_name + "()\n\t\t$1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
             displayText: 'function...coroutine...end'
+          },
+          {
+            snippet: '\n\tfunction ' + function_name + "()\n\t\trepeat\n\t\t\tcoroutine.yield(0)\n\t\tuntil $1\n\t\treturn 1\n\tend\n\tstartLuaCoroutine(self, '" + function_name + "')\nend"
+            displayText: 'function...coroutine...repeat...end'
           },
         ]
 
