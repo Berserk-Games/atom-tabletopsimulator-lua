@@ -72,7 +72,9 @@ completeFilepath = (fn, dir) ->
   filepath = fn
   if not filepath.endsWith('.ttslua')
     filepath += '.ttslua'
-  if filepath.match(/^~[\\/]/) # home dir selector
+  if filepath.match(/^![\\/]/) # ! = configured dir for TTSLua files
+    filepath = path.join(getRootPath(), filepath[2..])
+  else if filepath.match(/^~[\\/]/) # ~ = home dir
     filepath = path.join(os.homedir(), filepath[2..])
   if os.platform() == 'win32'
     fullPathPattern = /\:/
@@ -260,7 +262,7 @@ module.exports = TabletopsimulatorLua =
           default: false
         includeOtherFilesPath:
           title: 'Experimental: Base path for files you wish to #include'
-          description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``'
+          description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
           order: 5
           type: 'string'
           default: ''
