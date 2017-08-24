@@ -712,6 +712,9 @@ module.exports = TabletopsimulatorLua =
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
             lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
+        else
+          marker = '----' + found[1]
+          lines[i] = marker + '\n' + marker
     return lines.join('\n')
 
   excludeChange: (newValue) ->
