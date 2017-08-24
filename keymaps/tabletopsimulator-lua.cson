@@ -14,6 +14,7 @@
 
 'atom-workspace atom-text-editor:not([mini])':
   'ctrl-g':           'tabletopsimulator-lua:gotoFunction'
+  'ctrl-shift-g':     'tabletopsimulator-lua:jumpToFunction'
   'ctrl-<':           'tabletopsimulator-lua:expandSelection'
   'ctrl->':           'tabletopsimulator-lua:retractSelection'
   'ctrl-alt-<':       'tabletopsimulator-lua:selectFunction'
