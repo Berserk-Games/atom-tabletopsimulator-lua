@@ -697,13 +697,13 @@ module.exports = TabletopsimulatorLua =
       if found
         filepath = completeFilepath(found[2], dir)
         filetext = null
-        #if not fs.existsSync(filepath)
-        #  atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
-        #  continue
-        try
-          filetext = fs.readFileSync(filepath, 'utf8')
-        catch error
-          atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
+        if fs.existsSync(filepath)
+          try
+            filetext = fs.readFileSync(filepath, 'utf8')
+          catch error
+            atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
+        else
+          atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
         if filetext
           if filepath of alreadyInserted
             atom.notifications.addWarning(atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword') + " used for same file twice.", {dismissable: true, icon: 'type-file', detail: filepath})
