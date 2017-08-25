@@ -1,3 +1,6 @@
+## 1.2.2
+* Merged more pull requests
+
 ## 1.2.1
 * Merged more pull requests with async saving
 
