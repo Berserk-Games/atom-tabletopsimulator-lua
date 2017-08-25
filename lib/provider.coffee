@@ -1052,9 +1052,9 @@ module.exports =
             description: 'Returns the number of hands that exist for this player color.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandCount'
           },
-          {
-            snippet: 'getHandObjects()'
-            displayText: 'getHandObjects()'
+          { #TODO
+            snippet: 'getHandObjects(${1:int|index})'
+            displayText: 'getHandObjects(int index = 1)'
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.'
@@ -1630,6 +1630,14 @@ module.exports =
             description: 'Clears all 3D UI buttons on this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons'
           },
+          { #TODO
+            snippet: 'clearInputs()'
+            displayText: 'clearInputs()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears all 3D UI text inputs on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearInputs'
+          },
           {
             snippet: 'clone(${1:Table|parameters})'
             displayText: 'clone(Table parameters)'
@@ -1671,13 +1679,46 @@ module.exports =
               'height         = ${8:-- int},\n\t' +
               'font_size      = ${9:-- int},\n\t' +
               'color          = ${10:-- Color},\n\t' +
-              'font_color     = ${11:-- Color},\n' +
+              'font_color     = ${11:-- Color},\n\t' +
+              'tooltip        = ${12:-- string},\n' +
               '})'
             displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI button on this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
+          },
+          { #TODO
+            snippet: 'createInput(${1:Table|parameters})'
+            displayText: 'createInput(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createInput'
+          },
+          { #TODO
+            snippet:
+              'createInput({\n\t' +
+              'value          = ${1:-- string (required)},\n\t' +
+              'input_function = ${2:-- string (required)},\n\t' +
+              'function_owner = ${3:-- Object (required)},\n\t' +
+              'label          = ${4:-- string},\n\t' +
+              'alignment      = ${5:-- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)},\n\t' +
+              'position       = ${6:-- Vector},\n\t' +
+              'rotation       = ${7:-- Vector},\n\t' +
+              'scale          = ${8:-- Vector},\n\t' +
+              'width          = ${9:-- int},\n\t' +
+              'height         = ${10:-- int},\n\t' +
+              'font_size      = ${11:-- int},\n\t' +
+              'color          = ${12:-- Color},\n\t' +
+              'font_color     = ${13:-- Color},\n\t' +
+              'tooltip        = ${14:-- Color},\n' +
+              '})'
+            displayText: 'createInput({string value, string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createInput'
           },
           {
             snippet: 'cut()'
@@ -1695,22 +1736,6 @@ module.exports =
             description: 'Deals to player’s hand. If no player_color supplied it will deal to all seated players.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#deal'
           },
-          #{ DEPRECATED v9.6
-          #  snippet: 'dealToAll(${1:int|num_cards})'
-          #  displayText: 'dealToAll(int num_cards)'
-          #  type: 'function'
-          #  leftLabel: 'bool'
-          #  description: 'Deals a number of Cards from a this Deck to all seated players.'
-          #  descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToAll'
-          #},
-          #{ DEPRECATED v9.6
-          #  snippet: 'dealToColor(${1:int|num_cards}, ${2:string|player_color})'
-          #  displayText: 'dealToColor(int num_cards, string player_color)'
-          #  type: 'function'
-          #  leftLabel: 'bool'
-          #  description: 'Deals a number of Cards from this Deck to a specific player.'
-          #  descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColor'
-          #},
           {
             snippet: 'dealToColorWithOffset(${1:Vector|offset}, ${2:bool|flip}, ${3:string|player_color})'
             displayText: 'dealToColorWithOffset(Vector offset, bool flip, string player_color)'
@@ -1756,6 +1781,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Edits a 3D UI button on this Object based on its index.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
+          },
+          { #TODO
+            snippet: 'editInput(${1:Table|parameters})'
+            displayText: 'editInput(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: ''
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editInput'
           },
           {
             snippet: 'flip()'
@@ -1867,6 +1900,14 @@ module.exports =
             leftLabel: 'string'
             description: 'Returns the GUID that belongs to this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
+          },
+          { #TODO
+            snippet: 'getInputs()'
+            displayText: 'getInputs()'
+            type: 'function'
+            leftLabel: 'string'
+            description: ''
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getInputs'
           },
           {
             snippet: 'getLoopingEffectIndex()'
@@ -2164,6 +2205,14 @@ module.exports =
             description: 'Removes a 3D UI button from this Object by its index.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeButton'
           },
+          { #TODO
+            snippet: 'removeInput(${1:int|index})'
+            displayText: 'removeInput(int index)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Removes a 3D UI text input from this Object by its index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeInput'
+          },
           {
             snippet: 'reset()'
             displayText: 'reset()'
@@ -2460,13 +2509,6 @@ module.exports =
               descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDropped'
             },
             {
-              snippet: 'onLoad(save_state)\n\t${0:-- body...}\nend'
-              displayText: 'onLoad(string save_state)'
-              type: 'function'
-              description: 'Automatically called when a game save is finished loading every Object.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
-            },
-            {
               snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
               displayText: 'onPickedUp(string player_color)'
               type: 'function'
@@ -2475,16 +2517,23 @@ module.exports =
             },
           ]
         suggestions = suggestions.concat [
-          {
-            snippet: 'fixedUpdate()\n\t${0:-- body...}\nend'
-            displayText: 'fixedUpdate()'
+          { #TODO
+            snippet: 'onChat(message, player)\n\t${0:-- body...}\nend'
+            displayText: 'onChat(string message, Player player)'
             type: 'function'
-            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#fixedUpdate'
+            description: 'This function is called every time a player sends a chat message.  Return false to cancel that message.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onChat'
           },
           {
-            snippet: 'onload(save_state)\n\t${0:-- body...}\nend'
-            displayText: 'onload(string save_state)'
+            snippet: 'onFixedUpdate()\n\t${0:-- body...}\nend'
+            displayText: 'onFixedUpdate()'
+            type: 'function'
+            description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onFixedUpdate'
+          },
+          {
+            snippet: 'onLoad(save_state)\n\t${0:-- body...}\nend'
+            displayText: 'onLoad(string save_state)'
             type: 'function'
             description: 'Automatically called when a game save is finished loading every Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
@@ -2588,11 +2637,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
           },
           {
-            snippet: 'update()\n\t${0:-- body...}\nend'
-            displayText: 'update()'
+            snippet: 'onUpdate()\n\t${0:-- body...}\nend'
+            displayText: 'onUpdate()'
             type: 'function'
             description: 'Automatically called once every frame.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#update'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onUpdate'
           },
         ]
 
