@@ -1052,12 +1052,12 @@ module.exports =
             description: 'Returns the number of hands that exist for this player color.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandCount'
           },
-          { #TODO
+          {
             snippet: 'getHandObjects(${1:int|index})'
             displayText: 'getHandObjects(int index = 1)'
             type: 'function'
             leftLabel: 'Table'
-            description: 'Returns a Lua Table as a list of all the Cards and Mahjong Tiles in the player\'s hand.'
+            description: 'Returns a list of all the Cards and Mahjong Tiles in the player\'s hand. Specify index for additional hands.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects'
           },
           {
@@ -1630,7 +1630,7 @@ module.exports =
             description: 'Clears all 3D UI buttons on this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons'
           },
-          { #TODO
+          {
             snippet: 'clearInputs()'
             displayText: 'clearInputs()'
             type: 'function'
@@ -1688,7 +1688,7 @@ module.exports =
             description: 'Creates a 3D UI button on this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
           },
-          { #TODO
+          {
             snippet: 'createInput(${1:Table|parameters})'
             displayText: 'createInput(Table parameters)'
             type: 'function'
@@ -1696,25 +1696,26 @@ module.exports =
             description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createInput'
           },
-          { #TODO
+          {
             snippet:
               'createInput({\n\t' +
-              'value          = ${1:-- string (required)},\n\t' +
-              'input_function = ${2:-- string (required)},\n\t' +
-              'function_owner = ${3:-- Object (required)},\n\t' +
-              'label          = ${4:-- string},\n\t' +
-              'alignment      = ${5:-- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)},\n\t' +
-              'position       = ${6:-- Vector},\n\t' +
-              'rotation       = ${7:-- Vector},\n\t' +
-              'scale          = ${8:-- Vector},\n\t' +
-              'width          = ${9:-- int},\n\t' +
-              'height         = ${10:-- int},\n\t' +
-              'font_size      = ${11:-- int},\n\t' +
-              'color          = ${12:-- Color},\n\t' +
-              'font_color     = ${13:-- Color},\n\t' +
-              'tooltip        = ${14:-- Color},\n' +
+              'input_function = ${1:-- string (required)},\n\t' +
+              'function_owner = ${2:-- Object (required)},\n\t' +
+              'label          = ${3:-- string},\n\t' +
+              'alignment      = ${4:-- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)},\n\t' +
+              'position       = ${5:-- Vector},\n\t' +
+              'rotation       = ${6:-- Vector},\n\t' +
+              'scale          = ${7:-- Vector},\n\t' +
+              'width          = ${8:-- int},\n\t' +
+              'height         = ${9:-- int},\n\t' +
+              'font_size      = ${10:-- int},\n\t' +
+              'color          = ${11:-- Color},\n\t' +
+              'font_color     = ${12:-- Color},\n\t' +
+              'tooltip        = ${13:-- Color},\n\t' +
+              'value          = ${14:-- string},\n\t' +
+              'validation     = ${15:-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)},\n\t' +
               '})'
-            displayText: 'createInput({string value, string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip})'
+            displayText: 'createInput({string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip, string value, int validation})'
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
@@ -1782,13 +1783,39 @@ module.exports =
             description: 'Edits a 3D UI button on this Object based on its index.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
           },
-          { #TODO
+          {
             snippet: 'editInput(${1:Table|parameters})'
             displayText: 'editInput(Table parameters)'
             type: 'function'
             leftLabel: 'bool'
-            description: ''
+            description: 'Edits a 3D UI input on this Object based on its index.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editInput'
+          },
+          {
+            snippet:
+              'editInput({\n\t' +
+              'index          = ${1:-- int (required)},\n\t' +
+              'input_function = ${2:-- string},\n\t' +
+              'function_owner = ${3:-- Object},\n\t' +
+              'label          = ${4:-- string},\n\t' +
+              'alignment      = ${5:-- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)},\n\t' +
+              'position       = ${6:-- Vector},\n\t' +
+              'rotation       = ${7:-- Vector},\n\t' +
+              'scale          = ${8:-- Vector},\n\t' +
+              'width          = ${9:-- int},\n\t' +
+              'height         = ${10:-- int},\n\t' +
+              'font_size      = ${11:-- int},\n\t' +
+              'color          = ${12:-- Color},\n\t' +
+              'font_color     = ${13:-- Color},\n\t' +
+              'tooltip        = ${14:-- Color},\n\t' +
+              'value          = ${15:-- string},\n\t' +
+              'validation     = ${16:-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)},\n\t' +
+              '})'
+            displayText: 'editInput({int index, string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip, string value, int validation})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits a 3D UI input on this Object based on its index.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editInput'
           },
           {
             snippet: 'flip()'
@@ -1901,12 +1928,37 @@ module.exports =
             description: 'Returns the GUID that belongs to this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
           },
-          { #TODO
+          {
             snippet: 'getInputs()'
             displayText: 'getInputs()'
             type: 'function'
-            leftLabel: 'string'
-            description: ''
+            leftLabel: 'Table'
+            description: 'Gets a list of all the 3D UI inputs on this Object.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getInputs'
+          },
+          {
+            snippet:
+              'getInputs() -- returns table of tables:\n\t' +
+                '-- index               int       \n\t' +
+                '-- click_function      string    \n\t' +
+                '-- function_owner      Object    \n\t' +
+                '-- label               string    \n\t' +
+                '-- position            Table     \n\t' +
+                '-- rotation            Table     \n\t' +
+                '-- scale               Table     \n\t' +
+                '-- width               int       \n\t' +
+                '-- height              int       \n\t' +
+                '-- font_size           int       \n\t' +
+                '-- color               Color     \n\t' +
+                '-- font_color          Color     \n\t' +
+                '-- tooltip             string    \n\t' +
+                '-- alignment           int       (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)\n\t' +
+                '-- value               string    \n\t' +
+                '-- validation          int       (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)'
+            displayText: 'getInputs() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Gets a list of all the 3D UI inputs on this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getInputs'
           },
           {
@@ -2205,7 +2257,7 @@ module.exports =
             description: 'Removes a 3D UI button from this Object by its index.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeButton'
           },
-          { #TODO
+          {
             snippet: 'removeInput(${1:int|index})'
             displayText: 'removeInput(int index)'
             type: 'function'
@@ -2517,7 +2569,7 @@ module.exports =
             },
           ]
         suggestions = suggestions.concat [
-          { #TODO
+          { 
             snippet: 'onChat(message, player)\n\t${0:-- body...}\nend'
             displayText: 'onChat(string message, Player player)'
             type: 'function'
