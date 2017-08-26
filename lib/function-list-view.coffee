@@ -79,7 +79,8 @@ class FunctionListView extends SelectListView
               # not in any children, so is only in this file
             return [node.label, row - (node.startRow + offset)]
           [filepath, row] = walkFileMap(row, @fileMap)
-        if filepath != @editor.getPath()
+        if filepath and filepath != @editor.getPath()
+          console.log "Opening file in Go To Function", filepath
           atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
             editor.setCursorBufferPosition([row, 0])
             editor.scrollToCursorPosition()

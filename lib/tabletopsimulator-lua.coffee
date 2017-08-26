@@ -452,10 +452,9 @@ module.exports = TabletopsimulatorLua =
     if not atom.workspace.isTextEditor(editor)
       return
     filepath = editor.getPath()
-    if not filepath.endsWith('.ttslua')
-      return
-    if not (filepath of @functionPaths)
-      @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
+    if filepath and filepath.endsWith('.ttslua')
+      if not (filepath of @functionPaths)
+        @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -837,7 +836,8 @@ module.exports = TabletopsimulatorLua =
       if editor.getPath() == item.filepath
           editor.setCursorBufferPosition([item.line, 0])
           editor.scrollToCursorPosition()
-      else
+      else if item.filepath
+        #console.log "Opening Jumped-to file", item.filepath
         atom.workspace.open(item.filepath, {initialLine: item.line, initialColumn: 0}).then (other) ->
           other.setCursorBufferPosition([item.line, 0])
           other.scrollToCursorPosition()
@@ -1044,16 +1044,17 @@ module.exports = TabletopsimulatorLua =
     @if_connected = true
 
     @connection.on 'connect', () ->
-      #console.log "Opened connection to #{domain}:#{port}"
+      #console.log "Opened connection to #{domain}:#{clientport}"
 
     @connection.on 'data', (data) ->
       # getObjects results in this
-
       try
         @data = JSON.parse(@data_cache + data)
       catch error
         @data_cache = @data_cache + data
+        #console.log "Received data cache"
         return
+      #console.log "Received: ", @data.messageID
 
       if @data.messageID == 0
         # Close any open files
@@ -1078,6 +1079,7 @@ module.exports = TabletopsimulatorLua =
             #@parse_line(line)
             @file.append(line)
           if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            #console.log i, "Opening file in Start Connection", @file
             @file.open()
           @file = null
 
@@ -1109,13 +1111,13 @@ module.exports = TabletopsimulatorLua =
       socket.on 'data', (data) ->
         # saveAndPlay and making a new script in TTS results in this
 
-        #console.log "#{socket.remoteAddress} sent: #{data}"
-
         try
           @data = JSON.parse(@data_cache + data)
         catch error
           @data_cache = @data_cache + data
+          #console.log "Received data cache"
           return
+        #console.log "Received: #{@data.messageID} from #{socket.remoteAddress}"
 
         # Pushing new Object
         if @data.messageID == 0
@@ -1132,7 +1134,8 @@ module.exports = TabletopsimulatorLua =
                 line = line + "\n"
               #@parse_line(line)
               @file.append(line)
-              @file.open()
+              #console.log i, "Opening file in Start Server message 0", @file
+            @file.open()
             @file = null
 
         # Loading a new game
@@ -1167,6 +1170,7 @@ module.exports = TabletopsimulatorLua =
               #@parse_line(line)
               @file.append(line)
             if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+              #console.log "Opening file in Start Server message 1", @file
               @file.open()
             @file = null
 
@@ -1180,6 +1184,7 @@ module.exports = TabletopsimulatorLua =
                 col = cursors[filepath].column
               catch error
               active = (activeEditorPath == filepath)
+              #console.log "Opening other file", filepath
               atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
 
         # Print/Debug message
