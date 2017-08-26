@@ -1,3 +1,6 @@
+## 1.2.3
+* Fixed freezing when right click object and selecting lua editor
+
 ## 1.2.2
 * Merged more pull requests
 
