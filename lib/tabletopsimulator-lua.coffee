@@ -1044,7 +1044,7 @@ module.exports = TabletopsimulatorLua =
     @if_connected = true
 
     @connection.on 'connect', () ->
-      #console.log "Opened connection to #{domain}:#{port}"
+      console.log "Opened connection to #{domain}:#{clientport}"
 
     @connection.on 'data', (data) ->
       # getObjects results in this
@@ -1103,14 +1103,14 @@ module.exports = TabletopsimulatorLua =
 
   startServer: ->
     server = net.createServer (socket) ->
-      #console.log "New connection from #{socket.remoteAddress}"
+      console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
       #socket.parse_line = @parse_line
 
       socket.on 'data', (data) ->
         # saveAndPlay and making a new script in TTS results in this
 
-        #console.log "#{socket.remoteAddress} sent: #{data}"
+        console.log "#{socket.remoteAddress} sent: #{data}"
 
         try
           @data = JSON.parse(@data_cache + data)
