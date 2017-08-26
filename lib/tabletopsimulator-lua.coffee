@@ -452,10 +452,9 @@ module.exports = TabletopsimulatorLua =
     if not atom.workspace.isTextEditor(editor)
       return
     filepath = editor.getPath()
-    if not filepath.endsWith('.ttslua')
-      return
-    if not (filepath of @functionPaths)
-      @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
+    if filepath and filepath.endsWith('.ttslua')
+      if not (filepath of @functionPaths)
+        @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -837,7 +836,8 @@ module.exports = TabletopsimulatorLua =
       if editor.getPath() == item.filepath
           editor.setCursorBufferPosition([item.line, 0])
           editor.scrollToCursorPosition()
-      else
+      else if item.filepath
+        console.log "Opening Jumped-to file", item.filepath
         atom.workspace.open(item.filepath, {initialLine: item.line, initialColumn: 0}).then (other) ->
           other.setCursorBufferPosition([item.line, 0])
           other.scrollToCursorPosition()
@@ -1078,6 +1078,7 @@ module.exports = TabletopsimulatorLua =
             #@parse_line(line)
             @file.append(line)
           if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            console.log "Opening file in Start Connection", @file
             @file.open()
           @file = null
 
@@ -1132,6 +1133,7 @@ module.exports = TabletopsimulatorLua =
                 line = line + "\n"
               #@parse_line(line)
               @file.append(line)
+              console.log "Opening file in Start Server message 0", @file
               @file.open()
             @file = null
 
@@ -1167,6 +1169,7 @@ module.exports = TabletopsimulatorLua =
               #@parse_line(line)
               @file.append(line)
             if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+              console.log "Opening file in Start Server message 1", @file
               @file.open()
             @file = null
 
@@ -1180,6 +1183,7 @@ module.exports = TabletopsimulatorLua =
                 col = cursors[filepath].column
               catch error
               active = (activeEditorPath == filepath)
+              console.log "Opening other file", filepath
               atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
 
         # Print/Debug message
