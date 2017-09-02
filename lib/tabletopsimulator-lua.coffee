@@ -46,6 +46,8 @@ cursors = {}
 editors = []
 ttsEditors = {}
 activeEditorPath = ''
+mutex = {}
+mutex.doingSaveAndPlay = false
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -631,6 +633,9 @@ module.exports = TabletopsimulatorLua =
 
 
   saveAndPlay: ->
+    if mutex.doingSaveAndPlay
+      return
+    mutex.doingSaveAndPlay = true
     # Store active editor
     try
       activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
@@ -1190,6 +1195,7 @@ module.exports = TabletopsimulatorLua =
               active = (activeEditorPath == filepath)
               #console.log "Opening other file", filepath
               atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
+          mutex.doingSaveAndPlay = false
 
         # Print/Debug message
         else if @data.messageID == 2
