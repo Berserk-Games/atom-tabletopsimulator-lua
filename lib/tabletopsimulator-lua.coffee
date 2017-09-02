@@ -622,12 +622,12 @@ module.exports = TabletopsimulatorLua =
       if editor.isModified()
         return Promise.resolve(editor.save())
       else
-        return Promise.resolve()
+        return Promise.resolve(editor.getBuffer())
     else
       try
         editor.save()
       catch error
-      return Promise.resolve()
+      return Promise.resolve(editor.getBuffer())
 
 
   saveAndPlay: ->
@@ -650,10 +650,14 @@ module.exports = TabletopsimulatorLua =
         editors.push(editor.getPath())
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
 
+    console.log "Starting to save..."
+
     for editor, i in atom.workspace.getTextEditors()
-      @blocking_save(editor).then =>
+      @blocking_save(editor).then (buffer) =>
+        console.log buffer.getPath(), buffer.isModified()
         savedFiles += 1
         if savedFiles == openFiles
+          console.log "All done!"
           # This is a horrible hack I feel - we see how many editors are open, then
           # run this block after each save, but only do the below code if the
           # number of files we have saved is the number of files open.  Urgh.
