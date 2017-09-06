@@ -46,6 +46,8 @@ cursors = {}
 editors = []
 ttsEditors = {}
 activeEditorPath = ''
+mutex = {}
+mutex.doingSaveAndPlay = false
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -123,6 +125,16 @@ isFromTTS = (fn) ->
 
 isGlobalScript = (fn) ->
   return path.basename(fn) == 'Global.-1.ttslua'
+
+destroyTTSEditors = ->
+  if not atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
+    force = true
+  for editor,i in atom.workspace.getTextEditors()
+    if force or isFromTTS(editor.getPath())
+      try
+        editor.destroy()
+      catch error
+        console.log error
 
 
 class FileHandler
@@ -424,12 +436,13 @@ module.exports = TabletopsimulatorLua =
         @onSave(event)
 
     # Close any open files
-    for editor,i in atom.workspace.getTextEditors()
-      try
-        #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-        editor.destroy()
-      catch error
-        console.log error
+    #for editor,i in atom.workspace.getTextEditors()
+    #  try
+    #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+    #    editor.destroy()
+    #  catch error
+    #    console.log error
+    destroyTTSEditors()
 
     # Delete any existing cached Lua files
     try
@@ -591,14 +604,15 @@ module.exports = TabletopsimulatorLua =
       buttons:
         Yes: ->
           # Close any open files
-          for editor,i in atom.workspace.getTextEditors()
-            try
-              # Store cursor positions
-              cursors[editor.getPath()] = editor.getCursorBufferPosition()
-              #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-              editor.destroy()
-            catch error
-              console.log error
+          #for editor,i in atom.workspace.getTextEditors()
+          #  try
+          #    # Store cursor positions
+          #    cursors[editor.getPath()] = editor.getCursorBufferPosition()
+          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+          #    editor.destroy()
+          #  catch error
+          #    console.log error
+          destroyTTSEditors()
 
           # Delete any existing cached Lua files
           try
@@ -622,15 +636,18 @@ module.exports = TabletopsimulatorLua =
       if editor.isModified()
         return Promise.resolve(editor.save())
       else
-        return Promise.resolve()
+        return Promise.resolve(editor.getBuffer())
     else
       try
         editor.save()
       catch error
-      return Promise.resolve()
+      return Promise.resolve(editor.getBuffer())
 
 
   saveAndPlay: ->
+    if mutex.doingSaveAndPlay
+      return
+    mutex.doingSaveAndPlay = true
     # Store active editor
     try
       activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
@@ -650,10 +667,14 @@ module.exports = TabletopsimulatorLua =
         editors.push(editor.getPath())
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
 
+    console.log "Starting to save..."
+
     for editor, i in atom.workspace.getTextEditors()
-      @blocking_save(editor).then =>
+      @blocking_save(editor).then (buffer) =>
+        console.log buffer.getPath(), buffer.isModified()
         savedFiles += 1
         if savedFiles == openFiles
+          console.log "All done!"
           # This is a horrible hack I feel - we see how many editors are open, then
           # run this block after each save, but only do the below code if the
           # number of files we have saved is the number of files open.  Urgh.
@@ -1058,12 +1079,13 @@ module.exports = TabletopsimulatorLua =
 
       if @data.messageID == 0
         # Close any open files
-        for editor,i in atom.workspace.getTextEditors()
-          try
-            #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-            editor.destroy()
-          catch error
-            console.log error
+        #for editor,i in atom.workspace.getTextEditors()
+        #  try
+        #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+        #    editor.destroy()
+        #  catch error
+        #    console.log error
+        destroyTTSEditors()
 
         for f,i in @data.scriptStates
           @file = new FileHandler()
@@ -1140,12 +1162,13 @@ module.exports = TabletopsimulatorLua =
 
         # Loading a new game
         else if @data.messageID == 1
-          for editor,i in atom.workspace.getTextEditors()
-            try
-              #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-              editor.destroy()
-            catch error
-              console.log error
+          #for editor,i in atom.workspace.getTextEditors()
+          #  try
+          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
+          #    editor.destroy()
+          #  catch error
+          #    console.log error
+          destroyTTSEditors()
 
           # Delete any existing cached Lua files
           try
@@ -1174,18 +1197,20 @@ module.exports = TabletopsimulatorLua =
               @file.open()
             @file = null
 
+          # TODO trying to do this by simply not closing them instead of reopening them
           # Load any further files that were previously open
-          if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-            for filepath in editors
-              row = 0
-              col = 0
-              try
-                row = cursors[filepath].row
-                col = cursors[filepath].column
-              catch error
-              active = (activeEditorPath == filepath)
-              #console.log "Opening other file", filepath
-              atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
+          #if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
+          #  for filepath in editors
+          #    row = 0
+          #    col = 0
+          #    try
+          #      row = cursors[filepath].row
+          #      col = cursors[filepath].column
+          #    catch error
+          #    active = (activeEditorPath == filepath)
+          #    #console.log "Opening other file", filepath
+          #    atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
+          mutex.doingSaveAndPlay = false
 
         # Print/Debug message
         else if @data.messageID == 2
