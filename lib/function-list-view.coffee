@@ -48,8 +48,9 @@ class FunctionListView extends SelectListView
       line += @currentRow
     if line < 0
       line = 0
-    if line >= @lineCount
-      line = @lineCount
+    lineCount = @editor.getLineCount()
+    if line >= lineCount
+      line = lineCount - 1
     @editor.setCursorBufferPosition([line, 0])
     @editor.scrollToCursorPosition()
 
@@ -68,16 +69,16 @@ class FunctionListView extends SelectListView
         filepath = @editor.getPath()
         row = parseInt(m[2]) - 1
         if @fileMap
-          walkFileMap = (row, node) ->
-            if node.startRow <= row <= node.endRow
-              offset = 0
+          walkFileMap = (r, node) ->
+            offset = 0
+            if node.startRow <= r <= node.endRow
               for child in node.children
-                if child.endRow < row
+                if child.endRow < r
                   offset += (child.endRow - child.startRow) + 1
-                else if row >= child.startRow
-                  return walkFileMap(row, child)
+                else if r >= child.startRow
+                  return walkFileMap(r, child)
               # not in any children, so is only in this file
-            return [node.label, row - (node.startRow + offset)]
+            return [node.label, r - (node.startRow + offset)]
           [filepath, row] = walkFileMap(row, @fileMap)
         if filepath and filepath != @editor.getPath()
           console.log "Opening file in Go To Function", filepath
