@@ -1227,10 +1227,7 @@ module.exports = TabletopsimulatorLua =
       lintsOnChange: true
       lint: (editor) =>
         filepath = editor.getPath()
-        text = editor.getText().replace(/^#include/gm, '--#include')
-        blocks = []
-        currentBlock = ''
-        blockStartRow = 0
+        text = editor.getText().replace(/^#include/gm, '--nclude')
         indents = [0]
         nextLineContinuation = false
         nextLineExpectIndent = null
@@ -1249,9 +1246,9 @@ module.exports = TabletopsimulatorLua =
             }
           })
         for line, i in text.split(/\r?\n/)
-          if not nextLineContinuation
-            m = line.match(/^(\s*)([^\s]+)/)
-            if m
+          m = line.match(/^(\s*)([^\s]+)/)
+          if m
+            if not nextLineContinuation
               indent = m[1].length
               irregular = null
               [..., currentIndent] = indents
@@ -1277,45 +1274,31 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent without keyword"
               if irregular
                 addLint('warning', irregular, i, indent)
-            m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|$)/)
-            if m
-              nextLineExpectIndent = m[1]
-            else
-              nextLineExpectIndent = null
-          else if nextLineContinuation[1] == ','
-            m = line.match(/^(\s*)([^\s]+)/)
-            if m and m[2].match(/^[\]\}\)]+$/)
-              indent = m[1].length
-              [..., prevIndent, currentIndent] = indents
-              if indent == prevIndent
-                indents.pop()
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|$)/)
+              if m
+                nextLineExpectIndent = m[1]
               else
-                addLint('warning', 'Dedent does not match indent', i, indent)
-                while indent < currentIndent
+                nextLineExpectIndent = null
+            else if nextLineContinuation[1] == ','
+              m = line.match(/^(\s*)([^\s]+)/)
+              if m and m[2].match(/^[\]\}\)]+$/)
+                indent = m[1].length
+                [..., prevIndent, currentIndent] = indents
+                if indent == prevIndent
                   indents.pop()
-                  [..., currentIndent] = indents
-                if indent > currentIndent
-                  indents.push(indent)
-          nextLineContinuation = line.match(/(\sor|\sand|..|,)\s*$/)
-          if line.match(/^function\s/)
-            blocks.push([blockStartRow, currentBlock])
-            currentBlock = line + '\n'
-            blockStartRow = i
-          else if line.match(/^end(\s|$)/)
-            currentBlock += line + '\n'
-            blocks.push([blockStartRow, currentBlock])
-            currentBlock = ''
-            blockStartRow = i + 1
-          else
-            currentBlock += line + '\n'
-        if currentBlock != ''
-          blocks.push([blockStartRow, currentBlock])
-        for [startRow, currentBlock] in blocks
-          try
-            luaparse.parse(currentBlock)
-          catch error
-            row = error.line - 1 + startRow
-            column = error.column
-            message = error.message.replace('<eof>', '<end of function>')
-            addLint('error', message, row, column)
+                else
+                  addLint('warning', 'Dedent does not match indent', i, indent)
+                  while indent < currentIndent
+                    indents.pop()
+                    [..., currentIndent] = indents
+                  if indent > currentIndent
+                    indents.push(indent)
+            nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
+        try
+          luaparse.parse(text)
+        catch error
+          row = error.line - 1
+          column = error.column
+          message = error.message
+          addLint('error', message, row, column)
         return lints
