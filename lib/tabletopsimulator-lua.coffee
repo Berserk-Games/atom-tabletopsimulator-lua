@@ -1294,7 +1294,21 @@ module.exports = TabletopsimulatorLua =
               nextLineExpectIndent = m[1]
             else
               nextLineExpectIndent = null
-          nextLineContinuation = line.match(/--$/)
+          else if nextLineContinuation[1] == ','
+            m = line.match(/^(\s*)([^\s]+)/)
+            if m and m[2].match(/^[\]\}\)]+$/)
+              indent = m[1].length
+              [..., prevIndent, currentIndent] = indents
+              if indent == prevIndent
+                indents.pop()
+              else
+                addLint('warning', 'Dedent does not match indent', i, indent)
+                while indent < currentIndent
+                  indents.pop()
+                  [..., currentIndent] = indents
+                if indent > currentIndent
+                  indents.push(indent)
+          nextLineContinuation = line.match(/(\sor|\sand|,)\s*$/)
           if line.match(/^function\s/)
             blocks.push([blockStartRow, currentBlock])
             currentBlock = line + '\n'
