@@ -6,6 +6,7 @@ fs = require 'fs'
 os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
+luaparse = require 'luaparse'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
@@ -97,7 +98,7 @@ getRootPath = () ->
   return rootpath
 
 extractFileMap = (text, filepath) ->
-  lines = text.split('\n')
+  lines = text.split(/\r?\n/)
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
   for line, row in lines
     found = line.match(insertedFileRegexp)
@@ -187,7 +188,7 @@ class FileHandler
     # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = editor.getText()
-      lines = text.split('\n')
+      lines = text.split(/\r?\n/)
       tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
       output = []
       for line, row in lines
@@ -711,7 +712,7 @@ module.exports = TabletopsimulatorLua =
 
 
   insertFiles: (text, dir = null, alreadyInserted = {}) ->
-    lines = text.split('\n')
+    lines = text.split(/\r?\n/)
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
@@ -730,7 +731,7 @@ module.exports = TabletopsimulatorLua =
             lines[i] = ''
           else
             alreadyInserted[filepath] = true
-            filetext = filetext.replace(/[\s\n\r]*$/, '')
+            filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
             lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
@@ -800,7 +801,7 @@ module.exports = TabletopsimulatorLua =
     @functionPaths[filepath] = {}
     otherFiles = {}
     stack = []
-    lines = text.split('\n')
+    lines = text.split(/\r?\n/)
     closingTag = []
     if not isFromTTS(filepath) and root == null
       root = path.dirname(filepath)
@@ -1094,7 +1095,7 @@ module.exports = TabletopsimulatorLua =
           @file.setDatasize(f.script.length)
           @file.create()
 
-          lines = f.script.split "\n"
+          lines = f.script.split(/\r?\n/)
           for line,i in lines
             if i < lines.length-1
               line = line + "\n"
@@ -1150,7 +1151,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split "\n"
+            lines = f.script.split(/\r?\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1186,7 +1187,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split "\n"
+            lines = f.script.split(/\r?\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1229,3 +1230,95 @@ module.exports = TabletopsimulatorLua =
 
     console.log "Listening to #{domain}:#{serverport}"
     server.listen serverport, domain
+
+  provideLinter: ->
+    provider =
+      name: 'TTS Lua'
+      grammarScopes: ['source.tts.lua']
+      scope: 'file'
+      lintsOnChange: true
+      lint: (editor) =>
+        filepath = editor.getPath()
+        text = editor.getText().replace(/^#include/gm, '--#include')
+        blocks = []
+        currentBlock = ''
+        blockStartRow = 0
+        indents = [0]
+        nextLineContinuation = false
+        nextLineExpectIndent = null
+        lints = []
+        addLint = (severity, message, row, column) ->
+          lints.push({
+            severity: severity,
+            excerpt: message,
+            location: {
+              file: filepath,
+              position: [[row, column], [row, column]]
+            }
+            reference: {
+              file: filepath,
+              position: [row, column]
+            }
+          })
+        for line, i in text.split(/\r?\n/)
+          if not nextLineContinuation
+            m = line.match(/^(\s*)([^\s]+)/)
+            if m
+              indent = m[1].length
+              irregular = null
+              [..., currentIndent] = indents
+              if indent > currentIndent
+                indents.push(indent)
+              else
+                if nextLineExpectIndent
+                  addLint('warning', "Indentation expected after '" + nextLineExpectIndent + "'", i, indent)
+                if indent < currentIndent
+                  indents.pop()
+                  [..., currentIndent] = indents
+                  if indent > currentIndent
+                    irregular = "Dedent does not match indent"
+                    indents.push(indent)
+                  else if indent < currentIndent
+                    irregular = "Dedent does not match indent"
+                    while indent < currentIndent
+                      indents.pop()
+                      [..., currentIndent] = indents
+                    if indent > currentIndent
+                      indents.push(indent)
+                  else if m[2] not in ['end', 'else', 'elseif', 'until'] and not m[2].match(/^[\]\}\)]+$/)
+                    irregular = "Dedent without keyword"
+              if irregular
+                addLint('warning', irregular, i, indent)
+            m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|$)/)
+            if m
+              nextLineExpectIndent = m[1]
+            else
+              nextLineExpectIndent = null
+          nextLineContinuation = line.match(/--$/)
+          if blockStartRow
+            if line.match(/^function\s/)
+              blocks.push([blockStartRow, currentBlock])
+              currentBlock = ''
+              blockStartRow = i
+            else if line.match(/^end(\s|$)/)
+              currentBlock += line + '\n'
+              blocks.push([blockStartRow, currentBlock])
+              currentBlock = ''
+              blockStartRow = null
+          else
+            if line.match(/^function\s/)
+              currentBlock = ''
+              blockStartRow = i
+          if blockStartRow
+            currentBlock += line + '\n'
+        if blockStartRow
+          blocks.push([blockStartRow, currentBlock])
+        for [startRow, currentBlock] in blocks
+          try
+            luaparse.parse(currentBlock)
+          catch error
+            row = error.line - 1 + startRow
+            column = error.column
+            message = error.message.replace('<eof>', '<end of function>')
+            addLint('error', message, row, column)
+        return lints

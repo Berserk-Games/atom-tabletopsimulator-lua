@@ -20,6 +20,11 @@
       "versions": {
         "2.0.0": "getProvider"
       }
+    },
+    "linter": {
+      "versions": {
+        "2.0.0": "provideLinter"
+      }
     }
   },
   "consumedServices": {
@@ -32,6 +37,7 @@
   "dependencies": {
     "mkdirp": "~0.3.5",
     "space-pen": "^5.1.1",
-    "atom-space-pen-views": "^2.0.0"
+    "atom-space-pen-views": "^2.0.0",
+    "luaparse": "^0.2.0"
   }
 }
