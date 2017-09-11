@@ -218,6 +218,28 @@ module.exports =
           },
         ]
 
+      # Section: dynamic Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "dynamic") || line.endsWith("dynamic.") || (previous_token == "dynamic" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'eval(${1:string|s})'
+            displayText: 'eval(string s)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Returns the evaluation of s.'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
+          },
+          {
+            snippet: 'prepare(${1:string|s})'
+            displayText: 'prepare(string s)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Returns a prepared expression object which can be passed to dynamic.eval for faster execution.'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
+          },
+        ]
+
       # Section: bit32 Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "bit32") || line.endsWith("bit32.") || (previous_token == "bit32" && this_token_intact)
         suggestions = [
