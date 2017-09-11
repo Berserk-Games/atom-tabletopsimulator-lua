@@ -1261,13 +1261,15 @@ module.exports = TabletopsimulatorLua =
             multiple = line.match(/(^|\s)(end|else|endif|until)(?=(\s|$))/g)
             if multiple and multiple.length > 1
               addLint('warning', 'Multiple block end keywords on single line', i, indent)
-            if not nextLineContinuation
+            override = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+            override = override and not override[3]
+            if not nextLineContinuation or override
               irregular = null
               [..., currentIndent] = indents
               if indent > currentIndent
                 if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
                   irregular = "Dedent expected for '" + m[2] + "'"
-                else if not nextLineExpectIndent
+                else if not nextLineExpectIndent and not override
                   irregular = "Indentation not expected"
                 indents.push(indent)
               else
@@ -1293,8 +1295,8 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
-              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)/)
-              if m
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+              if m and not m[3]
                 nextLineExpectIndent = m[1]
               else
                 m = line.match(/([\{\[\(]+)$/)
