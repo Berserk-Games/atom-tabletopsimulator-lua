@@ -1295,23 +1295,18 @@ module.exports = TabletopsimulatorLua =
             else
               nextLineExpectIndent = null
           nextLineContinuation = line.match(/--$/)
-          if blockStartRow
-            if line.match(/^function\s/)
-              blocks.push([blockStartRow, currentBlock])
-              currentBlock = ''
-              blockStartRow = i
-            else if line.match(/^end(\s|$)/)
-              currentBlock += line + '\n'
-              blocks.push([blockStartRow, currentBlock])
-              currentBlock = ''
-              blockStartRow = null
-          else
-            if line.match(/^function\s/)
-              currentBlock = ''
-              blockStartRow = i
-          if blockStartRow
+          if line.match(/^function\s/)
+            blocks.push([blockStartRow, currentBlock])
+            currentBlock = line + '\n'
+            blockStartRow = i
+          else if line.match(/^end(\s|$)/)
             currentBlock += line + '\n'
-        if blockStartRow
+            blocks.push([blockStartRow, currentBlock])
+            currentBlock = ''
+            blockStartRow = i + 1
+          else
+            currentBlock += line + '\n'
+        if currentBlock != ''
           blocks.push([blockStartRow, currentBlock])
         for [startRow, currentBlock] in blocks
           try
