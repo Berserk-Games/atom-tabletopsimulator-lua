@@ -1296,7 +1296,7 @@ module.exports = TabletopsimulatorLua =
                   [..., currentIndent] = indents
                 if indent > currentIndent
                   indents.push(indent)
-          nextLineContinuation = line.match(/(\sor|\sand|,)\s*$/)
+          nextLineContinuation = line.match(/(\sor|\sand|..|,)\s*$/)
           if line.match(/^function\s/)
             blocks.push([blockStartRow, currentBlock])
             currentBlock = line + '\n'
