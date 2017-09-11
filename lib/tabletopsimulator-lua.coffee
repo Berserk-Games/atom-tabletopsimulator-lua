@@ -1245,16 +1245,30 @@ module.exports = TabletopsimulatorLua =
               position: [row, column]
             }
           })
-        for line, i in text.split(/\r?\n/)
+        lineCount = editor.getLineCount()
+        i = 0
+        while (i < lineCount)
+          line = editor.lineTextForBufferRow(i)
+          scopes = editor.scopeDescriptorForBufferPosition([i, 0])
+          if 'string.quoted.other.multiline.lua' in scopes.scopes
+            i += 1
+            continue
           m = line.match(/^(\s*)([^\s]+)/)
           if m
+            indent = m[1].length
+            if line.match(/else\s+if/)
+              addLint('warning', "'else if' should be 'elseif'", i, indent)
+            multiple = line.match(/(^|\s)(end|else|endif|until)(?=(\s|$))/g)
+            if multiple and multiple.length > 1
+              addLint('warning', 'Multiple block end keywords on single line', i, indent)
             if not nextLineContinuation
-              indent = m[1].length
               irregular = null
               [..., currentIndent] = indents
               if indent > currentIndent
                 if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
                   irregular = "Dedent expected for '" + m[2] + "'"
+                else if not nextLineExpectIndent
+                  irregular = "Indentation not expected"
                 indents.push(indent)
               else
                 if nextLineExpectIndent
@@ -1279,11 +1293,15 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
-              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|$)/)
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)/)
               if m
                 nextLineExpectIndent = m[1]
               else
-                nextLineExpectIndent = null
+                m = line.match(/([\{\[\(]+)$/)
+                if m and not m[1].endsWith('[[')
+                  nextLineExpectIndent = m[1]
+                else
+                  nextLineExpectIndent = null
             else if nextLineContinuation[1] == ','
               m = line.match(/^(\s*)([^\s]+)/)
               if m and m[2].match(/^[\]\}\)]+$/)
@@ -1299,6 +1317,7 @@ module.exports = TabletopsimulatorLua =
                   if indent > currentIndent
                     indents.push(indent)
             nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
+          i += 1
         try
           luaparse.parse(text)
         catch error
