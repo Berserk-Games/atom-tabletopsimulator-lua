@@ -1253,6 +1253,8 @@ module.exports = TabletopsimulatorLua =
               irregular = null
               [..., currentIndent] = indents
               if indent > currentIndent
+                if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
+                  irregular = "Dedent expected for '" + m[2] + "'"
                 indents.push(indent)
               else
                 if nextLineExpectIndent
@@ -1272,6 +1274,9 @@ module.exports = TabletopsimulatorLua =
                       indents.push(indent)
                   else if m[2] not in ['end', 'else', 'elseif', 'until'] and not m[2].match(/^[\]\}\)]+$/)
                     irregular = "Dedent without keyword"
+                else # indent == currentIndent
+                  if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
+                    irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
               m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|$)/)
