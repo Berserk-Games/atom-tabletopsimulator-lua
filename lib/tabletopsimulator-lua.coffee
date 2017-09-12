@@ -1234,7 +1234,6 @@ module.exports = TabletopsimulatorLua =
         nextLineExpectIndent = null
         lints = []
         addLint = (severity, message, row, column) ->
-          console.log message, row, column
           lints.push({
             severity: severity,
             excerpt: message,
