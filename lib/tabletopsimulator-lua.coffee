@@ -1234,6 +1234,7 @@ module.exports = TabletopsimulatorLua =
         nextLineExpectIndent = null
         lints = []
         addLint = (severity, message, row, column) ->
+          console.log message, row, column
           lints.push({
             severity: severity,
             excerpt: message,
@@ -1249,7 +1250,7 @@ module.exports = TabletopsimulatorLua =
         lineCount = editor.getLineCount()
         i = 0
         while (i < lineCount)
-          line = editor.lineTextForBufferRow(i).replace(/^#include/, '--nclude')
+          line = editor.lineTextForBufferRow(i)
           scopes = editor.scopeDescriptorForBufferPosition([i, 0])
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
@@ -1329,7 +1330,7 @@ module.exports = TabletopsimulatorLua =
             nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
           i += 1
         try
-          luaparse.parse(text)
+          luaparse.parse(editor.getText().replace(/^#include/gm, '--nclude'))
         catch error
           row = error.line - 1
           column = error.column
