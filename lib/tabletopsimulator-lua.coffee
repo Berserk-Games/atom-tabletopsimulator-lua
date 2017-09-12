@@ -250,8 +250,8 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: false
         openOtherFiles:
-          title: 'Experimental: Re-open files from outwith the TTS folder'
-          description: 'When you Save And Play attempt to re-open files you had open which are not in the TTS temp folder'
+          title: 'Experimental: Ignore files from outwith the TTS folder'
+          description: 'When you Save And Play do not close files which are not in the TTS temp folder'
           order: 3
           type: 'boolean'
           default: false
