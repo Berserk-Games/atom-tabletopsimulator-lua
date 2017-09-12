@@ -1249,7 +1249,7 @@ module.exports = TabletopsimulatorLua =
         lineCount = editor.getLineCount()
         i = 0
         while (i < lineCount)
-          line = editor.lineTextForBufferRow(i).replace(/^#include/gm, '--nclude')
+          line = editor.lineTextForBufferRow(i).replace(/^#include/, '--nclude')
           scopes = editor.scopeDescriptorForBufferPosition([i, 0])
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
