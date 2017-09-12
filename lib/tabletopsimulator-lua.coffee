@@ -6,21 +6,10 @@ fs = require 'fs'
 os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
+luaparse = require 'luaparse'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
-
-###
-https://github.com/randy3k/remote-atom/blob/master/lib/remote-atom.coffee
-
-Copyright (c) Randy Lai 2014
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-###
 
 domain = 'localhost'
 clientport = 39999
@@ -97,7 +86,7 @@ getRootPath = () ->
   return rootpath
 
 extractFileMap = (text, filepath) ->
-  lines = text.split('\n')
+  lines = text.split(/\r?\n/)
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
   for line, row in lines
     found = line.match(insertedFileRegexp)
@@ -187,7 +176,7 @@ class FileHandler
     # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = editor.getText()
-      lines = text.split('\n')
+      lines = text.split(/\r?\n/)
       tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
       output = []
       for line, row in lines
@@ -468,6 +457,8 @@ module.exports = TabletopsimulatorLua =
     if filepath and filepath.endsWith('.ttslua')
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
+      view = atom.views.getView(editor)
+      atom.commands.dispatch(view, 'linter:lint')
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -711,7 +702,7 @@ module.exports = TabletopsimulatorLua =
 
 
   insertFiles: (text, dir = null, alreadyInserted = {}) ->
-    lines = text.split('\n')
+    lines = text.split(/\r?\n/)
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
@@ -730,7 +721,7 @@ module.exports = TabletopsimulatorLua =
             lines[i] = ''
           else
             alreadyInserted[filepath] = true
-            filetext = filetext.replace(/[\s\n\r]*$/, '')
+            filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
             lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
@@ -800,7 +791,7 @@ module.exports = TabletopsimulatorLua =
     @functionPaths[filepath] = {}
     otherFiles = {}
     stack = []
-    lines = text.split('\n')
+    lines = text.split(/\r?\n/)
     closingTag = []
     if not isFromTTS(filepath) and root == null
       root = path.dirname(filepath)
@@ -1094,7 +1085,7 @@ module.exports = TabletopsimulatorLua =
           @file.setDatasize(f.script.length)
           @file.create()
 
-          lines = f.script.split "\n"
+          lines = f.script.split(/\r?\n/)
           for line,i in lines
             if i < lines.length-1
               line = line + "\n"
@@ -1150,7 +1141,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split "\n"
+            lines = f.script.split(/\r?\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1186,7 +1177,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split "\n"
+            lines = f.script.split(/\r?\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1229,3 +1220,120 @@ module.exports = TabletopsimulatorLua =
 
     console.log "Listening to #{domain}:#{serverport}"
     server.listen serverport, domain
+
+  provideLinter: ->
+    provider =
+      name: 'TTS Lua'
+      grammarScopes: ['source.tts.lua']
+      scope: 'file'
+      lintsOnChange: true
+      lint: (editor) =>
+        filepath = editor.getPath()
+        text = editor.getText().replace(/^#include/gm, '--nclude')
+        indents = [0]
+        nextLineContinuation = false
+        nextLineExpectIndent = null
+        lints = []
+        addLint = (severity, message, row, column) ->
+          lints.push({
+            severity: severity,
+            excerpt: message,
+            location: {
+              file: filepath,
+              position: [[row, column], [row, column]]
+            }
+            reference: {
+              file: filepath,
+              position: [row, column]
+            }
+          })
+        lineCount = editor.getLineCount()
+        i = 0
+        while (i < lineCount)
+          line = editor.lineTextForBufferRow(i)
+          scopes = editor.scopeDescriptorForBufferPosition([i, 0])
+          if 'string.quoted.other.multiline.lua' in scopes.scopes
+            i += 1
+            continue
+          scopes = editor.scopeDescriptorForBufferPosition([i, line.length])
+          if 'comment.line.double-dash.lua' in scopes.scopes
+            line = line.split('--')[0]
+          m = line.match(/^(\s*)([^\s]+)/)
+          if m
+            indent = m[1].length
+            if line.match(/else\s+if/)
+              addLint('warning', "'else if' should be 'elseif'", i, indent)
+            multiple = line.match(/(^|\s)(end|else|endif|until)(?=(\s|$))/g)
+            if multiple and multiple.length > 1
+              addLint('warning', 'Multiple block end keywords on single line', i, indent)
+            override = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+            override = override and not override[3]
+            if not nextLineContinuation or override
+              irregular = null
+              [..., currentIndent] = indents
+              if indent > currentIndent
+                if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
+                  irregular = "Dedent expected for '" + m[2] + "'"
+                else if not nextLineExpectIndent and not override
+                  irregular = "Indentation not expected"
+                indents.push(indent)
+              else
+                if nextLineExpectIndent
+                  addLint('warning', "Indentation expected after '" + nextLineExpectIndent + "'", i, indent)
+                if indent < currentIndent
+                  indents.pop()
+                  [..., currentIndent] = indents
+                  if indent > currentIndent
+                    irregular = "Dedent does not match indent"
+                    indents.push(indent)
+                  else if indent < currentIndent
+                    irregular = "Dedent does not match indent"
+                    while indent < currentIndent
+                      indents.pop()
+                      [..., currentIndent] = indents
+                    if indent > currentIndent
+                      indents.push(indent)
+                  else if m[2] not in ['end', 'else', 'elseif', 'until'] and not m[2].match(/^[\]\}\)]+$/)
+                    irregular = "Dedent without keyword"
+                else # indent == currentIndent
+                  if m[2] in ['end', 'else', 'elseif', 'until'] or m[2].match(/^[\]\}\)]+$/)
+                    irregular = "Dedent expected for '" + m[2] + "'"
+              if irregular
+                addLint('warning', irregular, i, indent)
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+              if m and not m[3]
+                nextLineExpectIndent = m[1]
+              else
+                m = line.match(/([\{\[\(]+)$/)
+                if m and not m[1].endsWith('[[')
+                  nextLineExpectIndent = m[1]
+                else
+                  m = line.match(/\s(function)(\s|\()(.*\send\s*$)?/)
+                  if m and not m[3]
+                    nextLineExpectIndent = m[1]
+                  else
+                    nextLineExpectIndent = null
+            else if nextLineContinuation[1] == ','
+              m = line.match(/^(\s*)([^\s]+)/)
+              if m and m[2].match(/^[\]\}\)]+$/)
+                indent = m[1].length
+                [..., prevIndent, currentIndent] = indents
+                if indent == prevIndent
+                  indents.pop()
+                else
+                  addLint('warning', 'Dedent does not match indent', i, indent)
+                  while indent < currentIndent
+                    indents.pop()
+                    [..., currentIndent] = indents
+                  if indent > currentIndent
+                    indents.push(indent)
+            nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
+          i += 1
+        try
+          luaparse.parse(text)
+        catch error
+          row = error.line - 1
+          column = error.column
+          message = error.message
+          addLint('error', message, row, column)
+        return lints

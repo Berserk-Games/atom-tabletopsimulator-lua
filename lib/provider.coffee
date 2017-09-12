@@ -102,7 +102,7 @@ module.exports =
         # If we're in the middle of typing a number then suggest nothing on .
         resolve([])
         return
-      else if (line.endsWith(" else") || line.endsWith(" elseif") || line.endsWith(" end") || line == "end")
+      else if (line.match(/(^|\s)else$/) || line.match(/(^|\s)elseif$/) || line.match(/(^|\s)end$/) || line == "end")
         # Short circuit some common lua keywords
         resolve([])
         return
@@ -215,6 +215,130 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets a Lua variable for this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
+          },
+        ]
+
+      # Section: dynamic Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "dynamic") || line.endsWith("dynamic.") || (previous_token == "dynamic" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'eval(${1:string|s})'
+            displayText: 'eval(string s)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Returns the evaluation of s.'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
+          },
+          {
+            snippet: 'prepare(${1:string|s})'
+            displayText: 'prepare(string s)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Returns a prepared expression object which can be passed to dynamic.eval for faster execution.'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
+          },
+        ]
+
+      # Section: bit32 Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "bit32") || line.endsWith("bit32.") || (previous_token == "bit32" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'arshift(${1:int|x}, ${2:int|disp})'
+            displayText: 'arshift(int x, int disp)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number x shifted disp bits to the right.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.arshift'
+          },
+          {
+            snippet: 'band(${1:...})'
+            displayText: 'band(...)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the bitwise and of its operands.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.band'
+          },
+          {
+            snippet: 'bnot(${1:int|x})'
+            displayText: 'bnot(int x)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the bitwise not of x.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bnot'
+          },
+          {
+            snippet: 'bor(${1:...})'
+            displayText: 'bor(...)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the bitwise or of its operands.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bor'
+          },
+          {
+            snippet: 'btest(${1:...})'
+            displayText: 'btest(...)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Returns a boolean signaling whether the bitwise and of its operands is different from zero.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.btest'
+          },
+          {
+            snippet: 'bxor(${1:...})'
+            displayText: 'bxor(...)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the bitwise xor of its operands.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bxor'
+          },
+          {
+            snippet: 'extract(${1:int|n, ${2:int|field}, ${3:int width})'
+            displayText: 'extract(int n, int field, int width = 1)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the unsigned number formed by the bits field to field + width - 1 from n.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.extract'
+          },
+          {
+            snippet: 'lrotate(${1:int|x, ${2:int|disp})'
+            displayText: 'lrotate(int x, int disp)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number x rotated disp bits to the left.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lrotate'
+          },
+          {
+            snippet: 'lshift(${1:int|x, ${2:int|disp})'
+            displayText: 'lshift(int x, int disp)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number x shifted disp bits to the left.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lshift'
+          },
+          {
+            snippet: 'replace(${1:int|n, ${2:int|v}, ${3:int|field}, ${4:int width})'
+            displayText: 'replace(int n, int v, int field, int width = 1)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns a copy of n with the bits field to field + width - 1 replaced by the value v.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.replace'
+          },
+          {
+            snippet: 'rrotate(${1:int|x, ${2:int|disp})'
+            displayText: 'rrotate(int x, int disp)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number x rotated disp bits to the right.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rrotate'
+          },
+          {
+            snippet: 'rshift(${1:int|x, ${2:int|disp})'
+            displayText: 'rshift(int x, int disp)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number x shifted disp bits to the right.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rshift'
           },
         ]
 
@@ -455,7 +579,184 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tanh'
           },
         ]
-
+      # Section: string Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "string") || line.endsWith("string.") || (previous_token == "string" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'byte(${1:string|s}, ${2:int|i}, ${3:int|j})'
+            displayText: 'byte(string s, int i = 1, int j = i)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j].'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.byte'
+          },
+          {
+            snippet: 'char(${1:int|c})'
+            displayText: 'char(int c, [int c...])'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a string comprised of the integer char codes converted to chars and concatenated.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.char'
+          },
+          {
+            snippet: 'dump(${1:function|f})'
+            displayText: 'dump(function f)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a string containing a binary representation of the given function.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.dump'
+          },
+          {
+            snippet: 'find(${1:string|s}, ${2:string|pattern}, ${3:int|init}, ${4:bool|plain})'
+            displayText: 'find(string s, string pattern, int init = 1, bool plain = false)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the start and end indices of pattern in string, or nil.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.find'
+          },
+          {
+            snippet: 'format(${1:string|formatstring}, ${2:...})'
+            displayText: 'format(string formatstring, ...)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a formatted version of its variable number of arguments following the description given in its first argument.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.format'
+          },
+          {
+            snippet: 'gmatch(${1:string|s}, ${2:string|pattern})'
+            displayText: 'gmatch(string s, string pattern)'
+            type: 'function'
+            leftLabel: 'function'
+            description: 'Returns an iterator function that returns the next captures from pattern over the string s.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gmatch'
+          },
+          {
+            snippet: 'gsub(${1:string|s}, ${2:string|pattern}, ${3:string|repl}, ${4:int|n})'
+            displayText: 'gsub(string s, string pattern, string repl, [int n])'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a string from pattern matched to s replaced with repl for n occurences.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gsub'
+          },
+          {
+            snippet: 'len(${1:string|s})'
+            displayText: 'len(string s)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the length of the string.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.len'
+          },
+          {
+            snippet: 'lower(${1:string|s})'
+            displayText: 'lower(string s)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the string converted to lower case.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.lower'
+          },
+          {
+            snippet: 'match(${1:string|s}, ${2:string|pattern}, ${3:int|init})'
+            displayText: 'match(string s, string pattern, int init = 1)'
+            type: 'function'
+            leftLabel: 'captures'
+            description: 'Returns the captures from pattern matched to s.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.match'
+          },
+          {
+            snippet: 'rep(${1:string|s}, ${2:int|n}, ${3:string|sep})'
+            displayText: "rep(string s, int n, string sep = '')"
+            type: 'function'
+            leftLabel: 'captures'
+            description: 'Returns a string that is the concatenation of n copies of the string s separated by the string sep.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.rep'
+          },
+          {
+            snippet: 'reverse(${1:string|s})'
+            displayText: 'reverse(string s)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the reverse of string.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.reverse'
+          },
+          {
+            snippet: 'sub(${1:string|s}, ${2:int|i}, ${3:int|j})'
+            displayText: 'sub(string s, int i, [int j])'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the substring of s that starts at i and continues until j.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.sub'
+          },
+          {
+            snippet: 'unicode(${1:string|s}, ${2:int|i}, ${3:int|j})'
+            displayText: 'unicode(string s, int i = 1, int j = i)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the unicode numerical codes of the characters s[i], s[i+1], ..., s[j].'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
+          },
+          {
+            snippet: 'upper(${1:string|s})'
+            displayText: 'upper(string s)'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the string converted to upper case.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-string.upper'
+          },
+        ]
+      # Section: table Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "table") || line.endsWith("table.") || (previous_token == "table" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'concat(${1:table|list}, ${2:string|sep}, ${3:int|i}, ${4:int|j})'
+            displayText: "concat(table list, string sep = '', int i = 1, int j = #list)"
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a string of items i to j in list joined by sep.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.concat'
+          },
+          {
+            snippet: 'insert(${1:table|list}, ${2:int|pos}, ${3:variable|value})'
+            displayText: "insert(table list, int pos = #list+1, variable value)"
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Inserts element value at position pos in list.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.insert'
+          },
+          {
+            snippet: 'pack(${1:...})'
+            displayText: "pack(...)"
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns a new table with all parameters stored into keys 1, 2, etc. and with a field "n" with the total number of parameters.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.pack'
+          },
+          {
+            snippet: 'remove(${1:table|list}, ${2:int|pos})'
+            displayText: "remove(table list, int pos = #list)"
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Removes (and returns) item pos from list.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.remove'
+          },
+          {
+            snippet: 'sort(${1:table|list}, ${2:function|comp})'
+            displayText: "sort(table list, [function comp])"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sorts list in place. Uses compare function comp if specified.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.sort'
+          },
+          {
+            snippet: 'unpack(${1:table|list}, ${2:int|i}, ${3:int|j})'
+            displayText: "unpack(table list, int i = 1, int j = #list)"
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns elemeents i to j from list.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack'
+          },
+        ]
       # Section: coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
         suggestions = [
@@ -2569,7 +2870,7 @@ module.exports =
             },
           ]
         suggestions = suggestions.concat [
-          { 
+          {
             snippet: 'onChat(message, player)\n\t${0:-- body...}\nend'
             displayText: 'onChat(string message, Player player)'
             type: 'function'
@@ -2702,11 +3003,25 @@ module.exports =
         suggestions = [
           # Constants
           {
+            snippet: 'bit32'
+            displayText: 'bit32'
+            type: 'constant'
+            description: 'The bit32 class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.7'
+          },
+          {
             snippet: 'coroutine'
             displayText: 'coroutine'
             type: 'constant'
             description: 'The coroutine class.'
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.2'
+          },
+          {
+            snippet: 'dynamic'
+            displayText: 'dynamic'
+            type: 'constant'
+            description: 'The dynamic class.'
+            descriptionMoreURL: 'http://www.moonsharp.org/additions.html'
           },
           {
             snippet: 'Global'
@@ -2763,6 +3078,20 @@ module.exports =
             type: 'constant'
             description: 'A reference to this Object.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object'
+          },
+          {
+            snippet: 'string'
+            displayText: 'string'
+            type: 'constant'
+            description: 'The string class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.4'
+          },
+          {
+            snippet: 'table'
+            displayText: 'table'
+            type: 'constant'
+            description: 'The table class.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.5'
           },
           {
             snippet: 'Timer'
