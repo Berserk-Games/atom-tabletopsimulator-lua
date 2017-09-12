@@ -1229,7 +1229,6 @@ module.exports = TabletopsimulatorLua =
       lintsOnChange: true
       lint: (editor) =>
         filepath = editor.getPath()
-        text = editor.getText().replace(/^#include/gm, '--nclude')
         indents = [0]
         nextLineContinuation = false
         nextLineExpectIndent = null
@@ -1250,7 +1249,7 @@ module.exports = TabletopsimulatorLua =
         lineCount = editor.getLineCount()
         i = 0
         while (i < lineCount)
-          line = editor.lineTextForBufferRow(i)
+          line = editor.lineTextForBufferRow(i).replace(/^#include/, '--nclude')
           scopes = editor.scopeDescriptorForBufferPosition([i, 0])
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
