@@ -457,6 +457,8 @@ module.exports = TabletopsimulatorLua =
     if filepath and filepath.endsWith('.ttslua')
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
+      view = atom.views.getView(editor)
+      atom.commands.dispatch(view, 'linter:lint')
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -1253,6 +1255,9 @@ module.exports = TabletopsimulatorLua =
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
             continue
+          scopes = editor.scopeDescriptorForBufferPosition([i, line.length])
+          if 'comment.line.double-dash.lua' in scopes.scopes
+            line = line.split('--')[0]
           m = line.match(/^(\s*)([^\s]+)/)
           if m
             indent = m[1].length
@@ -1303,7 +1308,11 @@ module.exports = TabletopsimulatorLua =
                 if m and not m[1].endsWith('[[')
                   nextLineExpectIndent = m[1]
                 else
-                  nextLineExpectIndent = null
+                  m = line.match(/\s(function)(\s|\()(.*\send\s*$)?/)
+                  if m and not m[3]
+                    nextLineExpectIndent = m[1]
+                  else
+                    nextLineExpectIndent = null
             else if nextLineContinuation[1] == ','
               m = line.match(/^(\s*)([^\s]+)/)
               if m and m[2].match(/^[\]\}\)]+$/)
