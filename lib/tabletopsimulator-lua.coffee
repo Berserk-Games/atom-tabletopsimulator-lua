@@ -458,7 +458,10 @@ module.exports = TabletopsimulatorLua =
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
       view = atom.views.getView(editor)
-      atom.commands.dispatch(view, 'linter:lint')
+      f = () ->
+        atom.commands.dispatch(view, 'linter:lint')
+      setTimeout f, 1000
+
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
