@@ -250,8 +250,8 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: false
         openOtherFiles:
-          title: 'Experimental: Re-open files from outwith the TTS folder'
-          description: 'When you Save And Play attempt to re-open files you had open which are not in the TTS temp folder'
+          title: 'Experimental: Ignore files from outwith the TTS folder'
+          description: 'When you Save And Play do not close files which are not in the TTS temp folder'
           order: 3
           type: 'boolean'
           default: false
@@ -458,7 +458,10 @@ module.exports = TabletopsimulatorLua =
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
       view = atom.views.getView(editor)
-      atom.commands.dispatch(view, 'linter:lint')
+      f = () ->
+        atom.commands.dispatch(view, 'linter:lint')
+      setTimeout f, 1000
+
 
   onSave: (event) ->
     if not event.path.endsWith('.ttslua')
@@ -1229,7 +1232,6 @@ module.exports = TabletopsimulatorLua =
       lintsOnChange: true
       lint: (editor) =>
         filepath = editor.getPath()
-        text = editor.getText().replace(/^#include/gm, '--nclude')
         indents = [0]
         nextLineContinuation = false
         nextLineExpectIndent = null
@@ -1330,7 +1332,7 @@ module.exports = TabletopsimulatorLua =
             nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
           i += 1
         try
-          luaparse.parse(text)
+          luaparse.parse(editor.getText().replace(/^#include/gm, '--nclude'))
         catch error
           row = error.line - 1
           column = error.column
