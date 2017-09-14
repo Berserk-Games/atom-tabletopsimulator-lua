@@ -460,7 +460,10 @@ module.exports = TabletopsimulatorLua =
       view = atom.views.getView(editor)
       f = () ->
         atom.commands.dispatch(view, 'linter:lint')
-      setTimeout f, 1000
+      delay = 0
+      while delay < 1000
+        delay += 100
+        setTimeout f, delay
 
 
   onSave: (event) ->
@@ -642,6 +645,11 @@ module.exports = TabletopsimulatorLua =
     if mutex.doingSaveAndPlay
       return
     mutex.doingSaveAndPlay = true
+    #clear this after some time in case a problem occured during save and play
+    f = () ->
+      mutex.doingSaveAndPlay = false
+    setTimeout f, 3000
+
     # Store active editor
     try
       activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
