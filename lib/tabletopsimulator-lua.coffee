@@ -498,13 +498,13 @@ module.exports = TabletopsimulatorLua =
       editor = event.cursor.editor
       if editor
         filepath = editor.getPath()
-        if not filepath or not filepath.endsWith('.ttslua')
-          @statusBarFunctionView.updateFunction(null)
-        else if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
-          return
-        else
-          [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
-          @statusBarFunctionView.updateFunction(names, rows)
+      if not editor or not filepath or not filepath.endsWith('.ttslua')
+        @statusBarFunctionView.updateFunction(null)
+      else if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
+        return
+      else
+        [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
+        @statusBarFunctionView.updateFunction(names, rows)
 
   getFunctions: (editor, startRow) ->
     line = editor.lineTextForBufferRow(startRow)
