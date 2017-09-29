@@ -2015,7 +2015,7 @@ module.exports =
               'tooltip        = ${13:-- Color},\n\t' +
               'value          = ${14:-- string},\n\t' +
               'validation     = ${15:-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)},\n\t' +
-              'tab            = ${16:-- int (0 = None, 1 = Select Next, 2 = Indent)},\n\t' +
+              'tab            = ${16:-- int (1 = None, 2 = Select Next, 3 = Indent)},\n\t' +
               '})'
             displayText: 'createInput({string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip, string value, int validation, int tab})'
             type: 'function'
@@ -2112,7 +2112,7 @@ module.exports =
               'tooltip        = ${14:-- Color},\n\t' +
               'value          = ${15:-- string},\n\t' +
               'validation     = ${16:-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)},\n\t' +
-              'tab            = ${17:-- int (0 = None, 1 = Select Next, 2 = Indent)},\n\t' +
+              'tab            = ${17:-- int (1 = None, 2 = Select Next, 3 = Indent)},\n\t' +
               '})'
             displayText: 'editInput({int index, string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip, string value, int validation, int tab})'
             type: 'function'
@@ -2258,7 +2258,7 @@ module.exports =
                 '-- alignment           int       (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified)\n\t' +
                 '-- value               string    \n\t' +
                 '-- validation          int       (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)\n\t' +
-                '-- tab                 int       (0 = None, 1 = Select Next, 2 = Indent)'
+                '-- tab                 int       (1 = None, 2 = Select Next, 3 = Indent)'
             displayText: 'getInputs() -- returns {{...'
             type: 'function'
             leftLabel: 'Table'
