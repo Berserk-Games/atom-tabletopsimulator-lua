@@ -496,9 +496,11 @@ module.exports = TabletopsimulatorLua =
       @isBlockSelecting = false
     if event and @statusBarActive
       editor = event.cursor.editor
-      if not editor.getPath().endsWith('.ttslua')
+      if editor
+        filepath = editor.getPath()
+      if not editor or not filepath or not filepath.endsWith('.ttslua')
         @statusBarFunctionView.updateFunction(null)
-      else if editor.getPath() == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
+      else if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
         return
       else
         [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
@@ -524,38 +526,35 @@ module.exports = TabletopsimulatorLua =
           function_rows[0] = row
           break
         row -= 1
-      if row == -1 #no root function found
-        return [null, null]
-      else
-        root_row = row
-        row += 1
-        while row <= startRow
-          line = editor.lineTextForBufferRow(row)
-          m = line.match(/^(\s*)function\s+([^\s(]*)/)
-          if m
+      root_row = row
+      row += 1
+      while row <= startRow
+        line = editor.lineTextForBufferRow(row)
+        m = line.match(/^(\s*)function\s+([^\s(]*)/)
+        if m
+          indent = m[1].length
+          if not(indent of function_names)
+            function_names[indent] = m[2]
+            function_rows[indent]  = row
+        else if row < startRow
+          m = line.match(/^(\s*)end($|\s|--)/)
+          if m #previous function may have ended
             indent = m[1].length
-            if not(indent of function_names)
-              function_names[indent] = m[2]
-              function_rows[indent]  = row
-          else if row < startRow
-            m = line.match(/^(\s*)end($|\s|--)/)
-            if m #previous function may have ended
-              indent = m[1].length
-              if indent of function_names
-                delete function_names[indent]
-                delete function_rows[indent]
-          row += 1
-        keys = []
-        for k,v of function_names
-          keys.push(k)
-        keys.sort (a, b) ->
-          return if parseInt(a) >= parseInt(b) then 1 else -1
-        names = []
-        rows = []
-        for indent in keys
-          names.push(function_names[indent])
-          rows.push(function_rows[indent])
-        return [names, rows]
+            if indent of function_names
+              delete function_names[indent]
+              delete function_rows[indent]
+        row += 1
+      keys = []
+      for k,v of function_names
+        keys.push(k)
+      keys.sort (a, b) ->
+        return if parseInt(a) >= parseInt(b) then 1 else -1
+      names = []
+      rows = []
+      for indent in keys
+        names.push(function_names[indent])
+        rows.push(function_rows[indent])
+      return [names, rows]
 
 
   consumeStatusBar: (statusBar) ->
