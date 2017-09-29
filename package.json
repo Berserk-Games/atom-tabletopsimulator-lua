@@ -1,7 +1,7 @@
 {
   "name": "tabletopsimulator-lua",
   "main": "./lib/tabletopsimulator-lua",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Official plugin for Tabletop Simulator's Lua Scripting.",
   "keywords": [
     "tabletop",
