@@ -1243,7 +1243,9 @@ module.exports = TabletopsimulatorLua =
         nextLineContinuation = false
         nextLineExpectIndent = null
         lints = []
+        suppress = [false]
         addLint = (severity, message, row, column) ->
+          return if suppress[0]
           lints.push({
             severity: severity,
             excerpt: message,
@@ -1260,6 +1262,7 @@ module.exports = TabletopsimulatorLua =
         i = 0
         while (i < lineCount)
           line = editor.lineTextForBufferRow(i)
+          suppress[0] = line.endsWith('--') and not line.endsWith(']]--')
           scopes = editor.scopeDescriptorForBufferPosition([i, 0])
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
@@ -1344,5 +1347,6 @@ module.exports = TabletopsimulatorLua =
           row = error.line - 1
           column = error.column
           message = error.message
+          suppress[0] = false
           addLint('error', message, row, column)
         return lints
