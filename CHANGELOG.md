@@ -1,3 +1,11 @@
+## 9.9.1
+Linter:
+* Added ability to manually suppress a warning: postfix the line with --
+* Added the option to delay the linter when a file is first opened
+* Better understands one-liners (now works with closing parenthesis)
+* Better understands table definitions (optional comma after last item)
+* Fixed the linter spamming file locks when files are opened
+
 ## 1.2.4
 Lua module snippets
 
