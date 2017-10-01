@@ -1,3 +1,22 @@
+## 1.2.4
+Lua module snippets
+
+* Added autocomplete suggestions for built-in Lua classes: string, table, bit32, dynamic
+
+Linter support
+
+* Added linter support (i.e. error detection as you type, instead of waiting to see errors after Save And Play)
+* To enable it go to atom settings->install and install the 'linter' package by 'steelbrain' and the dependencies it asks for (other atom linter consumers should also work if you prefer one of them, i.e. Nuclide or atom-ide-ui).
+
+Other updates
+
+* Feature to re-open non-TTS files now simply does not close them when you Save And Play
+* Save And Play now locks itself so you cannot trigger it more than once-at-a-time.
+* Better autocomplete handling of else/elseif/end
+* Fixed error on trying to Go To Line > end of file
+* Fixed copy+paste error in cursorChange event
+* Fixed not finding current function if root function had indent
+
 ## 1.2.3
 * Fixed freezing when right click object and selecting lua editor
 
