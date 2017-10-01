@@ -1231,6 +1231,7 @@ module.exports = TabletopsimulatorLua =
     console.log "Listening to #{domain}:#{serverport}"
     server.listen serverport, domain
 
+
   provideLinter: ->
     provider =
       name: 'TTS Lua'
@@ -1244,6 +1245,12 @@ module.exports = TabletopsimulatorLua =
         nextLineExpectIndent = null
         lints = []
         suppress = [false]
+        checkForError = (code) ->
+          try
+            luaparse.parse(code)
+          catch error
+            return error
+          return null
         addLint = (severity, message, row, column) ->
           return if suppress[0]
           lints.push({
@@ -1312,7 +1319,7 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
-              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send[\s\)\}\]]*$)?/)
               if m and not m[3]
                 nextLineExpectIndent = m[1]
               else
@@ -1320,7 +1327,7 @@ module.exports = TabletopsimulatorLua =
                 if m and not m[1].endsWith('[[')
                   nextLineExpectIndent = m[1]
                 else
-                  m = line.match(/\s(function)(\s|\()(.*\send\s*$)?/)
+                  m = line.match(/\s(function)(\s|\()(.*\send[\s\)\]\}]*$)?/)
                   if m and not m[3]
                     nextLineExpectIndent = m[1]
                   else
