@@ -457,15 +457,14 @@ module.exports = TabletopsimulatorLua =
     if filepath and filepath.endsWith('.ttslua')
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
-      view = atom.views.getView(editor)
-      f = () ->
-        atom.commands.dispatch(view, 'linter:toggle')
-      f()
-      setTimeout f, 1000
-      #delay = 0
-      #while delay < 1000
-      #  delay += 100
-      #  setTimeout f, delay
+      # TODO 2017-10-01 Below code to fix linter not seeing scopes on load.
+      #                 That problem seems to have fixed itself though?
+      #view = atom.views.getView(editor)
+      #atom.commands.dispatch(view, 'linter:toggle')
+      #f = () ->
+      #  atom.commands.dispatch(view, 'linter:toggle')
+      #  atom.commands.dispatch(view, 'linter:lint')
+      #setTimeout f, 1000
 
 
   onSave: (event) ->
