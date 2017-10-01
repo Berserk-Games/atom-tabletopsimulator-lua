@@ -267,6 +267,13 @@ module.exports = TabletopsimulatorLua =
           order: 5
           type: 'string'
           default: ''
+        delayLinter:
+          title: 'Delay Linter When Loading'
+          description: 'Delay in ``ms`` before linting a newly loaded file.'
+          order: 6
+          type: 'integer'
+          default: 0
+          minimum: 0
 #        includeKeyword:
 #          title: 'Insertion keyword to use'
 #          description: 'Example (using default keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
@@ -457,13 +464,14 @@ module.exports = TabletopsimulatorLua =
     if filepath and filepath.endsWith('.ttslua')
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
-      view = atom.views.getView(editor)
-      f = () ->
-        atom.commands.dispatch(view, 'linter:lint')
-      delay = 0
-      while delay < 1000
-        delay += 100
-        setTimeout f, delay
+      linterDelay = atom.config.get('tabletopsimulator-lua.loadSave.delayLinter')
+      if linterDelay > 0
+        view = atom.views.getView(editor)
+        atom.commands.dispatch(view, 'linter:toggle')
+        f = () ->
+          atom.commands.dispatch(view, 'linter:toggle')
+          atom.commands.dispatch(view, 'linter:lint')
+        setTimeout f, linterDelay
 
 
   onSave: (event) ->
@@ -1231,6 +1239,7 @@ module.exports = TabletopsimulatorLua =
     console.log "Listening to #{domain}:#{serverport}"
     server.listen serverport, domain
 
+
   provideLinter: ->
     provider =
       name: 'TTS Lua'
@@ -1241,9 +1250,18 @@ module.exports = TabletopsimulatorLua =
         filepath = editor.getPath()
         indents = [0]
         nextLineContinuation = false
+        overrideContinuation = false
         nextLineExpectIndent = null
         lints = []
+        suppress = [false]
+        checkForError = (code) ->
+          try
+            luaparse.parse(code)
+          catch error
+            return error
+          return null
         addLint = (severity, message, row, column) ->
+          return if suppress[0]
           lints.push({
             severity: severity,
             excerpt: message,
@@ -1260,6 +1278,7 @@ module.exports = TabletopsimulatorLua =
         i = 0
         while (i < lineCount)
           line = editor.lineTextForBufferRow(i)
+          suppress[0] = line.endsWith('--') and not line.endsWith(']]--')
           scopes = editor.scopeDescriptorForBufferPosition([i, 0])
           if 'string.quoted.other.multiline.lua' in scopes.scopes
             i += 1
@@ -1309,7 +1328,7 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
-              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send[\s\)\}\]]*$)?/)
               if m and not m[3]
                 nextLineExpectIndent = m[1]
               else
@@ -1317,18 +1336,19 @@ module.exports = TabletopsimulatorLua =
                 if m and not m[1].endsWith('[[')
                   nextLineExpectIndent = m[1]
                 else
-                  m = line.match(/\s(function)(\s|\()(.*\send\s*$)?/)
+                  m = line.match(/\s(function)(\s|\()(.*\send[\s\)\]\}]*$)?/)
                   if m and not m[3]
                     nextLineExpectIndent = m[1]
                   else
                     nextLineExpectIndent = null
             else if nextLineContinuation[1] == ','
               m = line.match(/^(\s*)([^\s]+)/)
-              if m and m[2].match(/^[\]\}\)]+$/)
+              if m and m[2].match(/^[\]\}\)]+/)
                 indent = m[1].length
                 [..., prevIndent, currentIndent] = indents
                 if indent == prevIndent
                   indents.pop()
+                  overrideContinuation = true
                 else
                   addLint('warning', 'Dedent does not match indent', i, indent)
                   while indent < currentIndent
@@ -1336,7 +1356,11 @@ module.exports = TabletopsimulatorLua =
                     [..., currentIndent] = indents
                   if indent > currentIndent
                     indents.push(indent)
-            nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
+            if overrideContinuation
+              nextLineContinuation = false
+              overrideContinuation = false
+            else
+              nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
           i += 1
         try
           luaparse.parse(editor.getText().replace(/^#include/gm, '--nclude'))
@@ -1344,5 +1368,6 @@ module.exports = TabletopsimulatorLua =
           row = error.line - 1
           column = error.column
           message = error.message
+          suppress[0] = false
           addLint('error', message, row, column)
         return lints
