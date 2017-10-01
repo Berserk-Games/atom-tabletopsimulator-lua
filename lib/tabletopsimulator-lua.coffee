@@ -1243,6 +1243,7 @@ module.exports = TabletopsimulatorLua =
         filepath = editor.getPath()
         indents = [0]
         nextLineContinuation = false
+        overrideContinuation = false
         nextLineExpectIndent = null
         lints = []
         suppress = [false]
@@ -1335,11 +1336,12 @@ module.exports = TabletopsimulatorLua =
                     nextLineExpectIndent = null
             else if nextLineContinuation[1] == ','
               m = line.match(/^(\s*)([^\s]+)/)
-              if m and m[2].match(/^[\]\}\)]+$/)
+              if m and m[2].match(/^[\]\}\)]+/)
                 indent = m[1].length
                 [..., prevIndent, currentIndent] = indents
                 if indent == prevIndent
                   indents.pop()
+                  overrideContinuation = true
                 else
                   addLint('warning', 'Dedent does not match indent', i, indent)
                   while indent < currentIndent
@@ -1347,7 +1349,11 @@ module.exports = TabletopsimulatorLua =
                     [..., currentIndent] = indents
                   if indent > currentIndent
                     indents.push(indent)
-            nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
+            if overrideContinuation
+              nextLineContinuation = false
+              overrideContinuation = false
+            else
+              nextLineContinuation = line.match(/(\sor|\sand|\.\.|,)\s*$/)
           i += 1
         try
           luaparse.parse(editor.getText().replace(/^#include/gm, '--nclude'))
