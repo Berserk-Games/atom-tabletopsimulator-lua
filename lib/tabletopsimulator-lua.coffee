@@ -267,6 +267,13 @@ module.exports = TabletopsimulatorLua =
           order: 5
           type: 'string'
           default: ''
+        delayLinter:
+          title: 'Delay Linter When Loading'
+          description: 'Delay in ``ms`` before linting a newly loaded file.'
+          order: 6
+          type: 'integer'
+          default: 0
+          minimum: 0
 #        includeKeyword:
 #          title: 'Insertion keyword to use'
 #          description: 'Example (using default keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
@@ -457,14 +464,14 @@ module.exports = TabletopsimulatorLua =
     if filepath and filepath.endsWith('.ttslua')
       if not (filepath of @functionPaths)
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
-      # TODO 2017-10-01 Below code to fix linter not seeing scopes on load.
-      #                 That problem seems to have fixed itself though?
-      #view = atom.views.getView(editor)
-      #atom.commands.dispatch(view, 'linter:toggle')
-      #f = () ->
-      #  atom.commands.dispatch(view, 'linter:toggle')
-      #  atom.commands.dispatch(view, 'linter:lint')
-      #setTimeout f, 1000
+      linterDelay = atom.config.get('tabletopsimulator-lua.loadSave.delayLinter')
+      if linterDelay > 0
+        view = atom.views.getView(editor)
+        atom.commands.dispatch(view, 'linter:toggle')
+        f = () ->
+          atom.commands.dispatch(view, 'linter:toggle')
+          atom.commands.dispatch(view, 'linter:lint')
+        setTimeout f, linterDelay
 
 
   onSave: (event) ->
