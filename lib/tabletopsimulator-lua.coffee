@@ -459,11 +459,13 @@ module.exports = TabletopsimulatorLua =
         @doCatalog(editor.getText(), filepath, !isFromTTS(filepath))
       view = atom.views.getView(editor)
       f = () ->
-        atom.commands.dispatch(view, 'linter:lint')
-      delay = 0
-      while delay < 1000
-        delay += 100
-        setTimeout f, delay
+        atom.commands.dispatch(view, 'linter:toggle')
+      f()
+      setTimeout f, 1000
+      #delay = 0
+      #while delay < 1000
+      #  delay += 100
+      #  setTimeout f, delay
 
 
   onSave: (event) ->
