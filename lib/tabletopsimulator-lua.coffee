@@ -243,34 +243,46 @@ module.exports = TabletopsimulatorLua =
           order: 1
           type: 'boolean'
           default: false
+        noListen:
+          title: 'Disable opening scripts from in-game'
+          description: '``This option will require a restart to Atom when toggled.``If enabled, no files will open and the Lua Editor in-game will function normally. The parser, syntax, and "Save and Play" will still work normally.'
+          order: 2
+          type: 'boolean'
+          default: false
+        autoOpenOnLoad:
+          title: 'Open in-game scripts when the game loads.'
+          description: 'This will open all scripts for the table when you load a game.'
+          order: 3
+          type: 'boolean'
+          default: true
         openGlobalOnly:
           title: 'Open only the Global script automatically'
           description: 'You can still manually open your scripts from the package view'
-          order: 2
+          order: 4
           type: 'boolean'
           default: false
         openOtherFiles:
           title: 'Experimental: Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
-          order: 3
+          order: 5
           type: 'boolean'
           default: false
         includeOtherFiles:
           title: 'Experimental: Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
-          order: 4
+          order: 6
           type: 'boolean'
           default: false
         includeOtherFilesPath:
           title: 'Experimental: Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
-          order: 5
+          order: 7
           type: 'string'
           default: ''
         delayLinter:
           title: 'Delay Linter When Loading'
           description: 'Delay in ``ms`` before linting a newly loaded file.'
-          order: 6
+          order: 8
           type: 'integer'
           default: 0
           minimum: 0
@@ -449,7 +461,8 @@ module.exports = TabletopsimulatorLua =
     catch error
 
     # Start server to receive push information from Unity
-    @startServer()
+    if not atom.config.get('tabletopsimulator-lua.loadSave.noListen')
+      @startServer()
 
   deactivate: ->
     @subscriptions.dispose()
@@ -1110,9 +1123,10 @@ module.exports = TabletopsimulatorLua =
             #@parse_line(line)
             @file.append(line)
           if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            if atom.config.get('tabletopsimulator-lua.loadSave.autoOpenOnLoad')
             #console.log i, "Opening file in Start Connection", @file
-            @file.open()
-          @file = null
+              @file.open()
+            @file = null
 
       @data_cache = ""
 
@@ -1202,9 +1216,10 @@ module.exports = TabletopsimulatorLua =
               #@parse_line(line)
               @file.append(line)
             if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+              if atom.config.get('tabletopsimulator-lua.loadSave.autoOpenOnLoad')
               #console.log "Opening file in Start Server message 1", @file
-              @file.open()
-            @file = null
+                @file.open()
+              @file = null
 
           # TODO trying to do this by simply not closing them instead of reopening them
           # Load any further files that were previously open
