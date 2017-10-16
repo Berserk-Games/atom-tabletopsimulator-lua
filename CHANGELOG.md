@@ -1,3 +1,9 @@
+## 9.9.2
+* Fixed errors which caused plugin to lock-up and be unable to fetch or send from/to TTS
+* Added some more logging to save routines for future debugging
+* Linter now recognizes repeat/until one-liners
+* Grammar added for #include preprocessor command
+
 ## 9.9.1
 Linter:
 * Added ability to manually suppress a warning: postfix the line with --
