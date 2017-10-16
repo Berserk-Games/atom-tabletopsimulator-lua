@@ -178,6 +178,10 @@
     'name': 'variable.other.lua'
   }
   {
+    'match': '^#include'
+    'name': 'keyword.preprocessor.indicator.lua'
+  }
+  {
     'match': '\\+|-|%|#|\\*|\\/|\\^|==?|~=|<=?|>=?|(?<!\\.)\\.{2}(?!\\.)'
     'name': 'keyword.operator.lua'
   }

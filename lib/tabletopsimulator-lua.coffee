@@ -642,6 +642,7 @@ module.exports = TabletopsimulatorLua =
       else
         return Promise.resolve(editor.getBuffer())
     else
+      console.log "Non-async save"
       try
         editor.save()
       catch error
@@ -666,15 +667,15 @@ module.exports = TabletopsimulatorLua =
     openFiles = 0
     savedFiles = 0
     editors = []
+    ttsEditors = {}
     for editor,i in atom.workspace.getTextEditors()
       openFiles += 1
       # Store cursor positions
-      ttsEditors = {}
-      if path.dirname(editor.getPath()) == ttsLuaDir
+      cursors[editor.getPath()] = editor.getCursorBufferPosition()
+      if isFromTTS(editor.getPath())
         ttsEditors[path.basename(editor.getPath())] = true
       else
         editors.push(editor.getPath())
-      cursors[editor.getPath()] = editor.getCursorBufferPosition()
 
     console.log "Starting to save..."
 
@@ -711,6 +712,7 @@ module.exports = TabletopsimulatorLua =
                 @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
               @luaObjects.scriptStates.push(@luaObject)
 
+          console.log "Connected:", @if_connected
           if not @if_connected
             @startConnection()
           try
@@ -1103,7 +1105,7 @@ module.exports = TabletopsimulatorLua =
           @file.setDatasize(f.script.length)
           @file.create()
 
-          lines = f.script.split(/\r?\n/)
+          lines = f.script.split(/\n/)
           for line,i in lines
             if i < lines.length-1
               line = line + "\n"
@@ -1159,7 +1161,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split(/\r?\n/)
+            lines = f.script.split(/\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1195,7 +1197,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split(/\r?\n/)
+            lines = f.script.split(/\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1294,7 +1296,7 @@ module.exports = TabletopsimulatorLua =
             multiple = line.match(/(^|\s)(end|else|endif|until)(?=(\s|$))/g)
             if multiple and multiple.length > 1
               addLint('warning', 'Multiple block end keywords on single line', i, indent)
-            override = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send\s*$)?/)
+            override = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send[\s\)\}\]]*$|.*\suntil[\s\)\}\]]*)?/)
             override = override and not override[3]
             if not nextLineContinuation or override
               irregular = null
@@ -1328,7 +1330,7 @@ module.exports = TabletopsimulatorLua =
                     irregular = "Dedent expected for '" + m[2] + "'"
               if irregular
                 addLint('warning', irregular, i, indent)
-              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send[\s\)\}\]]*$)?/)
+              m = line.match(/^\s*(if|else|elseif|repeat|for|while|function)(\s|\(|$)(.*\send[\s\)\}\]]*$|.*\suntil[\s\)\}\]]*)?/)
               if m and not m[3]
                 nextLineExpectIndent = m[1]
               else
