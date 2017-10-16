@@ -642,6 +642,7 @@ module.exports = TabletopsimulatorLua =
       else
         return Promise.resolve(editor.getBuffer())
     else
+      console.log "Non-async save"
       try
         editor.save()
       catch error
@@ -666,15 +667,15 @@ module.exports = TabletopsimulatorLua =
     openFiles = 0
     savedFiles = 0
     editors = []
+    ttsEditors = {}
     for editor,i in atom.workspace.getTextEditors()
       openFiles += 1
       # Store cursor positions
-      ttsEditors = {}
-      if path.dirname(editor.getPath()) == ttsLuaDir
+      cursors[editor.getPath()] = editor.getCursorBufferPosition()
+      if isFromTTS(editor.getPath())
         ttsEditors[path.basename(editor.getPath())] = true
       else
         editors.push(editor.getPath())
-      cursors[editor.getPath()] = editor.getCursorBufferPosition()
 
     console.log "Starting to save..."
 
@@ -711,6 +712,7 @@ module.exports = TabletopsimulatorLua =
                 @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
               @luaObjects.scriptStates.push(@luaObject)
 
+          console.log "Connected:", @if_connected
           if not @if_connected
             @startConnection()
           try
@@ -1103,7 +1105,7 @@ module.exports = TabletopsimulatorLua =
           @file.setDatasize(f.script.length)
           @file.create()
 
-          lines = f.script.split(/\r?\n/)
+          lines = f.script.split(/\n/)
           for line,i in lines
             if i < lines.length-1
               line = line + "\n"
@@ -1159,7 +1161,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split(/\r?\n/)
+            lines = f.script.split(/\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
@@ -1195,7 +1197,7 @@ module.exports = TabletopsimulatorLua =
             @file.setDatasize(f.script.length)
             @file.create()
 
-            lines = f.script.split(/\r?\n/)
+            lines = f.script.split(/\n/)
             for line,i in lines
               if i < lines.length-1
                 line = line + "\n"
