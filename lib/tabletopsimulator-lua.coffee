@@ -86,7 +86,7 @@ getRootPath = () ->
   return rootpath
 
 extractFileMap = (text, filepath) ->
-  lines = text.split(/\r?\n/)
+  lines = text.split(/\n/)
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
   for line, row in lines
     found = line.match(insertedFileRegexp)
@@ -722,7 +722,7 @@ module.exports = TabletopsimulatorLua =
 
 
   insertFiles: (text, dir = null, alreadyInserted = {}) ->
-    lines = text.split(/\r?\n/)
+    lines = text.split(/\n/)
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
@@ -811,7 +811,7 @@ module.exports = TabletopsimulatorLua =
     @functionPaths[filepath] = {}
     otherFiles = {}
     stack = []
-    lines = text.split(/\r?\n/)
+    lines = text.split(/\n/)
     closingTag = []
     if not isFromTTS(filepath) and root == null
       root = path.dirname(filepath)
