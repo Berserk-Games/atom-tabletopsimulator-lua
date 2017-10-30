@@ -176,7 +176,7 @@ class FileHandler
     # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = editor.getText()
-      lines = text.split(/\r?\n/)
+      lines = text.split(/\n/)
       tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
       output = []
       for line, row in lines
@@ -741,7 +741,7 @@ module.exports = TabletopsimulatorLua =
             lines[i] = ''
           else
             alreadyInserted[filepath] = true
-            filetext = filetext.replace(/[\s\n\r]*$/gm, '')
+            #filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
             lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
