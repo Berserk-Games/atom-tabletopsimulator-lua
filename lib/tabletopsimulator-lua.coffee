@@ -237,15 +237,21 @@ module.exports = TabletopsimulatorLua =
       type: 'object'
       order: 1
       properties:
+        communicationMode:
+          title: 'Communication with Tabletop Simulator'
+          description: 'Should Atom automatically open files received from the game?'
+          order: 1
+          type: 'string'
+          default: 'all'
+          enum: [
+            {value: 'all',     description: 'Automatically open all files sent from Tabletop Simulator'}
+            {value: 'global',  description: 'Only automatically open the Global script file'}
+            {value: 'none',    description: 'Do not automatically open any files sent from Tabletop Simulator'}
+            {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
+          ]
         convertUnicodeCharacters:
           title: 'Convert between unicode chacter and \\u{xxxx} escape sequence when loading/saving'
           description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
-          order: 1
-          type: 'boolean'
-          default: false
-        openGlobalOnly:
-          title: 'Open only the Global script automatically'
-          description: 'You can still manually open your scripts from the package view'
           order: 2
           type: 'boolean'
           default: false
@@ -274,12 +280,6 @@ module.exports = TabletopsimulatorLua =
           type: 'integer'
           default: 0
           minimum: 0
-#        includeKeyword:
-#          title: 'Insertion keyword to use'
-#          description: 'Example (using default keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
-#          order: 5
-#          type: 'string'
-#          default: 'include'
     autocomplete:
       title: 'Autocomplete'
       order: 2
@@ -379,6 +379,15 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.parameterToDisplay') != undefined
       atom.config.set('tabletopsimulator-lua.autocomplete.parameterToDisplay', atom.config.get('tabletopsimulator-lua.parameterToDisplay'))
       atom.config.unset('tabletopsimulator-lua.parameterToDisplay')
+    # 30/10/17 - same for openGlobalOnly
+    if atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly') != undefined
+      if atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+        atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'global')
+      else
+        atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'all')
+      atom.config.unset('tabletopsimulator-lua.loadSave.openGlobalOnly')
+
+
 
     # StatusBarFunctionView to display current function in status bar
     @statusBarFunctionView = new StatusBarFunctionView()
@@ -601,6 +610,8 @@ module.exports = TabletopsimulatorLua =
     new BufferedProcess({command, args, stdout, exit})
 
   getObjects: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     # Confirm just in case they misclicked Save & Play
     atom.confirm
       message: 'Get Lua Scripts from game?'
@@ -650,6 +661,8 @@ module.exports = TabletopsimulatorLua =
 
 
   saveAndPlay: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     if mutex.doingSaveAndPlay
       return
     mutex.doingSaveAndPlay = true
@@ -1066,6 +1079,8 @@ module.exports = TabletopsimulatorLua =
       editor.scrollToCursorPosition()
 
   startConnection: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     if @if_connected
       @stopConnection()
 
@@ -1111,7 +1126,8 @@ module.exports = TabletopsimulatorLua =
               line = line + "\n"
             #@parse_line(line)
             @file.append(line)
-          if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+          mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+          if  mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
             #console.log i, "Opening file in Start Connection", @file
             @file.open()
           @file = null
@@ -1136,6 +1152,8 @@ module.exports = TabletopsimulatorLua =
   ###
 
   startServer: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
@@ -1203,7 +1221,8 @@ module.exports = TabletopsimulatorLua =
                 line = line + "\n"
               #@parse_line(line)
               @file.append(line)
-            if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+            if mode == 'all' or ttsEditors[@file.basename] or (mode == 'global' and isGlobalScript(@file.basename))
               #console.log "Opening file in Start Server message 1", @file
               @file.open()
             @file = null
@@ -1230,6 +1249,7 @@ module.exports = TabletopsimulatorLua =
         # Error message
         # Might change this from a string to a struct with more info
         else if @data.messageID == 3
+          console.log @data
           console.error @data.errorMessagePrefix + @data.error
           #console.error @data.message
 
