@@ -21,6 +21,10 @@
           'label': 'Jump To Cursor Function'
           'command': 'tabletopsimulator-lua:jumpToFunction'
         },
+        {
+          'label': 'Jump To Last Error'
+          'command': 'tabletopsimulator-lua:gotoLastError'
+        },
         {type: 'separator'},
         {
           'label': 'Display Current Function Name'
@@ -67,6 +71,10 @@
         {
           'label': 'Jump To Cursor Function'
           'command': 'tabletopsimulator-lua:jumpToFunction'
+        },
+        {
+          'label': 'Jump To Last Error'
+          'command': 'tabletopsimulator-lua:gotoLastError'
         },
         {type: 'separator'},
         {

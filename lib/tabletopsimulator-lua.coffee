@@ -54,6 +54,9 @@ insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
 fileMap = {}
 appearsInFile = {}
 
+# record last error message
+lastError = {message: "", guid: ""}
+
 if os.platform() == 'win32'
   PATH_SEPERATOR = '\\'
 else
@@ -86,7 +89,7 @@ getRootPath = () ->
   return rootpath
 
 extractFileMap = (text, filepath) ->
-  lines = text.split(/\r?\n/)
+  lines = text.split(/\n/)
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
   for line, row in lines
     found = line.match(insertedFileRegexp)
@@ -124,6 +127,53 @@ destroyTTSEditors = ->
         editor.destroy()
       catch error
         console.log error
+
+findFileRow = (filepath, row) ->
+  if fileMap[filepath]
+    walkFileMap = (r, node) ->
+      offset = 0
+      if node.startRow <= r <= node.endRow
+        for child in node.children
+          if child.endRow < r
+            offset += (child.endRow - child.startRow) + 1
+          else if r >= child.startRow
+            return walkFileMap(r, child)
+        # not in any children, so is only in this file
+      return [node.label, r - (node.startRow + offset)]
+    [fp, row] = walkFileMap(row, fileMap[filepath])
+    if fp
+      filepath = fp
+  return [filepath, row]
+
+gotoFileRow = (filepath, row) ->
+  [filepath, row] = findFileRow(filepath, row)
+  editor = atom.workspace.getActiveTextEditor()
+  if filepath and filepath != editor.getPath()
+    console.log "Opening file in Go-To-File-Row", filepath
+    atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
+      editor.setCursorBufferPosition([row, 0])
+      editor.scrollToCursorPosition()
+  else
+    editor.setCursorBufferPosition([row, 0])
+    editor.scrollToCursorPosition()
+
+gotoError = (message, guid) ->
+  # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
+  if guid == "-2"
+    guid = "-1"
+  row = 0
+  fname = ""
+  row_string = message.match(/:\(([0-9]*),[^\)]+\):/)
+  if row_string
+    row = parseInt(row_string[1]) - 1
+  luafiles = fs.readdirSync(ttsLuaDir)
+  for luafile, i in luafiles
+    guid_string = luafile.match(/\.(.+)\.ttslua$/)
+    if guid_string[1] == guid
+      fname = path.join(ttsLuaDir, luafile)
+      break
+  if fname != ""
+    gotoFileRow(fname, row)
 
 
 class FileHandler
@@ -176,7 +226,7 @@ class FileHandler
     # Map and remove included files
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = editor.getText()
-      lines = text.split(/\r?\n/)
+      lines = text.split(/\n/)
       tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
       output = []
       for line, row in lines
@@ -237,18 +287,24 @@ module.exports = TabletopsimulatorLua =
       type: 'object'
       order: 1
       properties:
+        communicationMode:
+          title: 'Communication with Tabletop Simulator'
+          description: 'Should Atom automatically open files received from the game?'
+          order: 1
+          type: 'string'
+          default: 'all'
+          enum: [
+            {value: 'all',     description: 'Automatically open all files sent from Tabletop Simulator'}
+            {value: 'global',  description: 'Only automatically open the Global script file'}
+            {value: 'none',    description: 'Do not automatically open any files sent from Tabletop Simulator'}
+            {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
+          ]
         convertUnicodeCharacters:
           title: 'Convert between unicode chacter and \\u{xxxx} escape sequence when loading/saving'
           description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
-          order: 1
-          type: 'boolean'
-          default: false
-        openGlobalOnly:
-          title: 'Open only the Global script automatically'
-          description: 'You can still manually open your scripts from the package view'
           order: 2
           type: 'boolean'
-          default: false
+          default: true
         openOtherFiles:
           title: 'Experimental: Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
@@ -274,12 +330,6 @@ module.exports = TabletopsimulatorLua =
           type: 'integer'
           default: 0
           minimum: 0
-#        includeKeyword:
-#          title: 'Insertion keyword to use'
-#          description: 'Example (using default keyword): ``-- include c:\\path\\to\\file`` will insert the contents of file ``c:\\path\\to\\file.ttslua``\nIf you specify a file with no path then it will look for the file in the same folder as the current file.'
-#          order: 5
-#          type: 'string'
-#          default: 'include'
     autocomplete:
       title: 'Autocomplete'
       order: 2
@@ -331,15 +381,26 @@ module.exports = TabletopsimulatorLua =
       order: 4
       type: 'object'
       properties:
+        errorPopup:
+          title: 'Report error message in pop-up'
+          order: 1
+          description: 'Display Atom notification for run-time errors, with button to jump to offending line'
+          type: 'string'
+          default: 'flash'
+          enum: [
+            {value: 'off', description: 'Off: simply log the error to the developer console'}
+            {value: 'flash', description: 'Display a notification for a few seconds'}
+            {value: 'close', description: 'Display a notification which user must close'}
+          ]
         showFunctionName:
           title: 'Show function name in status bar'
-          order: 1
+          order: 2
           description: 'Display the name of the function the cursor is currently inside'
           type: 'boolean'
-          default: false
+          default: true
         showFunctionInGoto:
           title: 'Show ``function`` prefix during Go To Function'
-          order: 2
+          order: 3
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
@@ -379,6 +440,15 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.parameterToDisplay') != undefined
       atom.config.set('tabletopsimulator-lua.autocomplete.parameterToDisplay', atom.config.get('tabletopsimulator-lua.parameterToDisplay'))
       atom.config.unset('tabletopsimulator-lua.parameterToDisplay')
+    # 30/10/17 - same for openGlobalOnly
+    if atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly') != undefined
+      if atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+        atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'global')
+      else
+        atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'all')
+      atom.config.unset('tabletopsimulator-lua.loadSave.openGlobalOnly')
+
+
 
     # StatusBarFunctionView to display current function in status bar
     @statusBarFunctionView = new StatusBarFunctionView()
@@ -413,6 +483,7 @@ module.exports = TabletopsimulatorLua =
     # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoLastError': => @gotoLastError()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:jumpToFunction': => @jumpToCursorFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
@@ -601,6 +672,8 @@ module.exports = TabletopsimulatorLua =
     new BufferedProcess({command, args, stdout, exit})
 
   getObjects: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     # Confirm just in case they misclicked Save & Play
     atom.confirm
       message: 'Get Lua Scripts from game?'
@@ -650,6 +723,8 @@ module.exports = TabletopsimulatorLua =
 
 
   saveAndPlay: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     if mutex.doingSaveAndPlay
       return
     mutex.doingSaveAndPlay = true
@@ -722,7 +797,7 @@ module.exports = TabletopsimulatorLua =
 
 
   insertFiles: (text, dir = null, alreadyInserted = {}) ->
-    lines = text.split(/\r?\n/)
+    lines = text.split(/\n/)
     for line, i in lines
       found = line.match(insertFileRegexp)
       if found
@@ -741,7 +816,7 @@ module.exports = TabletopsimulatorLua =
             lines[i] = ''
           else
             alreadyInserted[filepath] = true
-            filetext = filetext.replace(/[\s\n\r]*$/gm, '')
+            #filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
             lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
@@ -811,7 +886,7 @@ module.exports = TabletopsimulatorLua =
     @functionPaths[filepath] = {}
     otherFiles = {}
     stack = []
-    lines = text.split(/\r?\n/)
+    lines = text.split(/\n/)
     closingTag = []
     if not isFromTTS(filepath) and root == null
       root = path.dirname(filepath)
@@ -877,6 +952,9 @@ module.exports = TabletopsimulatorLua =
       # If we didn't find it then open Go To Function panel
       editor.selectWordsContainingCursors()
       @gotoFunction()
+
+  gotoLastError: ->
+    gotoError(lastError.message, lastError.guid)
 
   getFunctionRow: (text, function_name) ->
     #deprecated: TODO remove
@@ -1066,6 +1144,8 @@ module.exports = TabletopsimulatorLua =
       editor.scrollToCursorPosition()
 
   startConnection: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     if @if_connected
       @stopConnection()
 
@@ -1111,7 +1191,8 @@ module.exports = TabletopsimulatorLua =
               line = line + "\n"
             #@parse_line(line)
             @file.append(line)
-          if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+          mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+          if  mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
             #console.log i, "Opening file in Start Connection", @file
             @file.open()
           @file = null
@@ -1136,6 +1217,8 @@ module.exports = TabletopsimulatorLua =
   ###
 
   startServer: ->
+    if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
+      return
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
@@ -1203,7 +1286,8 @@ module.exports = TabletopsimulatorLua =
                 line = line + "\n"
               #@parse_line(line)
               @file.append(line)
-            if isGlobalScript(@file.basename) or ttsEditors[@file.basename] or not atom.config.get('tabletopsimulator-lua.loadSave.openGlobalOnly')
+            mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+            if mode == 'all' or ttsEditors[@file.basename] or (mode == 'global' and isGlobalScript(@file.basename))
               #console.log "Opening file in Start Server message 1", @file
               @file.open()
             @file = null
@@ -1231,6 +1315,26 @@ module.exports = TabletopsimulatorLua =
         # Might change this from a string to a struct with more info
         else if @data.messageID == 3
           console.error @data.errorMessagePrefix + @data.error
+          lastError.message = @data.error
+          lastError.guid = @data.guid
+          popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+          if popup != "off"
+            detail = "GUID: " + @data.guid
+            btns = []
+            row_string = @data.error.match(/:\(([0-9]*),[^\)]+\):/)
+            msg = @data.error
+            guid = @data.guid
+            f = () ->
+              gotoError(msg, guid)
+            if row_string
+              detail += "\nRow: " + (parseInt(row_string[1]) - 1)
+              btns = [{onDidClick: f, text: "<- Jump to Error"}]
+            atom.notifications.addError(@data.error, {
+              icon: 'puzzle',
+              detail: detail,
+              dismissable: popup == "close",
+              buttons: btns,
+            })
           #console.error @data.message
 
         @data_cache = ""
