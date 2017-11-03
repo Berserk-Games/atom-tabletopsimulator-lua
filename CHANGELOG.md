@@ -1,3 +1,10 @@
+## 10.0.1
+* Fixed go to line function (was going to wrong line)
+* Added more comprehensive setting to let user decide what files are opened in Atom when they are sent from TTS. Can also completely disable communication with TTS.
+* Now displays a pop-up in Atom when your TTS mod hits a run-time error, with a button to jump to offending line (if able). 
+* Added ```Jump To Last Error``` menu option and hotkey ```ctrl-e```.
+* Changed some settings so they default to on for options which have proved stable (such as the unicode conversion setting)
+
 ## 9.9.2
 * Fixed errors which caused plugin to lock-up and be unable to fetch or send from/to TTS
 * Added some more logging to save routines for future debugging
