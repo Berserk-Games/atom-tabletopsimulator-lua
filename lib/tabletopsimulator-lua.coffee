@@ -55,7 +55,7 @@ fileMap = {}
 appearsInFile = {}
 
 # record last error message
-lastError = {message: "", filepath: "", row: 0, timestamp: 0}
+lastError = {message: "", guid: ""}
 
 if os.platform() == 'win32'
   PATH_SEPERATOR = '\\'
@@ -128,8 +128,7 @@ destroyTTSEditors = ->
       catch error
         console.log error
 
-gotoFileRow = (filepath, row) ->
-  console.log filepath, row
+findFileRow = (filepath, row) ->
   if fileMap[filepath]
     walkFileMap = (r, node) ->
       offset = 0
@@ -144,7 +143,10 @@ gotoFileRow = (filepath, row) ->
     [fp, row] = walkFileMap(row, fileMap[filepath])
     if fp
       filepath = fp
-    console.log filepath, row
+  return [filepath, row]
+
+gotoFileRow = (filepath, row) ->
+  [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
   if filepath and filepath != editor.getPath()
     console.log "Opening file in Go-To-File-Row", filepath
@@ -154,6 +156,25 @@ gotoFileRow = (filepath, row) ->
   else
     editor.setCursorBufferPosition([row, 0])
     editor.scrollToCursorPosition()
+
+gotoError = (message, guid) ->
+  # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
+  if guid == "-2"
+    guid = "-1"
+  row = 0
+  fname = ""
+  row_string = message.match(/:\(([0-9]*),[^\)]+\):/)
+  if row_string
+    row = parseInt(row_string[1]) - 1
+  luafiles = fs.readdirSync(ttsLuaDir)
+  for luafile, i in luafiles
+    guid_string = luafile.match(/\.(.+)\.ttslua$/)
+    if guid_string[1] == guid
+      fname = path.join(ttsLuaDir, luafile)
+      break
+  if fname != ""
+    gotoFileRow(fname, row)
+
 
 class FileHandler
   constructor: ->
@@ -364,8 +385,13 @@ module.exports = TabletopsimulatorLua =
           title: 'Report error message in pop-up'
           order: 1
           description: 'Display Atom notification for run-time errors, with button to jump to offending line'
-          type: 'boolean'
-          default: true
+          type: 'string'
+          default: 'flash'
+          enum: [
+            {value: 'off', description: 'Off: simply log the error to the developer console'}
+            {value: 'flash', description: 'Display a notification for a few seconds'}
+            {value: 'close', description: 'Display a notification which user must close'}
+          ]
         showFunctionName:
           title: 'Show function name in status bar'
           order: 2
@@ -457,6 +483,7 @@ module.exports = TabletopsimulatorLua =
     # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoLastError': => @gotoLastError()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:jumpToFunction': => @jumpToCursorFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:selectFunction': => @selectCurrentFunction()
@@ -926,6 +953,9 @@ module.exports = TabletopsimulatorLua =
       editor.selectWordsContainingCursors()
       @gotoFunction()
 
+  gotoLastError: ->
+    gotoError(lastError.message, lastError.guid)
+
   getFunctionRow: (text, function_name) ->
     #deprecated: TODO remove
     lineCount = editor.getLineCount()
@@ -1285,17 +1315,26 @@ module.exports = TabletopsimulatorLua =
         # Might change this from a string to a struct with more info
         else if @data.messageID == 3
           console.error @data.errorMessagePrefix + @data.error
-          if atom.config.get('tabletopsimulator-lua.editor.automaticallyGotoError')
+          lastError.message = @data.error
+          lastError.guid = @data.guid
+          popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+          if popup != "off"
+            detail = "GUID: " + @data.guid
+            btns = []
             row_string = @data.error.match(/:\(([0-9]*),[^\)]+\):/)
+            msg = @data.error
+            guid = @data.guid
+            f = () ->
+              gotoError(msg, guid)
             if row_string
-              row = parseInt(row_string[1]) - 1
-              luafiles = fs.readdirSync(ttsLuaDir)
-              for luafile,i in luafiles
-                guid_string = luafile.match(/\.(.+)\.ttslua$/)
-                if guid_string[1] == @data.guid
-                  fname = path.join(ttsLuaDir, luafile)
-                  gotoFileRow(fname, row)
-
+              detail += "\nRow: " + (parseInt(row_string[1]) - 1)
+              btns = [{onDidClick: f, text: "<- Jump to Error"}]
+            atom.notifications.addError(@data.error, {
+              icon: 'puzzle',
+              detail: detail,
+              dismissable: popup == "close",
+              buttons: btns,
+            })
           #console.error @data.message
 
         @data_cache = ""
