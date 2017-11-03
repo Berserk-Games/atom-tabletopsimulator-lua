@@ -54,6 +54,9 @@ insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
 fileMap = {}
 appearsInFile = {}
 
+# record last error message
+lastError = {message: "", filepath: "", row: 0, timestamp: 0}
+
 if os.platform() == 'win32'
   PATH_SEPERATOR = '\\'
 else
@@ -125,6 +128,32 @@ destroyTTSEditors = ->
       catch error
         console.log error
 
+gotoFileRow = (filepath, row) ->
+  console.log filepath, row
+  if fileMap[filepath]
+    walkFileMap = (r, node) ->
+      offset = 0
+      if node.startRow <= r <= node.endRow
+        for child in node.children
+          if child.endRow < r
+            offset += (child.endRow - child.startRow) + 1
+          else if r >= child.startRow
+            return walkFileMap(r, child)
+        # not in any children, so is only in this file
+      return [node.label, r - (node.startRow + offset)]
+    [fp, row] = walkFileMap(row, fileMap[filepath])
+    if fp
+      filepath = fp
+    console.log filepath, row
+  editor = atom.workspace.getActiveTextEditor()
+  if filepath and filepath != editor.getPath()
+    console.log "Opening file in Go-To-File-Row", filepath
+    atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
+      editor.setCursorBufferPosition([row, 0])
+      editor.scrollToCursorPosition()
+  else
+    editor.setCursorBufferPosition([row, 0])
+    editor.scrollToCursorPosition()
 
 class FileHandler
   constructor: ->
@@ -254,7 +283,7 @@ module.exports = TabletopsimulatorLua =
           description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
           order: 2
           type: 'boolean'
-          default: false
+          default: true
         openOtherFiles:
           title: 'Experimental: Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
@@ -331,15 +360,21 @@ module.exports = TabletopsimulatorLua =
       order: 4
       type: 'object'
       properties:
+        errorPopup:
+          title: 'Report error message in pop-up'
+          order: 1
+          description: 'Display Atom notification for run-time errors, with button to jump to offending line'
+          type: 'boolean'
+          default: true
         showFunctionName:
           title: 'Show function name in status bar'
-          order: 1
+          order: 2
           description: 'Display the name of the function the cursor is currently inside'
           type: 'boolean'
-          default: false
+          default: true
         showFunctionInGoto:
           title: 'Show ``function`` prefix during Go To Function'
-          order: 2
+          order: 3
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
@@ -1249,8 +1284,18 @@ module.exports = TabletopsimulatorLua =
         # Error message
         # Might change this from a string to a struct with more info
         else if @data.messageID == 3
-          console.log @data
           console.error @data.errorMessagePrefix + @data.error
+          if atom.config.get('tabletopsimulator-lua.editor.automaticallyGotoError')
+            row_string = @data.error.match(/:\(([0-9]*),[^\)]+\):/)
+            if row_string
+              row = parseInt(row_string[1]) - 1
+              luafiles = fs.readdirSync(ttsLuaDir)
+              for luafile,i in luafiles
+                guid_string = luafile.match(/\.(.+)\.ttslua$/)
+                if guid_string[1] == @data.guid
+                  fname = path.join(ttsLuaDir, luafile)
+                  gotoFileRow(fname, row)
+
           #console.error @data.message
 
         @data_cache = ""
