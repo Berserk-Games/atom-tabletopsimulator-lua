@@ -13,6 +13,8 @@
 #'atom-text-editor':
 
 'atom-workspace atom-text-editor:not([mini])':
+  'ctrl-shift-s':     'tabletopsimulator-lua:saveAndPlay'
+  'ctrl-shift-l':     'tabletopsimulator-lua:getObjects'
   'ctrl-g':           'tabletopsimulator-lua:gotoFunction'
   'ctrl-shift-g':     'tabletopsimulator-lua:jumpToFunction'
   'ctrl-e':           'tabletopsimulator-lua:gotoLastError'
