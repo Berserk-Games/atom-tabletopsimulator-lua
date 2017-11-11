@@ -46,6 +46,11 @@
           'label': 'Toggle Selection Cursor Position'
           'command': 'tabletopsimulator-lua:toggleSelectionCursor'
         },
+        {type: 'separator'},
+        {
+          'label': 'Help'
+          'command': 'tabletopsimulator-lua:openHelp'
+        },
       ]
     }
   ]
@@ -96,6 +101,11 @@
         {
           'label': 'Toggle Selection Cursor Position'
           'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Help'
+          'command': 'tabletopsimulator-lua:openHelp'
         },
       ]
     ]
