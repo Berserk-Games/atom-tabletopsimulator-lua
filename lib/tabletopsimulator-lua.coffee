@@ -301,7 +301,7 @@ module.exports = TabletopsimulatorLua =
             {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
           ]
         convertUnicodeCharacters:
-          title: 'Convert between unicode chacter and \\u{xxxx} escape sequence when loading/saving'
+          title: 'Convert between unicode characters and \\u{xxxx} escape sequences when loading/saving'
           description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
           order: 2
           type: 'boolean'
