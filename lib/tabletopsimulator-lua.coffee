@@ -7,6 +7,7 @@ os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
 luaparse = require 'luaparse'
+shell = require 'shell'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
@@ -491,6 +492,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:retractSelection': => @retractSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleSelectionCursor': => @toggleCursorSelectionEnd()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:displayCurrentFunction': => @displayFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openHelp': => @openHelp()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -670,6 +672,9 @@ module.exports = TabletopsimulatorLua =
       #atom.reload()
 
     new BufferedProcess({command, args, stdout, exit})
+
+  openHelp: ->
+    shell.openExternal('https://github.com/Knils/atom-tabletopsimulator-lua/wiki')
 
   getObjects: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
