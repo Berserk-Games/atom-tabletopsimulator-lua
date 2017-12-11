@@ -1390,13 +1390,14 @@ module.exports = TabletopsimulatorLua =
         while (i < lineCount)
           line = editor.lineTextForBufferRow(i)
           suppress[0] = line.endsWith('--') and not line.endsWith(']]--')
-          scopes = editor.scopeDescriptorForBufferPosition([i, 0])
-          if 'string.quoted.other.multiline.lua' in scopes.scopes
+          if 'string.quoted.other.multiline.lua' in editor.scopeDescriptorForBufferPosition([i, 0]).scopes
             i += 1
             continue
-          scopes = editor.scopeDescriptorForBufferPosition([i, line.length])
-          if 'comment.line.double-dash.lua' in scopes.scopes
-            line = line.split('--')[0]
+          if 'comment.line.double-dash.lua' in editor.scopeDescriptorForBufferPosition([i, line.length]).scopes
+            c = line.length - 1
+            while c > 0 and 'comment.line.double-dash.lua' in editor.scopeDescriptorForBufferPosition([i, c]).scopes
+              c -= 1
+            line = line.slice(0, c)
             if line.match(/^\s*$/)
               i += 1
               continue
