@@ -1397,6 +1397,9 @@ module.exports = TabletopsimulatorLua =
           scopes = editor.scopeDescriptorForBufferPosition([i, line.length])
           if 'comment.line.double-dash.lua' in scopes.scopes
             line = line.split('--')[0]
+            if line.match(/^\s*$/)
+              i += 1
+              continue
           m = line.match(/^(\s*)([^\s]+)/)
           if m
             indent = m[1].length
