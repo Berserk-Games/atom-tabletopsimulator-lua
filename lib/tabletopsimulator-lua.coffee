@@ -15,6 +15,12 @@ FunctionListView = require './function-list-view'
 domain = 'localhost'
 clientport = 39999
 serverport = 39998
+MSG_NONE        = -1
+MSG_NEW_OBJECTS = 0
+MSG_NEW_GAME    = 1
+MSG_PRINT       = 2
+MSG_ERROR       = 3
+MSG_CUSTOM      = 4
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
@@ -176,6 +182,9 @@ gotoError = (message, guid) ->
   if fname != ""
     gotoFileRow(fname, row)
 
+lengthInUtf8Bytes = (str) ->
+  m = encodeURIComponent(str).match(/%[89ABab]/g)
+  return str.length + (if m then m.length else 0)
 
 class FileHandler
   constructor: ->
@@ -279,6 +288,30 @@ class FileHandler
   close: ->
     @subscriptions.dispose()
 
+readFilesFromTTS = (files, forceOpen = false) ->
+  for f,i in files
+    @file = new FileHandler()
+    f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+    @file.setBasename(f.name + "." + f.guid + ".ttslua")
+    @file.setDatasize(lengthInUtf8Bytes(f.script))
+    @file.create()
+
+    lines = f.script.split(/\n/)
+    for line,i in lines
+      if i < lines.length-1
+        line = line + "\n"
+      @file.append(line)
+    mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+    if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
+      @file.open()
+    @file = null
+
+deleteCachedFiles = () ->
+  try
+    for oldfile,i in fs.readdirSync(ttsLuaDir)
+      deletefile = path.join(ttsLuaDir, oldfile)
+      fs.unlinkSync(deletefile)
+  catch error
 
 module.exports = TabletopsimulatorLua =
   subscriptions: null
@@ -462,6 +495,9 @@ module.exports = TabletopsimulatorLua =
     @functionByName = {}
     @functionPaths = {}
 
+    # JSON of currently loaded mod save file
+    @saveState = {}
+
     # Set font for Go To Function UI
     styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
     fontFamily = atom.config.get('editor.fontFamily')
@@ -514,12 +550,7 @@ module.exports = TabletopsimulatorLua =
     destroyTTSEditors()
 
     # Delete any existing cached Lua files
-    try
-      @oldfiles = fs.readdirSync(ttsLuaDir)
-      for oldfile,i in @oldfiles
-        @deletefile = path.join(ttsLuaDir, oldfile)
-        fs.unlinkSync(@deletefile)
-    catch error
+    deleteCachedFiles()
 
     # Start server to receive push information from Unity
     @startServer()
@@ -685,24 +716,10 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
-          # Close any open files
-          #for editor,i in atom.workspace.getTextEditors()
-          #  try
-          #    # Store cursor positions
-          #    cursors[editor.getPath()] = editor.getCursorBufferPosition()
-          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-          #    editor.destroy()
-          #  catch error
-          #    console.log error
           destroyTTSEditors()
 
           # Delete any existing cached Lua files
-          try
-            @oldfiles = fs.readdirSync(ttsLuaDir)
-            for oldfile,i in @oldfiles
-              @deletefile = path.join(ttsLuaDir, oldfile)
-              fs.unlinkSync(@deletefile)
-          catch error
+          deleteCachedFiles()
 
           # Add temp dir to atom
           atom.project.addPath(ttsLuaDir)
@@ -1148,11 +1165,61 @@ module.exports = TabletopsimulatorLua =
         editor.selectToBufferPosition(selected.start)
       editor.scrollToCursorPosition()
 
+  handleMessage: (data, fromTTS = false) ->
+    id = data.messageID
+    if data.saveState and data.saveState != undefined
+      @saveState = data.saveState
+      console.log @saveState
+      
+    if id == MSG_NONE
+      return
+
+    else if id == MSG_NEW_OBJECTS
+      readFilesFromTTS(data.scriptStates, fromTTS)
+
+    else if id == MSG_NEW_GAME
+      destroyTTSEditors()
+      deleteCachedFiles()
+      readFilesFromTTS(data.scriptStates)
+      mutex.doingSaveAndPlay = false
+
+    else if id == MSG_PRINT
+      console.log data.message
+
+    else if id == MSG_ERROR
+      console.error data.errorMessagePrefix + data.error
+      lastError.message = data.error
+      lastError.guid = data.guid
+      popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+      if popup != "off"
+        detail = "GUID: " + data.guid
+        btns = []
+        row_string = data.error.match(/:\(([0-9]*),[^\)]+\):/)
+        msg = data.error
+        guid = data.guid
+        f = () ->
+          gotoError(msg, guid)
+        if row_string
+          detail += "\nRow: " + (parseInt(row_string[1]) - 1)
+          btns = [{onDidClick: f, text: "<- Jump to Error"}]
+        atom.notifications.addError(data.error, {
+          icon: 'puzzle',
+          detail: detail,
+          dismissable: popup == "close",
+          buttons: btns,
+        })
+      #console.error @data.message
+
+    else if id == MSG_CUSTOM
+      console.log data.message
+
   startConnection: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     if @if_connected
       @stopConnection()
+
+    handleMessage = @handleMessage
 
     @connection = net.createConnection clientport, domain
     @connection.tabletopsimulator = @
@@ -1173,34 +1240,7 @@ module.exports = TabletopsimulatorLua =
         return
       #console.log "Received: ", @data.messageID
 
-      if @data.messageID == 0
-        # Close any open files
-        #for editor,i in atom.workspace.getTextEditors()
-        #  try
-        #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-        #    editor.destroy()
-        #  catch error
-        #    console.log error
-        destroyTTSEditors()
-
-        for f,i in @data.scriptStates
-          @file = new FileHandler()
-          f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-          @file.setBasename(f.name + "." + f.guid + ".ttslua")
-          @file.setDatasize(f.script.length)
-          @file.create()
-
-          lines = f.script.split(/\n/)
-          for line,i in lines
-            if i < lines.length-1
-              line = line + "\n"
-            #@parse_line(line)
-            @file.append(line)
-          mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-          if  mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
-            #console.log i, "Opening file in Start Connection", @file
-            @file.open()
-          @file = null
+      handleMessage(@data)
 
       @data_cache = ""
 
@@ -1216,14 +1256,11 @@ module.exports = TabletopsimulatorLua =
     @connection.end()
     @if_connected = false
 
-  ###
-  parse_line: (line) ->
-    @file.append(line)
-  ###
 
   startServer: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
+    handleMessage = @handleMessage
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
@@ -1240,107 +1277,7 @@ module.exports = TabletopsimulatorLua =
           return
         #console.log "Received: #{@data.messageID} from #{socket.remoteAddress}"
 
-        # Pushing new Object
-        if @data.messageID == 0
-          for f,i in @data.scriptStates
-            @file = new FileHandler()
-            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-            @file.setBasename(f.name + "." + f.guid + ".ttslua")
-            @file.setDatasize(f.script.length)
-            @file.create()
-
-            lines = f.script.split(/\n/)
-            for line,i in lines
-              if i < lines.length-1
-                line = line + "\n"
-              #@parse_line(line)
-              @file.append(line)
-              #console.log i, "Opening file in Start Server message 0", @file
-            @file.open()
-            @file = null
-
-        # Loading a new game
-        else if @data.messageID == 1
-          #for editor,i in atom.workspace.getTextEditors()
-          #  try
-          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-          #    editor.destroy()
-          #  catch error
-          #    console.log error
-          destroyTTSEditors()
-
-          # Delete any existing cached Lua files
-          try
-            @oldfiles = fs.readdirSync(ttsLuaDir)
-            for oldfile,i in @oldfiles
-              @deletefile = path.join(ttsLuaDir, oldfile)
-              fs.unlinkSync(@deletefile)
-          catch error
-
-          # Load scripts from new game
-          for f,i in @data.scriptStates
-            @file = new FileHandler()
-            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-            @file.setBasename(f.name + "." + f.guid + ".ttslua")
-            @file.setDatasize(f.script.length)
-            @file.create()
-
-            lines = f.script.split(/\n/)
-            for line,i in lines
-              if i < lines.length-1
-                line = line + "\n"
-              #@parse_line(line)
-              @file.append(line)
-            mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-            if mode == 'all' or ttsEditors[@file.basename] or (mode == 'global' and isGlobalScript(@file.basename))
-              #console.log "Opening file in Start Server message 1", @file
-              @file.open()
-            @file = null
-
-          # TODO trying to do this by simply not closing them instead of reopening them
-          # Load any further files that were previously open
-          #if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-          #  for filepath in editors
-          #    row = 0
-          #    col = 0
-          #    try
-          #      row = cursors[filepath].row
-          #      col = cursors[filepath].column
-          #    catch error
-          #    active = (activeEditorPath == filepath)
-          #    #console.log "Opening other file", filepath
-          #    atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
-          mutex.doingSaveAndPlay = false
-
-        # Print/Debug message
-        else if @data.messageID == 2
-          console.log @data.message
-
-        # Error message
-        # Might change this from a string to a struct with more info
-        else if @data.messageID == 3
-          console.error @data.errorMessagePrefix + @data.error
-          lastError.message = @data.error
-          lastError.guid = @data.guid
-          popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
-          if popup != "off"
-            detail = "GUID: " + @data.guid
-            btns = []
-            row_string = @data.error.match(/:\(([0-9]*),[^\)]+\):/)
-            msg = @data.error
-            guid = @data.guid
-            f = () ->
-              gotoError(msg, guid)
-            if row_string
-              detail += "\nRow: " + (parseInt(row_string[1]) - 1)
-              btns = [{onDidClick: f, text: "<- Jump to Error"}]
-            atom.notifications.addError(@data.error, {
-              icon: 'puzzle',
-              detail: detail,
-              dismissable: popup == "close",
-              buttons: btns,
-            })
-          #console.error @data.message
+        handleMessage(@data, true)
 
         @data_cache = ""
 
