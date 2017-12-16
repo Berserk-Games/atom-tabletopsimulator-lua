@@ -1326,12 +1326,7 @@ module.exports = TabletopsimulatorLua =
     console.log "Sending test message..."
     if not TabletopsimulatorLua.if_connected
       TabletopsimulatorLua.startConnection()
-    msg = JSON.stringify({messageID: ATOM_MSG_LUA, guid: '-1', script: """
-    print(dice.d4.getValue())
-    print("")
-    print("")
-    """})
-    #TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_CUSTOM + ' , customMessage: {test: 1, foo: "bar" }}'
+    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar" }})
     TabletopsimulatorLua.connection.write msg
 
   executeLua: (lua) ->

@@ -56,11 +56,6 @@
           'label': 'Help'
           'command': 'tabletopsimulator-lua:openHelp'
         },
-        {type: 'separator'},
-        {
-          'label': 'Test'
-          'command': 'tabletopsimulator-lua:test'
-        },
       ]
     }
   ]
