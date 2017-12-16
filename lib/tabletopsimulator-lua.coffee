@@ -11,16 +11,24 @@ shell = require 'shell'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
+CheckboxList = require './checkbox-list-view'
 
 domain = 'localhost'
 clientport = 39999
 serverport = 39998
-MSG_NONE        = -1
-MSG_NEW_OBJECTS = 0
-MSG_NEW_GAME    = 1
-MSG_PRINT       = 2
-MSG_ERROR       = 3
-MSG_CUSTOM      = 4
+
+TTS_MSG_NONE        = -1
+TTS_MSG_NEW_OBJECTS = 0
+TTS_MSG_NEW_GAME    = 1
+TTS_MSG_PRINT       = 2
+TTS_MSG_ERROR       = 3
+TTS_MSG_CUSTOM      = 4
+
+ATOM_MSG_NONE        = -1
+ATOM_MSG_GET_SCRIPTS = 0
+ATOM_MSG_SAVE_PLAY   = 1
+ATOM_MSG_CUSTOM      = 2
+ATOM_MSG_LUA         = 3
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
@@ -44,6 +52,12 @@ ttsEditors = {}
 activeEditorPath = ''
 mutex = {}
 mutex.doingSaveAndPlay = false
+mutex.functionCount = 0
+
+luaFunctionName = ->
+  mutex.functionCount += 1
+  return "atom_lua_function_" + mutex.functionCount
+
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -497,6 +511,7 @@ module.exports = TabletopsimulatorLua =
 
     # JSON of currently loaded mod save file
     @saveState = {}
+    @guids = {}
 
     # Set font for Go To Function UI
     styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
@@ -508,6 +523,10 @@ module.exports = TabletopsimulatorLua =
       }
       .tabletopsimulator-lua-goto-function .right {
         float: right;
+      }
+
+      .modal.overlay.from-top::before {
+        z-index: -1;
       }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
@@ -529,6 +548,8 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleSelectionCursor': => @toggleCursorSelectionEnd()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:displayCurrentFunction': => @displayFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openHelp': => @openHelp()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:test': => @testMessage()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -612,11 +633,59 @@ module.exports = TabletopsimulatorLua =
         filepath = editor.getPath()
       if not editor or not filepath or not filepath.endsWith('.ttslua')
         @statusBarFunctionView.updateFunction(null)
-      else if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
-        return
       else
-        [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
-        @statusBarFunctionView.updateFunction(names, rows)
+        # highlight GUID
+        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
+        m = line.match(/(['"][a-zA-Z0-9]{6}['"])/)
+        if m
+          guid = editor.getWordUnderCursor({wordRegex: /['"]([a-zA-Z0-9]{6})['"]/})
+          if not guid
+            pos = event.newBufferPosition.column
+            if !pos or pos >= line.length
+              pos = line.length - 1
+              #pos = line.lastIndexOf(/(['"][a-zA-Z0-9]{6}['"])/)
+            m = line.substring(pos).match(/(['"][a-zA-Z0-9]{6}['"])/)
+            if m
+              guid = m[1]
+            else
+              guid = line.substring(0, pos).lastIndexOf(/(['"][a-zA-Z0-9]{6}['"])/)[1]
+          duration = 3
+          @executeLua("""
+            if __atom_highlight_guids == nil then
+              __atom_highlight_guids = {}
+            end
+            __atom_highlight_guids.next_guid = #{guid}
+            __atom_highlight_guids.end_time  = os.clock() + #{duration}
+            if __atom_highlight_guid == nil then
+              __atom_highlight_guid = function()
+                local start_time = os.clock()
+                local object
+                repeat
+                  if __atom_highlight_guids.current ~= __atom_highlight_guids.next_guid then
+                    if object then object.highlightOff() end
+                    __atom_highlight_guids.current = __atom_highlight_guids.next_guid
+                    object = getObjectFromGUID(__atom_highlight_guids.current)
+                  end
+                  if object then
+                    object.highlightOn({r=math.random(),g=math.random(),b=math.random()})
+                  end
+                  coroutine.yield(0)
+                until os.clock() > __atom_highlight_guids.end_time
+                if object then object.highlightOff() end
+                _G['__atom_highlight_guids'] = nil
+                _G['__atom_highlight_guid'] = nil
+                return 1
+              end
+              startLuaCoroutine(Global, '__atom_highlight_guid')
+            end
+          """)
+        # update status bar
+        if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
+          return
+        else
+          [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
+          @statusBarFunctionView.updateFunction(names, rows)
+
 
   getFunctions: (editor, startRow) ->
     line = editor.lineTextForBufferRow(startRow)
@@ -726,7 +795,7 @@ module.exports = TabletopsimulatorLua =
 
           if not TabletopsimulatorLua.if_connected
             TabletopsimulatorLua.startConnection()
-          TabletopsimulatorLua.connection.write '{ messageID: 0 }'
+          TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
         No: -> return
 
   # hack needed because atom 1.19 makes save() async
@@ -1165,28 +1234,68 @@ module.exports = TabletopsimulatorLua =
         editor.selectToBufferPosition(selected.start)
       editor.scrollToCursorPosition()
 
-  handleMessage: (data, fromTTS = false) ->
+  generateGUIDFunction: () ->
+    editor = atom.workspace.getActiveTextEditor()
+    insert = (tags, guids, func) ->
+      s = ""
+      pre = ""
+      if func
+        s += "function getGUIDs()\n"
+        pre = "\t"
+      i = 0
+      for tag of tags
+        if tags[tag]
+          i += 1
+          if i > 1
+            s += "\n"
+          for guid of guids
+            desc = guids[guid]
+            if desc.tag == tag
+              name = desc.name.toLowerCase().replace(/[^a-zA-Z0-9_]/gm, '').slice(0,12)
+              s += pre + desc.tag.toLowerCase() + name + "_" + "\t\t\t = getObjectFromGUID('" + guid + "')\n"
+      if func
+        s += "end\n"
+      editor.insertText(s, {select: true, autoIndent: true})
+    @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
+
+  parseSaveState: (cls, saveState) ->
+    cls.saveState = saveState
+    console.log saveState
+    cls.guids = {}
+    walkSaveState = (node, parent) ->
+      nodes = []
+      guid = parent
+      for k of node
+        if k == 'GUID'
+          guid = node[k]
+          cls.guids[guid] = {tag: node.Name, name: node.Nickname, parent: parent}
+        else if typeof node[k] == 'object'
+          nodes.push(k)
+      for k in nodes
+        walkSaveState(node[k], guid)
+    walkSaveState(saveState, null)
+
+  handleMessage: (cls, data, fromTTS = false) ->
     id = data.messageID
     if data.saveState and data.saveState != undefined
-      @saveState = data.saveState
-      console.log @saveState
-      
-    if id == MSG_NONE
+      cls.parseSaveState(cls, data.saveState)
+
+    if id == TTS_MSG_NONE
       return
 
-    else if id == MSG_NEW_OBJECTS
+    else if id == TTS_MSG_NEW_OBJECTS
       readFilesFromTTS(data.scriptStates, fromTTS)
 
-    else if id == MSG_NEW_GAME
+    else if id == TTS_MSG_NEW_GAME
       destroyTTSEditors()
       deleteCachedFiles()
       readFilesFromTTS(data.scriptStates)
       mutex.doingSaveAndPlay = false
 
-    else if id == MSG_PRINT
+    else if id == TTS_MSG_PRINT
       console.log data.message
 
-    else if id == MSG_ERROR
+    else if id == TTS_MSG_ERROR
       console.error data.errorMessagePrefix + data.error
       lastError.message = data.error
       lastError.guid = data.guid
@@ -1210,8 +1319,28 @@ module.exports = TabletopsimulatorLua =
         })
       #console.error @data.message
 
-    else if id == MSG_CUSTOM
-      console.log data.message
+    else if id == TTS_MSG_CUSTOM
+      console.log data
+
+  testMessage: ->
+    console.log "Sending test message..."
+    if not TabletopsimulatorLua.if_connected
+      TabletopsimulatorLua.startConnection()
+    msg = JSON.stringify({messageID: ATOM_MSG_LUA, guid: '-1', script: """
+    print(dice.d4.getValue())
+    print("")
+    print("")
+    """})
+    #TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_CUSTOM + ' , customMessage: {test: 1, foo: "bar" }}'
+    TabletopsimulatorLua.connection.write msg
+
+  executeLua: (lua) ->
+    #console.log lua
+    if not TabletopsimulatorLua.if_connected
+      TabletopsimulatorLua.startConnection()
+    msg = JSON.stringify({messageID: ATOM_MSG_LUA, guid: '-1', script: lua})
+    TabletopsimulatorLua.connection.write msg
+
 
   startConnection: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
@@ -1220,6 +1349,7 @@ module.exports = TabletopsimulatorLua =
       @stopConnection()
 
     handleMessage = @handleMessage
+    cls = this
 
     @connection = net.createConnection clientport, domain
     @connection.tabletopsimulator = @
@@ -1240,7 +1370,7 @@ module.exports = TabletopsimulatorLua =
         return
       #console.log "Received: ", @data.messageID
 
-      handleMessage(@data)
+      handleMessage(cls, @data)
 
       @data_cache = ""
 
@@ -1261,6 +1391,7 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     handleMessage = @handleMessage
+    cls = this
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
@@ -1277,7 +1408,7 @@ module.exports = TabletopsimulatorLua =
           return
         #console.log "Received: #{@data.messageID} from #{socket.remoteAddress}"
 
-        handleMessage(@data, true)
+        handleMessage(cls, @data, true)
 
         @data_cache = ""
 
