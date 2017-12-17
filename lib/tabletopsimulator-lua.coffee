@@ -872,11 +872,15 @@ module.exports = TabletopsimulatorLua =
               # Insert included files
               if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                 @luaObject.script = @insertFiles(@luaObject.script)
+              # TODO this section commented out because TTS now handles unicode correctly
+              # When setting is enabled we still convert \u codes to utf8 when loading
+              # but we no longer write \u codes to TTS.
+              # This setting should be removed entirely at a future date
+              #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
               # Replace with \u character codes
-              if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-                replace_character = (character) ->
-                  return "\\u{" + character.codePointAt(0).toString(16) + "}"
-                @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
+              #  replace_character = (character) ->
+              #    return "\\u{" + character.codePointAt(0).toString(16) + "}"
+              #  @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
               @luaObjects.scriptStates.push(@luaObject)
 
           console.log "Connected:", @if_connected
