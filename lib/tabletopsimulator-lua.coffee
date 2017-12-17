@@ -549,6 +549,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:displayCurrentFunction': => @displayFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openHelp': => @openHelp()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:test': => @testMessage()
 
     # Register events
@@ -1260,7 +1261,6 @@ module.exports = TabletopsimulatorLua =
 
   parseSaveState: (cls, saveState) ->
     cls.saveState = saveState
-    console.log saveState
     cls.guids = {}
     walkSaveState = (node, parent) ->
       nodes = []
@@ -1320,7 +1320,7 @@ module.exports = TabletopsimulatorLua =
       #console.error @data.message
 
     else if id == TTS_MSG_CUSTOM
-      console.log data
+      console.log data.customMessage
 
   testMessage: ->
     console.log "Sending test message..."
@@ -1328,6 +1328,25 @@ module.exports = TabletopsimulatorLua =
       TabletopsimulatorLua.startConnection()
     msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar" }})
     TabletopsimulatorLua.connection.write msg
+
+  executeLuaSelection: ->
+    editor = atom.workspace.getActiveTextEditor()
+    code = editor.getSelectedText()
+    if code == ''
+      editor.selectLinesContainingCursors()
+      code = editor.getSelectedText()
+    ok = true
+    try
+      luaparse.parse(code)
+    catch error
+      ok = false
+      row = error.line
+      column = error.column
+      message = error.message
+      atom.notifications.addError("Invalid Lua selection:", {icon: 'type-file', detail: "#{message}\nRow: #{row}\nCol: #{column}", dismissable: false})
+    if ok
+      @executeLua(code)
+
 
   executeLua: (lua) ->
     #console.log lua
@@ -1428,12 +1447,6 @@ module.exports = TabletopsimulatorLua =
         nextLineExpectIndent = null
         lints = []
         suppress = [false]
-        checkForError = (code) ->
-          try
-            luaparse.parse(code)
-          catch error
-            return error
-          return null
         addLint = (severity, message, row, column) ->
           return if suppress[0]
           lints.push({

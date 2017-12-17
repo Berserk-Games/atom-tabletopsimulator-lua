@@ -24,3 +24,4 @@
   'ctrl-alt->':       'tabletopsimulator-lua:retractSelection'
   'ctrl-?':           'tabletopsimulator-lua:toggleSelectionCursor'
   'ctrl-i':           'tabletopsimulator-lua:displayCurrentFunction'
+  "ctrl-@":           'tabletopsimulator-lua:executeLuaSelection'

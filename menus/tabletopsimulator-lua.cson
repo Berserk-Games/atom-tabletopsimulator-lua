@@ -48,6 +48,11 @@
         },
         {type: 'separator'},
         {
+          'label': 'Execute Selected Lua'
+          'command': 'tabletopsimulator-lua:executeLuaSelection'
+        },
+        {type: 'separator'},
+        {
           'label': 'Generate GUID Code...'
           'command': 'tabletopsimulator-lua:generateGUIDFunction'
         },
@@ -106,6 +111,11 @@
         {
           'label': 'Toggle Selection Cursor Position'
           'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Execute Selected Lua'
+          'command': 'tabletopsimulator-lua:executeLuaSelection'
         },
         {type: 'separator'},
         {
