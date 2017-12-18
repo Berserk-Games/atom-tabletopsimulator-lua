@@ -424,6 +424,12 @@ module.exports = TabletopsimulatorLua =
           order: 3
           type: 'string'
           default: '_GUID'
+        guidCodeGeneration:
+          title: 'Generate GUID Code'
+          description: "When automatically generating GUID code, format the variable name like this.  Can use ``(Field)`` ``(field)`` or ``(FIELD)``to refer to object properties, ``(FIELD:#)`` to limit to ``#`` characters, ``(FIELD?xxx:yyy)`` to insert ``xxx`` if FIELD is present and ``yyy`` if it's not.  Fields: ``Name`` ``Nickname`` ``Description`` ``Tooltip``.  ``[from:to]`` will replace ``from`` with ``to``"
+          order: 4
+          type: 'string'
+          default: '(name)_(nickname:12)[die_:d][scriptingtrigger:zone]'
     editor:
       title: 'Editor'
       order: 4
@@ -440,15 +446,21 @@ module.exports = TabletopsimulatorLua =
             {value: 'flash', description: 'Display a notification for a few seconds'}
             {value: 'close', description: 'Display a notification which user must close'}
           ]
+        highlightGUIDObject:
+          title: 'Highlight GUID object in TTS'
+          order: 2
+          description: 'When the cursor is on a row which contains a GUID string, highlight the object in TTS'
+          type: 'boolean'
+          default: true
         showFunctionName:
           title: 'Show function name in status bar'
-          order: 2
+          order: 3
           description: 'Display the name of the function the cursor is currently inside'
           type: 'boolean'
           default: true
         showFunctionInGoto:
           title: 'Show ``function`` prefix during Go To Function'
-          order: 3
+          order: 4
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
@@ -496,12 +508,13 @@ module.exports = TabletopsimulatorLua =
         atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'all')
       atom.config.unset('tabletopsimulator-lua.loadSave.openGlobalOnly')
 
-
+    # Dynamic Editor settings
+    @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
 
     # StatusBarFunctionView to display current function in status bar
     @statusBarFunctionView = new StatusBarFunctionView()
     @statusBarFunctionView.init()
-    @statusBarActive = false
+    @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
     @statusBarPreviousPath = ''
     @statusBarPreviousRow  = 0
 
@@ -555,6 +568,7 @@ module.exports = TabletopsimulatorLua =
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.highlightGUIDObject', (newValue) => @highlightGUIDObjectChange()
     @subscriptions.add atom.workspace.onDidOpen (event) => @onLoad(event)
     @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       @subscriptions.add editor.onDidChangeCursorPosition (event) =>
@@ -625,68 +639,89 @@ module.exports = TabletopsimulatorLua =
         else
           atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
 
+
   cursorChangeEvent: (event) ->
-    if event and @isBlockSelecting and not @blockSelectLock
-      @isBlockSelecting = false
-    if event and @statusBarActive
+    if event
+      if @isBlockSelecting and not @blockSelectLock
+        @isBlockSelecting = false
       editor = event.cursor.editor
       if editor
         filepath = editor.getPath()
-      if not editor or not filepath or not filepath.endsWith('.ttslua')
-        @statusBarFunctionView.updateFunction(null)
+        isTTS = filepath.endsWith('.ttslua')
       else
-        # highlight GUID
-        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
-        m = line.match(/(['"][a-zA-Z0-9]{6}['"])/)
-        if m
-          guid = editor.getWordUnderCursor({wordRegex: /['"]([a-zA-Z0-9]{6})['"]/})
-          if not guid
-            pos = event.newBufferPosition.column
-            if !pos or pos >= line.length
-              pos = line.length - 1
-              #pos = line.lastIndexOf(/(['"][a-zA-Z0-9]{6}['"])/)
-            m = line.substring(pos).match(/(['"][a-zA-Z0-9]{6}['"])/)
-            if m
-              guid = m[1]
-            else
-              guid = line.substring(0, pos).lastIndexOf(/(['"][a-zA-Z0-9]{6}['"])/)[1]
-          duration = 3
-          @executeLua("""
-            if __atom_highlight_guids == nil then
-              __atom_highlight_guids = {}
-            end
-            __atom_highlight_guids.next_guid = #{guid}
-            __atom_highlight_guids.end_time  = os.clock() + #{duration}
-            if __atom_highlight_guid == nil then
-              __atom_highlight_guid = function()
-                local start_time = os.clock()
-                local object
-                repeat
-                  if __atom_highlight_guids.current ~= __atom_highlight_guids.next_guid then
-                    if object then object.highlightOff() end
-                    __atom_highlight_guids.current = __atom_highlight_guids.next_guid
-                    object = getObjectFromGUID(__atom_highlight_guids.current)
-                  end
-                  if object then
-                    object.highlightOn({r=math.random(),g=math.random(),b=math.random()})
-                  end
-                  coroutine.yield(0)
-                until os.clock() > __atom_highlight_guids.end_time
-                if object then object.highlightOff() end
-                _G['__atom_highlight_guids'] = nil
-                _G['__atom_highlight_guid'] = nil
-                return 1
-              end
-              startLuaCoroutine(Global, '__atom_highlight_guid')
-            end
-          """)
-        # update status bar
-        if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
-          return
+        isTTS = false
+      if @statusBarActive
+        if not editor or not filepath or not isTTS
+          @statusBarFunctionView.updateFunction(null)
         else
-          [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
-          @statusBarFunctionView.updateFunction(names, rows)
+          if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
+            return
+          else
+            [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
+            @statusBarFunctionView.updateFunction(names, rows)
+      if @highlightGUIDObject and isTTS
+        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
+        guid_pattern = /(['"][a-zA-Z0-9]{6}['"])/
+        m = line.match(guid_pattern)
+        if m
+          guid = editor.getWordUnderCursor({wordRegex: guid_pattern})
+          if not guid
+            if event.cursor.isAtBeginningOfLine()
+              guid = line.match(guid_pattern)[1]
+            else if event.cursor.isAtEndOfLine()
+              pos = line.lastIndexOf(guid_pattern)
+              guid = line.substring(pos, pos + 6)
+            else
+              guid = line.substring(event.newBufferPosition.column).match(guid_pattern)[1]
+          guid = guid.substring(1, 7)
+          if guid of @guids
+            duration = 3
+            if @guids[guid].Name == "ScriptingTrigger"
+              transform = @guids[guid].Transform
+              @executeLua("""
+                  Physics.cast({
+                    origin       = {x=#{transform.posX}, y=#{transform.posY}, z=#{transform.posZ}},
+                    direction    = {x=0, y=0, z=0},
+                    type         = 3,
+                    size         = {x=#{transform.scaleX}, y=#{transform.scaleY}, z=#{transform.scaleZ}},
+                    orientation  = {x=#{transform.rotX}, y=#{transform.rotY}, z=#{transform.rotZ}},
+                    max_distance = 30,
+                    debug        = true,
+                  })
+                """, false)
+            else
+              @executeLua("""
+                if __atom_highlight_guids == nil then
+                  __atom_highlight_guids = {}
+                end
+                __atom_highlight_guids.next_guid = '#{guid}'
+                __atom_highlight_guids.end_time  = os.clock() + #{duration}
+                if __atom_highlight_guid == nil then
+                  __atom_highlight_guid = function()
+                    local start_time = os.clock()
+                    local object
+                    repeat
+                      if __atom_highlight_guids.current ~= __atom_highlight_guids.next_guid then
+                        if object then object.highlightOff() end
+                        __atom_highlight_guids.current = __atom_highlight_guids.next_guid
+                        object = getObjectFromGUID(__atom_highlight_guids.current)
+                      end
+                      if object then
+                        object.highlightOn({r=math.random(),g=math.random(),b=math.random()})
+                      end
+                      coroutine.yield(0)
+                    until os.clock() > __atom_highlight_guids.end_time
+                    if object then object.highlightOff() end
+                    _G['__atom_highlight_guids'] = nil
+                    _G['__atom_highlight_guid'] = nil
+                    return 1
+                  end
+                  startLuaCoroutine(Global, '__atom_highlight_guid')
+                end
+              """, false)
 
+  highlightGUIDObjectChange: (newValue) ->
+    @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
 
   getFunctions: (editor, startRow) ->
     line = editor.lineTextForBufferRow(startRow)
@@ -1244,23 +1279,71 @@ module.exports = TabletopsimulatorLua =
     insert = (tags, guids, func) ->
       s = ""
       pre = ""
+      fields = ['Name', 'Nickname', 'Description', 'Tooltip']
+      format = atom.config.get('tabletopsimulator-lua.style.guidCodeGeneration')
+      replacements = {}
+      get_replacements = (s) ->
+        s = s.slice(1, -1)
+        [f, t] = s.split(':', 2)
+        replacements[f] = t
+        return ''
+      format = format.replace(/\[[^\]:]+:[^\]:]+\]/g, get_replacements)
+      formats = {}
+      for field in fields
+        formats[field] = {field: field, f: (s) -> s}
+        formats[field.toLowerCase()] = {field: field, f: (s) -> s.toLowerCase()}
+        formats[field.toUpperCase()] = {field: field, f: (s) -> s.toUpperCase()}
       if func
         s += "function getGUIDs()\n"
-        pre = "\t"
+        pre = editor.getTabText()
       i = 0
       for tag of tags
         if tags[tag]
           i += 1
           if i > 1
             s += "\n"
+          rows = []
+          maxlen = 0
           for guid of guids
             desc = guids[guid]
             if desc.tag == tag
-              name = desc.name.toLowerCase().replace(/[^a-zA-Z0-9_]/gm, '').slice(0,12)
-              s += pre + desc.tag.toLowerCase() + name + "_" + "\t\t\t = getObjectFromGUID('" + guid + "')\n"
+              format_field = (s) ->
+                s = s.slice(1, -1)
+                if '?' in s
+                  [s, present, missing] = s.split(/[?:]/, 3)
+                  if s of formats and formats[s].field of desc and desc[formats[s].field] != ''
+                    return present
+                  else if missing
+                    return missing
+                  else
+                    return ''
+                else
+                  chars = 0
+                  out = ""
+                  if ':' in s
+                    [s, chars] = s.split(':', 2)
+                    try
+                      chars = parseInt(chars)
+                  if s of formats
+                    out = formats[s].f(desc[formats[s].field]).replace(/[^a-zA-Z0-9_]/g, "")
+                    if chars > 0
+                      out = out.slice(0, chars)
+                  for f of replacements
+                    out = out.replace(f, replacements[f])
+                  return out
+              label = pre + format.replace(/\([^)]+\)/g, format_field)
+              post = " = getObjectFromGUID('" + guid + "')\n"
+              rows.push({label: label, post: post})
+              if label.length > maxlen
+                maxlen = label.length
+          for row in rows
+            label = row.label
+            while label.length < maxlen
+              label += " "
+            s += label + " " + row.post
       if func
         s += "end\n"
-      editor.insertText(s, {select: true, autoIndent: true})
+      editor.insertText(s, {select: true})
     @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
 
   parseSaveState: (cls, saveState) ->
@@ -1272,7 +1355,7 @@ module.exports = TabletopsimulatorLua =
       for k of node
         if k == 'GUID'
           guid = node[k]
-          cls.guids[guid] = {tag: node.Name, name: node.Nickname, parent: parent}
+          cls.guids[guid] = {parent: parent, tag: node.Name, Name: node.Name, Nickname: node.Nickname, Description: node.Description, Transform: node.Transform, Tooltip: node.Tooltip}
         else if typeof node[k] == 'object'
           nodes.push(k)
       for k in nodes
@@ -1352,8 +1435,9 @@ module.exports = TabletopsimulatorLua =
       @executeLua(code)
 
 
-  executeLua: (lua) ->
-    #console.log lua
+  executeLua: (lua, log) ->
+    if log
+      console.log lua
     if not TabletopsimulatorLua.if_connected
       TabletopsimulatorLua.startConnection()
     msg = JSON.stringify({messageID: ATOM_MSG_LUA, guid: '-1', script: lua})
