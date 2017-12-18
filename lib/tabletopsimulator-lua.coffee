@@ -429,7 +429,7 @@ module.exports = TabletopsimulatorLua =
           description: "When automatically generating GUID code, format the variable name like this.  Can use ``(Field)`` ``(field)`` or ``(FIELD)``to refer to object properties, ``(FIELD:#)`` to limit to ``#`` characters, ``(FIELD?xxx:yyy)`` to insert ``xxx`` if FIELD is present and ``yyy`` if it's not.  Fields: ``Name`` ``Nickname`` ``Description`` ``Tooltip``.  ``[from:to]`` will replace ``from`` with ``to``"
           order: 4
           type: 'string'
-          default: '(name)_(nickname:12)[die_:d][scriptingtrigger:zone]'
+          default: '(name)_(nickname:12)[die_:d][scriptingtrigger:zone][custom_:][game_piece_:][infinite_:][fogofwartrigger:hidden]'
     editor:
       title: 'Editor'
       order: 4
@@ -676,7 +676,7 @@ module.exports = TabletopsimulatorLua =
           guid = guid.substring(1, 7)
           if guid of @guids
             duration = 3
-            if @guids[guid].Name == "ScriptingTrigger"
+            if @guids[guid].Name.indexOf("Trigger") != -1
               transform = @guids[guid].Transform
               @executeLua("""
                   Physics.cast({
@@ -688,6 +688,7 @@ module.exports = TabletopsimulatorLua =
                     max_distance = 30,
                     debug        = true,
                   })
+                  if __atom_highlight_guids ~= nil then __atom_highlight_guids.end_time = 0 end
                 """, false)
             else
               @executeLua("""
@@ -1287,7 +1288,7 @@ module.exports = TabletopsimulatorLua =
         [f, t] = s.split(':', 2)
         replacements[f] = t
         return ''
-      format = format.replace(/\[[^\]:]+:[^\]:]+\]/g, get_replacements)
+      format = format.replace(/\[[^\]:]+:[^\]:]*\]/g, get_replacements)
       formats = {}
       for field in fields
         formats[field] = {field: field, f: (s) -> s}
