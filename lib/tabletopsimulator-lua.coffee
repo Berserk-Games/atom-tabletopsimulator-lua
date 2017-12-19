@@ -1348,26 +1348,26 @@ module.exports = TabletopsimulatorLua =
       editor.insertText(s, {select: true})
     @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
 
-  parseSaveState: (cls, saveState) ->
-    cls.saveState = saveState
-    cls.guids = {}
+  parseSaveState: (self, saveState) ->
+    self.saveState = saveState
+    self.guids = {}
     walkSaveState = (node, parent) ->
       nodes = []
       guid = parent
       for k of node
         if k == 'GUID'
           guid = node[k]
-          cls.guids[guid] = {parent: parent, tag: node.Name, Name: node.Name, Nickname: node.Nickname, Description: node.Description, Transform: node.Transform, Tooltip: node.Tooltip}
+          self.guids[guid] = {parent: parent, tag: node.Name, Name: node.Name, Nickname: node.Nickname, Description: node.Description, Transform: node.Transform, Tooltip: node.Tooltip}
         else if typeof node[k] == 'object'
           nodes.push(k)
       for k in nodes
         walkSaveState(node[k], guid)
     walkSaveState(saveState, null)
 
-  handleMessage: (cls, data, fromTTS = false) ->
+  handleMessage: (self, data, fromTTS = false) ->
     id = data.messageID
     if data.saveState and data.saveState != undefined
-      cls.parseSaveState(cls, data.saveState)
+      self.parseSaveState(self, data.saveState)
 
     if id == TTS_MSG_NONE
       return
@@ -1457,7 +1457,7 @@ module.exports = TabletopsimulatorLua =
       @stopConnection()
 
     handleMessage = @handleMessage
-    cls = this
+    self = this
 
     @connection = net.createConnection clientport, domain
     @connection.tabletopsimulator = @
@@ -1475,7 +1475,7 @@ module.exports = TabletopsimulatorLua =
         @data = JSON.parse(@data_cache)
       catch error
         return
-      handleMessage(cls, @data)
+      handleMessage(self, @data)
       @data_cache = ""
 
     @connection.on 'error', (e) ->
@@ -1495,7 +1495,7 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     handleMessage = @handleMessage
-    cls = this
+    self = this
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
@@ -1508,7 +1508,7 @@ module.exports = TabletopsimulatorLua =
           @data = JSON.parse(@data_cache)
         catch error
           return
-        handleMessage(cls, @data, true)
+        handleMessage(self, @data, true)
         @data_cache = ""
 
       socket.on 'error', (e) ->
