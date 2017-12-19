@@ -822,6 +822,7 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
+          console.log "Request at", Date.now()
           destroyTTSEditors()
 
           # Delete any existing cached Lua files
@@ -1372,12 +1373,16 @@ module.exports = TabletopsimulatorLua =
       return
 
     else if id == TTS_MSG_NEW_OBJECTS
+      console.log "Received data from TTS", Date.now()
       readFilesFromTTS(data.scriptStates, fromTTS)
+      console.log "Finished receiving data from TTS", Date.now()
 
     else if id == TTS_MSG_NEW_GAME
+      console.log "Received data from TTS", Date.now()
       destroyTTSEditors()
       deleteCachedFiles()
       readFilesFromTTS(data.scriptStates)
+      console.log "Finished receiving data from TTS", Date.now()
       mutex.doingSaveAndPlay = false
 
     else if id == TTS_MSG_PRINT
@@ -1464,17 +1469,13 @@ module.exports = TabletopsimulatorLua =
       #console.log "Opened connection to #{domain}:#{clientport}"
 
     @connection.on 'data', (data) ->
-      # getObjects results in this
+      #console.log "Data received", Date.now()
+      @data_cache += data
       try
-        @data = JSON.parse(@data_cache + data)
+        @data = JSON.parse(@data_cache)
       catch error
-        @data_cache = @data_cache + data
-        #console.log "Received data cache"
         return
-      #console.log "Received: ", @data.messageID
-
       handleMessage(cls, @data)
-
       @data_cache = ""
 
     @connection.on 'error', (e) ->
@@ -1501,18 +1502,13 @@ module.exports = TabletopsimulatorLua =
       #socket.parse_line = @parse_line
 
       socket.on 'data', (data) ->
-        # saveAndPlay and making a new script in TTS results in this
-
+        #console.log "Data received", Date.now()
+        @data_cache += data
         try
-          @data = JSON.parse(@data_cache + data)
+          @data = JSON.parse(@data_cache)
         catch error
-          @data_cache = @data_cache + data
-          #console.log "Received data cache"
           return
-        #console.log "Received: #{@data.messageID} from #{socket.remoteAddress}"
-
         handleMessage(cls, @data, true)
-
         @data_cache = ""
 
       socket.on 'error', (e) ->
