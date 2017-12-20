@@ -1,7 +1,16 @@
+## 10.2.0
+* TTS now fully supports utf-8, so plugin no longer converts utf-8 to \u codes (it still does the reverse if the setting is enabled)
+* Open Save File command
+* Generate GUID Code command (pulls GUIDs from TTS save file and makes Lua for them). Format customizable in Style section of package settings.
+* Execute Selected Lua (ctrl-@) - send whatever code you have selected to TTS. If you're in an object script will execute under that object, otherwise will execute in Global.
+* Highlight GUID Objects setting. When enabled and your cursor is near a GUID string will make TTS highlight the related object.
+* Updated autocomplete suggestions for v10.2 additions
+* Fixed some linter warnings relating to comments
+
 ## 10.0.1
 * Fixed go to line function (was going to wrong line)
 * Added more comprehensive setting to let user decide what files are opened in Atom when they are sent from TTS. Can also completely disable communication with TTS.
-* Now displays a pop-up in Atom when your TTS mod hits a run-time error, with a button to jump to offending line (if able). 
+* Now displays a pop-up in Atom when your TTS mod hits a run-time error, with a button to jump to offending line (if able).
 * Added ```Jump To Last Error``` menu option and hotkey ```ctrl-e```.
 * Changed some settings so they default to on for options which have proved stable (such as the unicode conversion setting)
 * Added default hotkeys for Get Lua Scripts (ctrl-shift-l) and Save And Play (ctrl-shift-s)
