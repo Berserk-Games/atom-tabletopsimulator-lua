@@ -11,10 +11,25 @@ shell = require 'shell'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
+CheckboxList = require './checkbox-list-view'
 
 domain = 'localhost'
 clientport = 39999
 serverport = 39998
+
+TTS_MSG_NONE        = -1
+TTS_MSG_NEW_OBJECTS = 0
+TTS_MSG_NEW_GAME    = 1
+TTS_MSG_PRINT       = 2
+TTS_MSG_ERROR       = 3
+TTS_MSG_CUSTOM      = 4
+TTS_MSG_RETURN      = 5
+
+ATOM_MSG_NONE        = -1
+ATOM_MSG_GET_SCRIPTS = 0
+ATOM_MSG_SAVE_PLAY   = 1
+ATOM_MSG_CUSTOM      = 2
+ATOM_MSG_LUA         = 3
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
@@ -38,6 +53,16 @@ ttsEditors = {}
 activeEditorPath = ''
 mutex = {}
 mutex.doingSaveAndPlay = false
+mutex.functionCount = 0
+mutex.returnID = 0
+
+luaFunctionName = ->
+  mutex.functionCount += 1
+  return "atom_lua_function_" + mutex.functionCount
+
+getExecuteReturnID = ->
+  mutex.returnID += 1
+  return mutex.returnID
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -119,6 +144,10 @@ isFromTTS = (fn) ->
 isGlobalScript = (fn) ->
   return path.basename(fn) == 'Global.-1.ttslua'
 
+getPathGUID = (fn) ->
+  [name, guid, ext] = fn.split('.')
+  return guid
+
 destroyTTSEditors = ->
   if not atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
     force = true
@@ -176,6 +205,9 @@ gotoError = (message, guid) ->
   if fname != ""
     gotoFileRow(fname, row)
 
+lengthInUtf8Bytes = (str) ->
+  m = encodeURIComponent(str).match(/%[89ABab]/g)
+  return str.length + (if m then m.length else 0)
 
 class FileHandler
   constructor: ->
@@ -279,6 +311,30 @@ class FileHandler
   close: ->
     @subscriptions.dispose()
 
+readFilesFromTTS = (files, forceOpen = false) ->
+  for f,i in files
+    @file = new FileHandler()
+    f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+    @file.setBasename(f.name + "." + f.guid + ".ttslua")
+    @file.setDatasize(lengthInUtf8Bytes(f.script))
+    @file.create()
+
+    lines = f.script.split(/\n/)
+    for line,i in lines
+      if i < lines.length-1
+        line = line + "\n"
+      @file.append(line)
+    mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+    if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
+      @file.open()
+    @file = null
+
+deleteCachedFiles = () ->
+  try
+    for oldfile,i in fs.readdirSync(ttsLuaDir)
+      deletefile = path.join(ttsLuaDir, oldfile)
+      fs.unlinkSync(deletefile)
+  catch error
 
 module.exports = TabletopsimulatorLua =
   subscriptions: null
@@ -377,31 +433,43 @@ module.exports = TabletopsimulatorLua =
           order: 3
           type: 'string'
           default: '_GUID'
+        guidCodeGeneration:
+          title: 'Generate GUID Code'
+          description: "When automatically generating GUID code, format the variable name like this.  Can use ``(Field)`` ``(field)`` or ``(FIELD)``to refer to object properties, ``(FIELD:#)`` to limit to ``#`` characters, ``(FIELD?xxx:yyy)`` to insert ``xxx`` if FIELD is present and ``yyy`` if it's not.  Fields: ``Name`` ``Nickname`` ``Description`` ``Tooltip``.  ``[from:to]`` will replace ``from`` with ``to``"
+          order: 4
+          type: 'string'
+          default: '(name)_(nickname:12)[die_:d][scriptingtrigger:zone][custom_:][game_piece_:][infinite_:][fogofwartrigger:hidden]'
     editor:
       title: 'Editor'
       order: 4
       type: 'object'
       properties:
         errorPopup:
-          title: 'Report error message in pop-up'
+          title: 'Report TTS messages in pop-up'
           order: 1
-          description: 'Display Atom notification for run-time errors, with button to jump to offending line'
+          description: 'Display Atom notifications for run-time errors (with button to jump to offending line) and return values.'
           type: 'string'
           default: 'flash'
           enum: [
-            {value: 'off', description: 'Off: simply log the error to the developer console'}
+            {value: 'off', description: 'Off: simply log message to the developer console'}
             {value: 'flash', description: 'Display a notification for a few seconds'}
             {value: 'close', description: 'Display a notification which user must close'}
           ]
+        highlightGUIDObject:
+          title: 'Highlight GUID object in TTS'
+          order: 2
+          description: 'When the cursor is on a row which contains a GUID string, highlight the object in TTS'
+          type: 'boolean'
+          default: true
         showFunctionName:
           title: 'Show function name in status bar'
-          order: 2
+          order: 3
           description: 'Display the name of the function the cursor is currently inside'
           type: 'boolean'
           default: true
         showFunctionInGoto:
           title: 'Show ``function`` prefix during Go To Function'
-          order: 3
+          order: 4
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
@@ -449,18 +517,26 @@ module.exports = TabletopsimulatorLua =
         atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'all')
       atom.config.unset('tabletopsimulator-lua.loadSave.openGlobalOnly')
 
+    # Dynamic Editor settings
+    @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
 
+    # Code awaiting return value from TTS
+    @returnIDs = {}
 
     # StatusBarFunctionView to display current function in status bar
     @statusBarFunctionView = new StatusBarFunctionView()
     @statusBarFunctionView.init()
-    @statusBarActive = false
+    @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
     @statusBarPreviousPath = ''
     @statusBarPreviousRow  = 0
 
     # Function name lookup
     @functionByName = {}
     @functionPaths = {}
+
+    # JSON of currently loaded mod save file
+    @savePath = ""
+    @guids = {}
 
     # Set font for Go To Function UI
     styleSheetSource = atom.styles.styleElementsBySourcePath['global-text-editor-styles'].textContent
@@ -472,6 +548,10 @@ module.exports = TabletopsimulatorLua =
       }
       .tabletopsimulator-lua-goto-function .right {
         float: right;
+      }
+
+      .modal.overlay.from-top::before {
+        z-index: -1;
       }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
@@ -493,10 +573,14 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleSelectionCursor': => @toggleCursorSelectionEnd()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:displayCurrentFunction': => @displayFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openHelp': => @openHelp()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.highlightGUIDObject', (newValue) => @highlightGUIDObjectChange()
     @subscriptions.add atom.workspace.onDidOpen (event) => @onLoad(event)
     @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       @subscriptions.add editor.onDidChangeCursorPosition (event) =>
@@ -514,12 +598,7 @@ module.exports = TabletopsimulatorLua =
     destroyTTSEditors()
 
     # Delete any existing cached Lua files
-    try
-      @oldfiles = fs.readdirSync(ttsLuaDir)
-      for oldfile,i in @oldfiles
-        @deletefile = path.join(ttsLuaDir, oldfile)
-        fs.unlinkSync(@deletefile)
-    catch error
+    deleteCachedFiles()
 
     # Start server to receive push information from Unity
     @startServer()
@@ -572,20 +651,90 @@ module.exports = TabletopsimulatorLua =
         else
           atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
 
+
   cursorChangeEvent: (event) ->
-    if event and @isBlockSelecting and not @blockSelectLock
-      @isBlockSelecting = false
-    if event and @statusBarActive
+    if event
+      if @isBlockSelecting and not @blockSelectLock
+        @isBlockSelecting = false
       editor = event.cursor.editor
       if editor
         filepath = editor.getPath()
-      if not editor or not filepath or not filepath.endsWith('.ttslua')
-        @statusBarFunctionView.updateFunction(null)
-      else if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
-        return
+        isTTS = filepath.endsWith('.ttslua')
       else
-        [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
-        @statusBarFunctionView.updateFunction(names, rows)
+        isTTS = false
+      if @statusBarActive
+        if not editor or not filepath or not isTTS
+          @statusBarFunctionView.updateFunction(null)
+        else
+          if filepath == @statusBarPreviousPath and event.newBufferPosition.row == @statusBarPreviousRow
+            return
+          else
+            [names, rows] = @getFunctions(editor, event.newBufferPosition.row)
+            @statusBarFunctionView.updateFunction(names, rows)
+      if @highlightGUIDObject and isTTS
+        line = editor.lineTextForBufferRow(event.newBufferPosition.row)
+        guid_pattern = /(['"][a-zA-Z0-9]{6}['"])/
+        m = line.match(guid_pattern)
+        if m
+          guid = editor.getWordUnderCursor({wordRegex: guid_pattern})
+          if not guid
+            if event.cursor.isAtBeginningOfLine()
+              guid = line.match(guid_pattern)[1]
+            else if event.cursor.isAtEndOfLine()
+              pos = line.lastIndexOf(guid_pattern)
+              guid = line.substring(pos, pos + 6)
+            else
+              guid = line.substring(event.newBufferPosition.column).match(guid_pattern)[1]
+          guid = guid.substring(1, 7)
+          if guid of @guids
+            duration = 3
+            if @guids[guid].Name.indexOf("Trigger") != -1
+              transform = @guids[guid].Transform
+              @executeLua("""
+                  Physics.cast({
+                    origin       = {x=#{transform.posX}, y=#{transform.posY}, z=#{transform.posZ}},
+                    direction    = {x=0, y=0, z=0},
+                    type         = 3,
+                    size         = {x=#{transform.scaleX}, y=#{transform.scaleY}, z=#{transform.scaleZ}},
+                    orientation  = {x=#{transform.rotX}, y=#{transform.rotY}, z=#{transform.rotZ}},
+                    max_distance = 30,
+                    debug        = true,
+                  })
+                  if __atom_highlight_guids ~= nil then __atom_highlight_guids.end_time = 0 end
+                """)
+            else
+              @executeLua("""
+                if __atom_highlight_guids == nil then
+                  __atom_highlight_guids = {}
+                end
+                __atom_highlight_guids.next_guid = '#{guid}'
+                __atom_highlight_guids.end_time  = os.clock() + #{duration}
+                if __atom_highlight_guid == nil then
+                  __atom_highlight_guid = function()
+                    local start_time = os.clock()
+                    local object
+                    repeat
+                      if __atom_highlight_guids.current ~= __atom_highlight_guids.next_guid then
+                        if object then object.highlightOff() end
+                        __atom_highlight_guids.current = __atom_highlight_guids.next_guid
+                        object = getObjectFromGUID(__atom_highlight_guids.current)
+                      end
+                      if object then
+                        object.highlightOn({r=math.random(),g=math.random(),b=math.random()})
+                      end
+                      coroutine.yield(0)
+                    until os.clock() > __atom_highlight_guids.end_time
+                    if object then object.highlightOff() end
+                    _G['__atom_highlight_guids'] = nil
+                    _G['__atom_highlight_guid'] = nil
+                    return 1
+                  end
+                  startLuaCoroutine(Global, '__atom_highlight_guid')
+                end
+              """)
+
+  highlightGUIDObjectChange: (newValue) ->
+    @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
 
   getFunctions: (editor, startRow) ->
     line = editor.lineTextForBufferRow(startRow)
@@ -685,31 +834,18 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
-          # Close any open files
-          #for editor,i in atom.workspace.getTextEditors()
-          #  try
-          #    # Store cursor positions
-          #    cursors[editor.getPath()] = editor.getCursorBufferPosition()
-          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-          #    editor.destroy()
-          #  catch error
-          #    console.log error
+          #console.log "Request at", Date.now()
           destroyTTSEditors()
 
           # Delete any existing cached Lua files
-          try
-            @oldfiles = fs.readdirSync(ttsLuaDir)
-            for oldfile,i in @oldfiles
-              @deletefile = path.join(ttsLuaDir, oldfile)
-              fs.unlinkSync(@deletefile)
-          catch error
+          deleteCachedFiles()
 
           # Add temp dir to atom
           atom.project.addPath(ttsLuaDir)
 
           if not TabletopsimulatorLua.if_connected
             TabletopsimulatorLua.startConnection()
-          TabletopsimulatorLua.connection.write '{ messageID: 0 }'
+          TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
         No: -> return
 
   # hack needed because atom 1.19 makes save() async
@@ -785,11 +921,15 @@ module.exports = TabletopsimulatorLua =
               # Insert included files
               if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                 @luaObject.script = @insertFiles(@luaObject.script)
+              # TODO this section commented out because TTS now handles unicode correctly
+              # When setting is enabled we still convert \u codes to utf8 when loading
+              # but we no longer write \u codes to TTS.
+              # This setting should be removed entirely at a future date
+              #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
               # Replace with \u character codes
-              if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-                replace_character = (character) ->
-                  return "\\u{" + character.codePointAt(0).toString(16) + "}"
-                @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
+              #  replace_character = (character) ->
+              #    return "\\u{" + character.codePointAt(0).toString(16) + "}"
+              #  @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
               @luaObjects.scriptStates.push(@luaObject)
 
           console.log "Connected:", @if_connected
@@ -1148,11 +1288,224 @@ module.exports = TabletopsimulatorLua =
         editor.selectToBufferPosition(selected.start)
       editor.scrollToCursorPosition()
 
+  generateGUIDFunction: () ->
+    editor = atom.workspace.getActiveTextEditor()
+    insert = (tags, guids, func) ->
+      s = ""
+      pre = ""
+      fields = ['Name', 'Nickname', 'Description', 'Tooltip']
+      format = atom.config.get('tabletopsimulator-lua.style.guidCodeGeneration')
+      replacements = {}
+      get_replacements = (s) ->
+        s = s.slice(1, -1)
+        [f, t] = s.split(':', 2)
+        replacements[f] = t
+        return ''
+      format = format.replace(/\[[^\]:]+:[^\]:]*\]/g, get_replacements)
+      formats = {}
+      for field in fields
+        formats[field] = {field: field, f: (s) -> s}
+        formats[field.toLowerCase()] = {field: field, f: (s) -> s.toLowerCase()}
+        formats[field.toUpperCase()] = {field: field, f: (s) -> s.toUpperCase()}
+      if func
+        s += "function getGUIDs()\n"
+        pre = editor.getTabText()
+      i = 0
+      for tag of tags
+        if tags[tag]
+          i += 1
+          if i > 1
+            s += "\n"
+          rows = []
+          maxlen = 0
+          for guid of guids
+            desc = guids[guid]
+            if desc.tag == tag
+              format_field = (s) ->
+                s = s.slice(1, -1)
+                if '?' in s
+                  [s, present, missing] = s.split(/[?:]/, 3)
+                  if s of formats and formats[s].field of desc and desc[formats[s].field] != ''
+                    return present
+                  else if missing
+                    return missing
+                  else
+                    return ''
+                else
+                  chars = 0
+                  out = ""
+                  if ':' in s
+                    [s, chars] = s.split(':', 2)
+                    try
+                      chars = parseInt(chars)
+                  if s of formats
+                    out = formats[s].f(desc[formats[s].field]).replace(/[^a-zA-Z0-9_]/g, "")
+                    if chars > 0
+                      out = out.slice(0, chars)
+                  for f of replacements
+                    out = out.replace(f, replacements[f])
+                  return out
+              label = pre + format.replace(/\([^)]+\)/g, format_field)
+              post = " = getObjectFromGUID('" + guid + "')\n"
+              rows.push({label: label, post: post})
+              if label.length > maxlen
+                maxlen = label.length
+          for row in rows
+            label = row.label
+            while label.length < maxlen
+              label += " "
+            s += label + " " + row.post
+      if func
+        s += "end\n"
+      editor.insertText(s, {select: true})
+    @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
+
+  parseSavePath: (self, savePath) ->
+    self.savePath = savePath
+    self.guids = {}
+    if savePath == ""
+      return
+    save = JSON.parse(fs.readFileSync(savePath, 'utf8'))
+    walkSave = (node, parent) ->
+      nodes = []
+      guid = parent
+      for k of node
+        if k == 'GUID'
+          guid = node[k]
+          self.guids[guid] = {parent: parent, tag: node.Name, Name: node.Name, Nickname: node.Nickname, Description: node.Description, Transform: node.Transform, Tooltip: node.Tooltip}
+        else if typeof node[k] == 'object'
+          nodes.push(k)
+      for k in nodes
+        walkSave(node[k], guid)
+    walkSave(save, null)
+
+  handleMessage: (self, data, fromTTS = false) ->
+    id = data.messageID
+    if data.savePath and data.savePath != undefined
+      self.parseSavePath(self, data.savePath)
+
+    if id == TTS_MSG_NONE
+      return
+
+    else if id == TTS_MSG_NEW_OBJECTS
+      #console.log "Received data from TTS", Date.now()
+      readFilesFromTTS(data.scriptStates, fromTTS)
+      #console.log "Finished receiving data from TTS", Date.now()
+
+    else if id == TTS_MSG_NEW_GAME
+      #console.log "Received data from TTS", Date.now()
+      destroyTTSEditors()
+      deleteCachedFiles()
+      readFilesFromTTS(data.scriptStates)
+      #console.log "Finished receiving data from TTS", Date.now()
+      mutex.doingSaveAndPlay = false
+
+    else if id == TTS_MSG_PRINT
+      console.log data.message
+
+    else if id == TTS_MSG_ERROR
+      console.error data.errorMessagePrefix + data.error
+      lastError.message = data.error
+      lastError.guid = data.guid
+      popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+      if popup != "off"
+        detail = "GUID: " + data.guid
+        btns = []
+        row_string = data.error.match(/:\(([0-9]*),[^\)]+\):/)
+        msg = data.error
+        guid = data.guid
+        f = () ->
+          gotoError(msg, guid)
+        if row_string
+          detail += "\nRow: " + (parseInt(row_string[1]) - 1)
+          btns = [{onDidClick: f, text: "<- Jump to Error"}]
+        atom.notifications.addError(data.error, {
+          icon: 'puzzle',
+          detail: detail,
+          dismissable: popup == "close",
+          buttons: btns,
+        })
+      #console.error @data.message
+
+    else if id == TTS_MSG_CUSTOM
+      console.log data.customMessage
+
+    else if id == TTS_MSG_RETURN
+      if data.returnValue
+        detail = "Return value: " + data.returnValue
+        id = data.returnID
+        if self.returnIDs[id]
+          console.log {code: self.returnIDs[id], result: data.returnValue}
+          self.returnIDs[id] = null
+        else
+          console.log data.returnValue
+      else
+        detail = "Nothing returned by code; end with a 'return' statement to return something"
+      if typeof(data.returnValue) == 'object'
+        detail += "\n\n- You can view and expand the returned object in \nthe dev console (ctrl-shift-i)"
+      popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+      if popup != "off"
+        atom.notifications.addInfo("Code Executed", {
+          icon: 'type-function',
+          detail: detail,
+          dismissable: popup == "close",
+        })
+
+
+  testMessage: ->
+    console.log "Sending test message..."
+    if not TabletopsimulatorLua.if_connected
+      TabletopsimulatorLua.startConnection()
+    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar" }})
+    TabletopsimulatorLua.connection.write msg
+
+  executeLuaSelection: ->
+    testMessage()
+    editor = atom.workspace.getActiveTextEditor()
+    code = editor.getSelectedText()
+    if code == ''
+      editor.selectLinesContainingCursors()
+      code = editor.getSelectedText()
+    ok = true
+    try
+      luaparse.parse(code)
+    catch error
+      ok = false
+      row = error.line
+      column = error.column
+      message = error.message
+      atom.notifications.addError("Invalid Lua selection:", {icon: 'type-file', detail: "#{message}\nRow: #{row}\nCol: #{column}", dismissable: false})
+    if ok
+      fn = editor.getPath()
+      guid = '-1'
+      if isFromTTS(fn)
+        guid = getPathGUID(fn)
+      @executeLua(code, guid, getExecuteReturnID())
+
+  executeLua: (lua, guid, returnID) ->
+    #console.log lua
+    if not TabletopsimulatorLua.if_connected
+      TabletopsimulatorLua.startConnection()
+    msg = {messageID: ATOM_MSG_LUA, guid: '-1', script: lua}
+    if guid
+      msg.guid = guid
+    if returnID
+      msg.returnID = returnID
+      @returnIDs[returnID] = lua
+    TabletopsimulatorLua.connection.write JSON.stringify(msg)
+
+  openSaveFile: ->
+    if @savePath != ''
+      atom.workspace.open(@savePath)
+
   startConnection: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     if @if_connected
       @stopConnection()
+
+    handleMessage = @handleMessage
+    self = this
 
     @connection = net.createConnection clientport, domain
     @connection.tabletopsimulator = @
@@ -1164,44 +1517,13 @@ module.exports = TabletopsimulatorLua =
       #console.log "Opened connection to #{domain}:#{clientport}"
 
     @connection.on 'data', (data) ->
-      # getObjects results in this
+      #console.log "Data received", Date.now()
+      @data_cache += data
       try
-        @data = JSON.parse(@data_cache + data)
+        @data = JSON.parse(@data_cache)
       catch error
-        @data_cache = @data_cache + data
-        #console.log "Received data cache"
         return
-      #console.log "Received: ", @data.messageID
-
-      if @data.messageID == 0
-        # Close any open files
-        #for editor,i in atom.workspace.getTextEditors()
-        #  try
-        #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-        #    editor.destroy()
-        #  catch error
-        #    console.log error
-        destroyTTSEditors()
-
-        for f,i in @data.scriptStates
-          @file = new FileHandler()
-          f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-          @file.setBasename(f.name + "." + f.guid + ".ttslua")
-          @file.setDatasize(f.script.length)
-          @file.create()
-
-          lines = f.script.split(/\n/)
-          for line,i in lines
-            if i < lines.length-1
-              line = line + "\n"
-            #@parse_line(line)
-            @file.append(line)
-          mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-          if  mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
-            #console.log i, "Opening file in Start Connection", @file
-            @file.open()
-          @file = null
-
+      handleMessage(self, @data)
       @data_cache = ""
 
     @connection.on 'error', (e) ->
@@ -1216,132 +1538,25 @@ module.exports = TabletopsimulatorLua =
     @connection.end()
     @if_connected = false
 
-  ###
-  parse_line: (line) ->
-    @file.append(line)
-  ###
 
   startServer: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
+    handleMessage = @handleMessage
+    self = this
     server = net.createServer (socket) ->
       #console.log "New connection from #{socket.remoteAddress}"
       socket.data_cache = ""
       #socket.parse_line = @parse_line
 
       socket.on 'data', (data) ->
-        # saveAndPlay and making a new script in TTS results in this
-
+        #console.log "Data received", Date.now()
+        @data_cache += data
         try
-          @data = JSON.parse(@data_cache + data)
+          @data = JSON.parse(@data_cache)
         catch error
-          @data_cache = @data_cache + data
-          #console.log "Received data cache"
           return
-        #console.log "Received: #{@data.messageID} from #{socket.remoteAddress}"
-
-        # Pushing new Object
-        if @data.messageID == 0
-          for f,i in @data.scriptStates
-            @file = new FileHandler()
-            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-            @file.setBasename(f.name + "." + f.guid + ".ttslua")
-            @file.setDatasize(f.script.length)
-            @file.create()
-
-            lines = f.script.split(/\n/)
-            for line,i in lines
-              if i < lines.length-1
-                line = line + "\n"
-              #@parse_line(line)
-              @file.append(line)
-              #console.log i, "Opening file in Start Server message 0", @file
-            @file.open()
-            @file = null
-
-        # Loading a new game
-        else if @data.messageID == 1
-          #for editor,i in atom.workspace.getTextEditors()
-          #  try
-          #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-          #    editor.destroy()
-          #  catch error
-          #    console.log error
-          destroyTTSEditors()
-
-          # Delete any existing cached Lua files
-          try
-            @oldfiles = fs.readdirSync(ttsLuaDir)
-            for oldfile,i in @oldfiles
-              @deletefile = path.join(ttsLuaDir, oldfile)
-              fs.unlinkSync(@deletefile)
-          catch error
-
-          # Load scripts from new game
-          for f,i in @data.scriptStates
-            @file = new FileHandler()
-            f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-            @file.setBasename(f.name + "." + f.guid + ".ttslua")
-            @file.setDatasize(f.script.length)
-            @file.create()
-
-            lines = f.script.split(/\n/)
-            for line,i in lines
-              if i < lines.length-1
-                line = line + "\n"
-              #@parse_line(line)
-              @file.append(line)
-            mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-            if mode == 'all' or ttsEditors[@file.basename] or (mode == 'global' and isGlobalScript(@file.basename))
-              #console.log "Opening file in Start Server message 1", @file
-              @file.open()
-            @file = null
-
-          # TODO trying to do this by simply not closing them instead of reopening them
-          # Load any further files that were previously open
-          #if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-          #  for filepath in editors
-          #    row = 0
-          #    col = 0
-          #    try
-          #      row = cursors[filepath].row
-          #      col = cursors[filepath].column
-          #    catch error
-          #    active = (activeEditorPath == filepath)
-          #    #console.log "Opening other file", filepath
-          #    atom.workspace.open(filepath, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active})
-          mutex.doingSaveAndPlay = false
-
-        # Print/Debug message
-        else if @data.messageID == 2
-          console.log @data.message
-
-        # Error message
-        # Might change this from a string to a struct with more info
-        else if @data.messageID == 3
-          console.error @data.errorMessagePrefix + @data.error
-          lastError.message = @data.error
-          lastError.guid = @data.guid
-          popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
-          if popup != "off"
-            detail = "GUID: " + @data.guid
-            btns = []
-            row_string = @data.error.match(/:\(([0-9]*),[^\)]+\):/)
-            msg = @data.error
-            guid = @data.guid
-            f = () ->
-              gotoError(msg, guid)
-            if row_string
-              detail += "\nRow: " + (parseInt(row_string[1]) - 1)
-              btns = [{onDidClick: f, text: "<- Jump to Error"}]
-            atom.notifications.addError(@data.error, {
-              icon: 'puzzle',
-              detail: detail,
-              dismissable: popup == "close",
-              buttons: btns,
-            })
-          #console.error @data.message
-
+        handleMessage(self, @data, true)
         @data_cache = ""
 
       socket.on 'error', (e) ->
@@ -1365,12 +1580,6 @@ module.exports = TabletopsimulatorLua =
         nextLineExpectIndent = null
         lints = []
         suppress = [false]
-        checkForError = (code) ->
-          try
-            luaparse.parse(code)
-          catch error
-            return error
-          return null
         addLint = (severity, message, row, column) ->
           return if suppress[0]
           lints.push({
@@ -1390,13 +1599,17 @@ module.exports = TabletopsimulatorLua =
         while (i < lineCount)
           line = editor.lineTextForBufferRow(i)
           suppress[0] = line.endsWith('--') and not line.endsWith(']]--')
-          scopes = editor.scopeDescriptorForBufferPosition([i, 0])
-          if 'string.quoted.other.multiline.lua' in scopes.scopes
+          if 'string.quoted.other.multiline.lua' in editor.scopeDescriptorForBufferPosition([i, 0]).scopes
             i += 1
             continue
-          scopes = editor.scopeDescriptorForBufferPosition([i, line.length])
-          if 'comment.line.double-dash.lua' in scopes.scopes
-            line = line.split('--')[0]
+          if 'comment.line.double-dash.lua' in editor.scopeDescriptorForBufferPosition([i, line.length]).scopes
+            c = line.length - 1
+            while c > 0 and 'comment.line.double-dash.lua' in editor.scopeDescriptorForBufferPosition([i, c]).scopes
+              c -= 1
+            line = line.slice(0, c)
+            if line.match(/^\s*$/)
+              i += 1
+              continue
           m = line.match(/^(\s*)([^\s]+)/)
           if m
             indent = m[1].length

@@ -1417,6 +1417,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoldingObjects'
           },
           {
+            snippet: 'getHoverObject()'
+            displayText: 'getHoverObject()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the object that this player is hovering their pointer over.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoverObject'
+          },
+          {
             snippet: 'getSelectedObjects()'
             displayText: 'getSelectedObjects()'
             type: 'function'
@@ -1577,6 +1585,82 @@ module.exports =
             leftLabel: 'bool'
             description: 'Destroys an existing timer.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy'
+          },
+        ]
+
+      # Section: WebRequest Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "WebRequest") || line.endsWith("WebRequest.") || (previous_token == "WebRequest" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'get(${1:string|url}, ${2:Object|callback_owner}, ${3:string|callback})'
+            displayText: 'get(string url, Object callback_owner, string callback)'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#get'
+          },
+          {
+            snippet:
+              'get(${1:string|url}, ${2:Object|callback_owner}, ${3:string|callback}) -- returns and passes to callback:\n\t' +
+                '-- download_progress    bool      (0.0 - 1.0)\n\t' +
+                '-- error                string\n\t' +
+                '-- is_error             bool\n\t' +
+                '-- is_done              bool\n\t' +
+                '-- text                 string\n\t' +
+                '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
+                '-- url                  string'
+            displayText: 'get(string url, Object callback_owner, string callback) -- returns ...'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#get'
+          },
+          {
+            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback})'
+            displayText: 'post(string url, Table form, Object callback_owner, string callback)'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Post the form to the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#post'
+          },
+          {
+            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+              '-- download_progress    bool      (0.0 - 1.0)\n\t' +
+              '-- error                string\n\t' +
+              '-- is_error             bool\n\t' +
+              '-- is_done              bool\n\t' +
+              '-- text                 string\n\t' +
+              '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
+              '-- url                  string'
+            displayText: 'post(string url, Table form, Object callback_owner, string callback) -- returns ...'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Post the form to the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#post'
+          },
+          {
+            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
+            displayText: 'post(string url, string data, Object callback_owner, string callback)'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Put the data to the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
+          },
+          {
+            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+              '-- download_progress    bool      (0.0 - 1.0)\n\t' +
+              '-- error                string\n\t' +
+              '-- is_error             bool\n\t' +
+              '-- is_done              bool\n\t' +
+              '-- text                 string\n\t' +
+              '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
+              '-- url                  string'
+            displayText: 'post(string url, string data, Object callback_owner, string callback) -- returns ...'
+            type: 'function'
+            leftLabel: 'WebRequest'
+            description: 'Put the data to the url. Callback function is supplied the WebRequest.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
           },
         ]
 
@@ -2785,12 +2869,13 @@ module.exports =
               'callback       = ${3:-- string},\n\t' +
               'callback_owner = ${4:-- Object},\n\t' +
               'params         = ${5:-- Table},\n\t' +
-              'flip           = ${6:-- bool},\n\t' +
-              'guid           = ${7:-- string},\n\t' +
-              'index          = ${8:-- int},\n\t' +
-              'top            = ${9:-- bool [true]},\n' +
+              'smooth         = ${6:-- bool},\n\t' +
+              'flip           = ${7:-- bool},\n\t' +
+              'guid           = ${8:-- string},\n\t' +
+              'index          = ${9:-- int},\n\t' +
+              'top            = ${10:-- bool [true]},\n' +
               '})'
-            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
+            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool smooth, bool flip, string guid, int index, bool top})'
             type: 'function'
             leftLabel: 'Object'
             description: 'Takes an Object from this container.'
@@ -2879,6 +2964,14 @@ module.exports =
             type: 'function'
             description: 'This function is called every time a player sends a chat message.  Return false to cancel that message.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onChat'
+          },
+          {
+            snippet: 'onExternalMessage(table)\n\t${0:-- body...}\nend'
+            displayText: 'onExternalMessage(Table table)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'This function called when a message is received from the External Editor API.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/external-editor-api/'
           },
           {
             snippet: 'onFixedUpdate()\n\t${0:-- body...}\nend'
@@ -3103,6 +3196,13 @@ module.exports =
             description: 'The Timer class.'
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/'
           },
+          {
+            snippet: 'WebRequest'
+            displayText: 'WebRequest'
+            type: 'constant'
+            description: 'The WebRequest class.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/'
+          },
           # Global Management Functions
           {
             snippet: 'addNotebookTab(${1:Table|parameters})'
@@ -3303,6 +3403,14 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab'
           },
           {
+            snippet: 'sendExternalMessage(${1:Table|table})'
+            displayText: 'sendExternalMessage(Table table)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sends table to whatever is connected to the External Editor API.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/external-editor-api/'
+          },
+          {
             snippet: 'setNotes(${1:string|notes})'
             displayText: 'setNotes(string notes)'
             type: 'function'
@@ -3327,10 +3435,11 @@ module.exports =
               'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
               'callback       = ${5:-- string},\n\t' +
               'callback_owner = ${6:-- Object},\n\t' +
-              'params         = ${7:-- Table},\n\t' +
-              'snap_to_grid   = ${8:-- bool},\n' +
+              'sound          = ${7:-- Object},\n\t' +
+              'params         = ${8:-- Table},\n\t' +
+              'snap_to_grid   = ${9:-- bool},\n' +
               '})'
-            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, Table params, bool snap_to_grid})'
+            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, bool sound, Table params, bool snap_to_grid})'
             type: 'function'
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'

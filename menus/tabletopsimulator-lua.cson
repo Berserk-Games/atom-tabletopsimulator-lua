@@ -14,6 +14,11 @@
         },
         {type: 'separator'},
         {
+          'label': 'Open Save File'
+          'command': 'tabletopsimulator-lua:openSaveFile'
+        },
+        {type: 'separator'},
+        {
           'label': 'Go To Function'
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
@@ -45,6 +50,16 @@
         {
           'label': 'Toggle Selection Cursor Position'
           'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Execute Selected Lua'
+          'command': 'tabletopsimulator-lua:executeLuaSelection'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Generate GUID Code...'
+          'command': 'tabletopsimulator-lua:generateGUIDFunction'
         },
         {type: 'separator'},
         {
@@ -70,6 +85,11 @@
         },
         {type: 'separator'},
         {
+          'label': 'Open Save File'
+          'command': 'tabletopsimulator-lua:openSaveFile'
+        },
+        {type: 'separator'},
+        {
           'label': 'Go To Function'
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
@@ -101,6 +121,16 @@
         {
           'label': 'Toggle Selection Cursor Position'
           'command': 'tabletopsimulator-lua:toggleSelectionCursor'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Execute Selected Lua'
+          'command': 'tabletopsimulator-lua:executeLuaSelection'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Generate GUID Code...'
+          'command': 'tabletopsimulator-lua:generateGUIDFunction'
         },
         {type: 'separator'},
         {
