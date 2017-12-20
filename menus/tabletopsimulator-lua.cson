@@ -14,6 +14,11 @@
         },
         {type: 'separator'},
         {
+          'label': 'Open Save File'
+          'command': 'tabletopsimulator-lua:openSaveFile'
+        },
+        {type: 'separator'},
+        {
           'label': 'Go To Function'
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
@@ -77,6 +82,11 @@
         {
           'label': 'Save And Play'
           'command': 'tabletopsimulator-lua:saveAndPlay'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Open Save File'
+          'command': 'tabletopsimulator-lua:openSaveFile'
         },
         {type: 'separator'},
         {

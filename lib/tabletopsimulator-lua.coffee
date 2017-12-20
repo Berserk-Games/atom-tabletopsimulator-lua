@@ -23,6 +23,7 @@ TTS_MSG_NEW_GAME    = 1
 TTS_MSG_PRINT       = 2
 TTS_MSG_ERROR       = 3
 TTS_MSG_CUSTOM      = 4
+TTS_MSG_RETURN      = 5
 
 ATOM_MSG_NONE        = -1
 ATOM_MSG_GET_SCRIPTS = 0
@@ -53,11 +54,15 @@ activeEditorPath = ''
 mutex = {}
 mutex.doingSaveAndPlay = false
 mutex.functionCount = 0
+mutex.returnID = 0
 
 luaFunctionName = ->
   mutex.functionCount += 1
   return "atom_lua_function_" + mutex.functionCount
 
+getExecuteReturnID = ->
+  mutex.returnID += 1
+  return mutex.returnID
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -138,6 +143,10 @@ isFromTTS = (fn) ->
 
 isGlobalScript = (fn) ->
   return path.basename(fn) == 'Global.-1.ttslua'
+
+getPathGUID = (fn) ->
+  [name, guid, ext] = fn.split('.')
+  return guid
 
 destroyTTSEditors = ->
   if not atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
@@ -436,13 +445,13 @@ module.exports = TabletopsimulatorLua =
       type: 'object'
       properties:
         errorPopup:
-          title: 'Report error message in pop-up'
+          title: 'Report TTS messages in pop-up'
           order: 1
-          description: 'Display Atom notification for run-time errors, with button to jump to offending line'
+          description: 'Display Atom notifications for run-time errors (with button to jump to offending line) and return values.'
           type: 'string'
           default: 'flash'
           enum: [
-            {value: 'off', description: 'Off: simply log the error to the developer console'}
+            {value: 'off', description: 'Off: simply log message to the developer console'}
             {value: 'flash', description: 'Display a notification for a few seconds'}
             {value: 'close', description: 'Display a notification which user must close'}
           ]
@@ -511,6 +520,9 @@ module.exports = TabletopsimulatorLua =
     # Dynamic Editor settings
     @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
 
+    # Code awaiting return value from TTS
+    @returnIDs = {}
+
     # StatusBarFunctionView to display current function in status bar
     @statusBarFunctionView = new StatusBarFunctionView()
     @statusBarFunctionView.init()
@@ -523,7 +535,7 @@ module.exports = TabletopsimulatorLua =
     @functionPaths = {}
 
     # JSON of currently loaded mod save file
-    @saveState = {}
+    @savePath = ""
     @guids = {}
 
     # Set font for Go To Function UI
@@ -563,7 +575,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openHelp': => @openHelp()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:test': => @testMessage()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -689,7 +701,7 @@ module.exports = TabletopsimulatorLua =
                     debug        = true,
                   })
                   if __atom_highlight_guids ~= nil then __atom_highlight_guids.end_time = 0 end
-                """, false)
+                """)
             else
               @executeLua("""
                 if __atom_highlight_guids == nil then
@@ -719,7 +731,7 @@ module.exports = TabletopsimulatorLua =
                   end
                   startLuaCoroutine(Global, '__atom_highlight_guid')
                 end
-              """, false)
+              """)
 
   highlightGUIDObjectChange: (newValue) ->
     @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
@@ -822,7 +834,7 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
-          console.log "Request at", Date.now()
+          #console.log "Request at", Date.now()
           destroyTTSEditors()
 
           # Delete any existing cached Lua files
@@ -1348,10 +1360,13 @@ module.exports = TabletopsimulatorLua =
       editor.insertText(s, {select: true})
     @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
 
-  parseSaveState: (self, saveState) ->
-    self.saveState = saveState
+  parseSavePath: (self, savePath) ->
+    self.savePath = savePath
     self.guids = {}
-    walkSaveState = (node, parent) ->
+    if savePath == ""
+      return
+    save = JSON.parse(fs.readFileSync(savePath, 'utf8'))
+    walkSave = (node, parent) ->
       nodes = []
       guid = parent
       for k of node
@@ -1361,28 +1376,28 @@ module.exports = TabletopsimulatorLua =
         else if typeof node[k] == 'object'
           nodes.push(k)
       for k in nodes
-        walkSaveState(node[k], guid)
-    walkSaveState(saveState, null)
+        walkSave(node[k], guid)
+    walkSave(save, null)
 
   handleMessage: (self, data, fromTTS = false) ->
     id = data.messageID
-    if data.saveState and data.saveState != undefined
-      self.parseSaveState(self, data.saveState)
+    if data.savePath and data.savePath != undefined
+      self.parseSavePath(self, data.savePath)
 
     if id == TTS_MSG_NONE
       return
 
     else if id == TTS_MSG_NEW_OBJECTS
-      console.log "Received data from TTS", Date.now()
+      #console.log "Received data from TTS", Date.now()
       readFilesFromTTS(data.scriptStates, fromTTS)
-      console.log "Finished receiving data from TTS", Date.now()
+      #console.log "Finished receiving data from TTS", Date.now()
 
     else if id == TTS_MSG_NEW_GAME
-      console.log "Received data from TTS", Date.now()
+      #console.log "Received data from TTS", Date.now()
       destroyTTSEditors()
       deleteCachedFiles()
       readFilesFromTTS(data.scriptStates)
-      console.log "Finished receiving data from TTS", Date.now()
+      #console.log "Finished receiving data from TTS", Date.now()
       mutex.doingSaveAndPlay = false
 
     else if id == TTS_MSG_PRINT
@@ -1415,6 +1430,28 @@ module.exports = TabletopsimulatorLua =
     else if id == TTS_MSG_CUSTOM
       console.log data.customMessage
 
+    else if id == TTS_MSG_RETURN
+      if data.returnValue
+        detail = "Return value: " + data.returnValue
+        id = data.returnID
+        if self.returnIDs[id]
+          console.log {code: self.returnIDs[id], result: data.returnValue}
+          self.returnIDs[id] = null
+        else
+          console.log data.returnValue
+      else
+        detail = "Nothing returned by code; end with a 'return' statement to return something"
+      if typeof(data.returnValue) == 'object'
+        detail += "\n\n- You can view and expand the returned object in \nthe dev console (ctrl-shift-i)"
+      popup = atom.config.get('tabletopsimulator-lua.editor.errorPopup')
+      if popup != "off"
+        atom.notifications.addInfo("Code Executed", {
+          icon: 'type-function',
+          detail: detail,
+          dismissable: popup == "close",
+        })
+
+
   testMessage: ->
     console.log "Sending test message..."
     if not TabletopsimulatorLua.if_connected
@@ -1423,6 +1460,7 @@ module.exports = TabletopsimulatorLua =
     TabletopsimulatorLua.connection.write msg
 
   executeLuaSelection: ->
+    testMessage()
     editor = atom.workspace.getActiveTextEditor()
     code = editor.getSelectedText()
     if code == ''
@@ -1438,17 +1476,27 @@ module.exports = TabletopsimulatorLua =
       message = error.message
       atom.notifications.addError("Invalid Lua selection:", {icon: 'type-file', detail: "#{message}\nRow: #{row}\nCol: #{column}", dismissable: false})
     if ok
-      @executeLua(code)
+      fn = editor.getPath()
+      guid = '-1'
+      if isFromTTS(fn)
+        guid = getPathGUID(fn)
+      @executeLua(code, guid, getExecuteReturnID())
 
-
-  executeLua: (lua, log) ->
-    if log
-      console.log lua
+  executeLua: (lua, guid, returnID) ->
+    #console.log lua
     if not TabletopsimulatorLua.if_connected
       TabletopsimulatorLua.startConnection()
-    msg = JSON.stringify({messageID: ATOM_MSG_LUA, guid: '-1', script: lua})
-    TabletopsimulatorLua.connection.write msg
+    msg = {messageID: ATOM_MSG_LUA, guid: '-1', script: lua}
+    if guid
+      msg.guid = guid
+    if returnID
+      msg.returnID = returnID
+      @returnIDs[returnID] = lua
+    TabletopsimulatorLua.connection.write JSON.stringify(msg)
 
+  openSaveFile: ->
+    if @savePath != ''
+      atom.workspace.open(@savePath)
 
   startConnection: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
