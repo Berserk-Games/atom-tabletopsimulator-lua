@@ -3435,7 +3435,7 @@ module.exports =
               'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
               'callback       = ${5:-- string},\n\t' +
               'callback_owner = ${6:-- Object},\n\t' +
-              'sound          = ${7:-- Object},\n\t' +
+              'sound          = ${7:-- bool},\n\t' +
               'params         = ${8:-- Table},\n\t' +
               'snap_to_grid   = ${9:-- bool},\n' +
               '})'
