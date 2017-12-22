@@ -1,5 +1,4 @@
 {$$, View} = require 'space-pen'
-{ScrollView} = require 'atom-space-pen-views'
 #CheckboxListView = require './checkbox-list-view'
 {CompositeDisposable} = require 'atom'
 
@@ -66,9 +65,6 @@ module.exports = class CheckboxListView extends View
         @modalPanel.hide()
       else
         @modalPanel.show()
-
-  # Returns an object that can be retrieved when package is activated
-  serialize: ->
 
   # Tear down any state and detach
   destroy: ->

@@ -12,6 +12,7 @@ provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
 CheckboxList = require './checkbox-list-view'
+TTSPanelView = require './tts-panel-view'
 
 domain = 'localhost'
 clientport = 39999
@@ -492,7 +493,7 @@ module.exports = TabletopsimulatorLua =
 
 
 
-  activate: (state) ->
+  activate: (state = {visible: false, watchList: []}) ->
     # See if there are any Updates
     @updatePackage()
 
@@ -558,6 +559,16 @@ module.exports = TabletopsimulatorLua =
     @blockSelectLock = false
     @isBlockSelecting = false
 
+    # Tabletop Simulator panel
+    if not ('watchList' of state)
+      state.watchList = []
+      for i in 12
+        state.watchList[i] = {}
+        state.watchList[i].entry = ''
+        state.watchList[i].value = ''
+    @ttsPanelView = new TTSPanelView(state.watchList)
+    @ttsPanelView.setState(state)
+
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
@@ -576,6 +587,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleTTSPanel': => @toggleTTSPanel()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -791,6 +803,7 @@ module.exports = TabletopsimulatorLua =
     @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
 
   serialize: ->
+    return @ttsPanelView.getState()
 
   getProvider: -> provider
 
@@ -824,6 +837,9 @@ module.exports = TabletopsimulatorLua =
 
   openHelp: ->
     shell.openExternal('https://github.com/Knils/atom-tabletopsimulator-lua/wiki')
+
+  toggleTTSPanel: ->
+    @ttsPanelView.toggle()
 
   getObjects: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
