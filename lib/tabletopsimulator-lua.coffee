@@ -12,6 +12,7 @@ provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
 CheckboxList = require './checkbox-list-view'
+TTSPanelView = require './tts-panel-view'
 
 domain = 'localhost'
 clientport = 39999
@@ -492,7 +493,7 @@ module.exports = TabletopsimulatorLua =
 
 
 
-  activate: (state) ->
+  activate: (state = {visible: false, watchList: []}) ->
     # See if there are any Updates
     @updatePackage()
 
@@ -558,6 +559,16 @@ module.exports = TabletopsimulatorLua =
     @blockSelectLock = false
     @isBlockSelecting = false
 
+    # Tabletop Simulator panel
+    if not ('watchList' of state)
+      state.watchList = []
+      for i in 12
+        state.watchList[i] = {}
+        state.watchList[i].entry = ''
+        state.watchList[i].value = ''
+    @ttsPanelView = new TTSPanelView(state.watchList)
+    @ttsPanelView.setState(state)
+
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
@@ -576,6 +587,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:generateGUIDFunction': => @generateGUIDFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleTTSPanel': => @toggleTTSPanel()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -676,15 +688,36 @@ module.exports = TabletopsimulatorLua =
         guid_pattern = /(['"][a-zA-Z0-9]{6}['"])/
         m = line.match(guid_pattern)
         if m
-          guid = editor.getWordUnderCursor({wordRegex: guid_pattern})
-          if not guid
-            if event.cursor.isAtBeginningOfLine()
-              guid = line.match(guid_pattern)[1]
-            else if event.cursor.isAtEndOfLine()
-              pos = line.lastIndexOf(guid_pattern)
-              guid = line.substring(pos, pos + 6)
+          if event.cursor.isAtBeginningOfLine()
+            guid = m[1]
+          else if event.cursor.isAtEndOfLine()
+            c = line.length
+            while c > 0
+              m = line.substring(c).match(guid_pattern)
+              if m
+                break
+              c -= 1
+            if m
+              guid = m[1]
             else
-              guid = line.substring(event.newBufferPosition.column).match(guid_pattern)[1]
+              guid = "********"
+          else
+            c = event.newBufferPosition.column
+            while c > 0 and line[c].match(/[a-zA-Z0-9"']/)
+              c -= 1
+            m = line.substring(c).match(guid_pattern)
+            if m
+              guid = m[1]
+            else
+              while c > 0
+                m = line.substring(c).match(guid_pattern)
+                if m
+                  break
+                c -= 1
+              if m
+                guid = m[1]
+              else
+                guid = "********"
           guid = guid.substring(1, 7)
           if guid of @guids
             duration = 3
@@ -791,6 +824,7 @@ module.exports = TabletopsimulatorLua =
     @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
 
   serialize: ->
+    return @ttsPanelView.getState()
 
   getProvider: -> provider
 
@@ -824,6 +858,9 @@ module.exports = TabletopsimulatorLua =
 
   openHelp: ->
     shell.openExternal('https://github.com/Knils/atom-tabletopsimulator-lua/wiki')
+
+  toggleTTSPanel: ->
+    @ttsPanelView.toggle()
 
   getObjects: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
