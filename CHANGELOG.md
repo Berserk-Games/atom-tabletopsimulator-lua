@@ -1,3 +1,6 @@
+## 10.2.1
+* Fix #47
+
 ## 10.2.0
 * TTS now fully supports utf-8, so plugin no longer converts utf-8 to \u codes (it still does the reverse if the setting is enabled)
 * Open Save File command
