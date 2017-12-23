@@ -688,15 +688,36 @@ module.exports = TabletopsimulatorLua =
         guid_pattern = /(['"][a-zA-Z0-9]{6}['"])/
         m = line.match(guid_pattern)
         if m
-          guid = editor.getWordUnderCursor({wordRegex: guid_pattern})
-          if not guid
-            if event.cursor.isAtBeginningOfLine()
-              guid = line.match(guid_pattern)[1]
-            else if event.cursor.isAtEndOfLine()
-              pos = line.lastIndexOf(guid_pattern)
-              guid = line.substring(pos, pos + 6)
+          if event.cursor.isAtBeginningOfLine()
+            guid = m[1]
+          else if event.cursor.isAtEndOfLine()
+            c = line.length
+            while c > 0
+              m = line.substring(c).match(guid_pattern)
+              if m
+                break
+              c -= 1
+            if m
+              guid = m[1]
             else
-              guid = line.substring(event.newBufferPosition.column).match(guid_pattern)[1]
+              guid = "********"
+          else
+            c = event.newBufferPosition.column
+            while c > 0 and line[c].match(/[a-zA-Z0-9"']/)
+              c -= 1
+            m = line.substring(c).match(guid_pattern)
+            if m
+              guid = m[1]
+            else
+              while c > 0
+                m = line.substring(c).match(guid_pattern)
+                if m
+                  break
+                c -= 1
+              if m
+                guid = m[1]
+              else
+                guid = "********"
           guid = guid.substring(1, 7)
           if guid of @guids
             duration = 3
