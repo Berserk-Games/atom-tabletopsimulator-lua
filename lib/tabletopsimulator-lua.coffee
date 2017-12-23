@@ -140,10 +140,10 @@ extractFileMap = (text, filepath) ->
 
 
 isFromTTS = (fn) ->
-  return path.dirname(fn) == ttsLuaDir
+  return fn and path.dirname(fn) == ttsLuaDir
 
 isGlobalScript = (fn) ->
-  return path.basename(fn) == 'Global.-1.ttslua'
+  return fn and path.basename(fn) == 'Global.-1.ttslua'
 
 getPathGUID = (fn) ->
   [name, guid, ext] = fn.split('.')
