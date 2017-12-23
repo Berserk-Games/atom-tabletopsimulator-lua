@@ -550,7 +550,13 @@ module.exports = TabletopsimulatorLua =
       .tabletopsimulator-lua-goto-function .right {
         float: right;
       }
-
+      table.watch-list input {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin: 1px;
+      }
       .modal.overlay.from-top::before {
         z-index: -1;
       }
@@ -560,12 +566,6 @@ module.exports = TabletopsimulatorLua =
     @isBlockSelecting = false
 
     # Tabletop Simulator panel
-    if not ('watchList' of state)
-      state.watchList = []
-      for i in 12
-        state.watchList[i] = {}
-        state.watchList[i].entry = ''
-        state.watchList[i].value = ''
     @ttsPanelView = new TTSPanelView(state.watchList)
     @ttsPanelView.setState(state)
 
@@ -671,7 +671,7 @@ module.exports = TabletopsimulatorLua =
       editor = event.cursor.editor
       if editor
         filepath = editor.getPath()
-        isTTS = filepath.endsWith('.ttslua')
+        isTTS = filepath and filepath.endsWith('.ttslua')
       else
         isTTS = false
       if @statusBarActive
@@ -721,7 +721,7 @@ module.exports = TabletopsimulatorLua =
           guid = guid.substring(1, 7)
           if guid of @guids
             duration = 3
-            if @guids[guid].Name.indexOf("Trigger") != -1
+            if @guids[guid].Name.indexOf("Trigger") != -1 # is a zone
               transform = @guids[guid].Transform
               @executeLua("""
                   Physics.cast({

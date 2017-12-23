@@ -66,11 +66,11 @@
           'label': 'Help'
           'command': 'tabletopsimulator-lua:openHelp'
         },
-      #  {type: 'separator'},
-      #  {
+        #{type: 'separator'},
+        #{
       #    'label': 'Toggle TTS Panel'
-      #    'command': 'tabletopsimulator-lua:toggleTTSPanel'
-      #  },
+    #      'command': 'tabletopsimulator-lua:toggleTTSPanel'
+    #    },
       ]
     }
   ]
@@ -142,11 +142,11 @@
           'label': 'Help'
           'command': 'tabletopsimulator-lua:openHelp'
         },
-        #{type: 'separator'},
-        #{
-        #  'label': 'Toggle TTS Panel'
-        #  'command': 'tabletopsimulator-lua:toggleTTSPanel'
-        #},
+#        {type: 'separator'},
+#        {
+#          'label': 'Toggle TTS Panel'
+#          'command': 'tabletopsimulator-lua:toggleTTSPanel'
+#        },
       ]
     ]
   }
