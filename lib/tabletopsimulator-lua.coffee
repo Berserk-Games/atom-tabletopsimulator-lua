@@ -189,6 +189,7 @@ gotoFileRow = (filepath, row) ->
     editor.scrollToCursorPosition()
 
 gotoError = (message, guid) ->
+  console.log("Error jump!", message);
   # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
   if guid == "-2"
     guid = "-1"
@@ -364,19 +365,19 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: true
         openOtherFiles:
-          title: 'Experimental: Ignore files from outwith the TTS folder'
+          title: 'Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
           order: 3
           type: 'boolean'
-          default: false
+          default: true
         includeOtherFiles:
-          title: 'Experimental: Insert other files specified in source code'
+          title: 'Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
           order: 4
           type: 'boolean'
-          default: false
+          default: true
         includeOtherFilesPath:
-          title: 'Experimental: Base path for files you wish to #include'
+          title: 'Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
           order: 5
           type: 'string'
