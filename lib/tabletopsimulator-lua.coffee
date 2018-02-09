@@ -32,6 +32,8 @@ ATOM_MSG_SAVE_PLAY   = 1
 ATOM_MSG_CUSTOM      = 2
 ATOM_MSG_LUA         = 3
 
+CUSTOM_MSG_WATCH = 1
+
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
 # TODO remove this at some later date
@@ -475,9 +477,20 @@ module.exports = TabletopsimulatorLua =
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
+    panel:
+      title: 'Tabletop Simulator Panel'
+      order: 5
+      type: 'object'
+      properties:
+        watchListLength:
+          title: 'Watch List Entries'
+          description: 'Number of rows in watch list table (requires restart)'
+          order: 1
+          type: 'integer'
+          default: 8
     hacks:
       title: 'Hacks (Experimental!)'
-      order: 5
+      order: 6
       type: 'object'
       properties:
         incrementals:
@@ -551,23 +564,13 @@ module.exports = TabletopsimulatorLua =
       .tabletopsimulator-lua-goto-function .right {
         float: right;
       }
-      table.watch-list input {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        margin: 1px;
-      }
-      .modal.overlay.from-top::before {
-        z-index: -1;
-      }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
     @blockSelectLock = false
     @isBlockSelecting = false
 
     # Tabletop Simulator panel
-    @ttsPanelView = new TTSPanelView(state.watchList)
+    @ttsPanelView = new TTSPanelView(state, @executeLua, atom.config.get('tabletopsimulator-lua.panel.watchListLength'), @checkLua)
     @ttsPanelView.setState(state)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -663,7 +666,6 @@ module.exports = TabletopsimulatorLua =
             @catalogFileFunctions(otherFile)
         else
           atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
-
 
   cursorChangeEvent: (event) ->
     if event
@@ -1466,7 +1468,19 @@ module.exports = TabletopsimulatorLua =
       #console.error @data.message
 
     else if id == TTS_MSG_CUSTOM
-      console.log data.customMessage
+      console.log data
+      if "messageID" of data.customMessage
+        msg = data.customMessage
+        if msg.messageID == CUSTOM_MSG_WATCH
+          for k, watch of msg.watched
+            if watch.error
+              self.ttsPanelView.updateValue(k, '-')
+            else
+              self.ttsPanelView.updateValue(k, watch.result)
+        else
+          console.log "Unknown custom message: messageID = " + msg.messageID
+      else
+        console.log data.customMessage
 
     else if id == TTS_MSG_RETURN
       if data.returnValue
@@ -1494,7 +1508,7 @@ module.exports = TabletopsimulatorLua =
     console.log "Sending test message..."
     if not TabletopsimulatorLua.if_connected
       TabletopsimulatorLua.startConnection()
-    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar" }})
+    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar"}})
     TabletopsimulatorLua.connection.write msg
 
   executeLuaSelection: ->
@@ -1519,6 +1533,14 @@ module.exports = TabletopsimulatorLua =
       if isFromTTS(fn)
         guid = getPathGUID(fn)
       @executeLua(code, guid, getExecuteReturnID())
+
+  checkLua: (lua) ->
+    ok = true
+    try
+      luaparse.parse(lua)
+    catch error
+      ok = false
+    return ok
 
   executeLua: (lua, guid, returnID) ->
     #console.log lua
@@ -1560,6 +1582,7 @@ module.exports = TabletopsimulatorLua =
       try
         @data = JSON.parse(@data_cache)
       catch error
+        console.log error
         return
       handleMessage(self, @data)
       @data_cache = ""
@@ -1593,6 +1616,7 @@ module.exports = TabletopsimulatorLua =
         try
           @data = JSON.parse(@data_cache)
         catch error
+          console.log error
           return
         handleMessage(self, @data, true)
         @data_cache = ""

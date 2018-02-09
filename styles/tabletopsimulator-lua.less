@@ -2,9 +2,130 @@
 //
 // See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
 // for a full listing of what's available.
+
+@ui-size: 1rem;
+@background: @base-background-color;
+@bg2: lighten(@background, 1%);
 @import "ui-variables";
 
+@tts-height: @ui-size * 2.5;
+@panel-bg-color: darken(@background, 1%);
+
 .tabletopsimulator-lua {
+}
+
+.tts-panel-view {
+    background-color: @panel-bg-color;
+    padding-left: 2px;
+}
+
+.tts-panel-view li.tab.active {
+    background-color: @panel-bg-color;
+}
+
+.tts-panel-view .header {
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    border-top: 1px solid @bg2;
+}
+
+.tts-panel-view table.watch-list div.tab {
+    background-color: @panel-bg-color;
+    border: none;
+}
+
+.tts-panel-view table.watch-list input.input-text {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background-color: @background;
+  border: 1px solid @bg2;
+  margin-top:  2px;
+}
+
+.tts-panel-view .watch-control {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.tts-panel-view .watch-control table {
+    width: 100%;
+    height: @ui-size;
+}
+
+.tts-panel-view .watch-control table label {
+    font-weight: normal;
+}
+
+.tts-panel-view .watch-control table input.input-checkbox {
+    margin-top: 0;
+}
+
+.tts-panel-view .watch-control table input {
+}
+
+.tts-panel-view .watch-control table .button-container {
+    text-align: right;
+}
+
+.tts-panel-view .watch-control table .button-container button {
+    margin-right: 0;
+    height: @tts-height * 0.9;
+    max-height: @tts-height * 0.9;
+}
+
+.tts-panel-view table.watch-list input.entry {
+}
+
+.tts-panel-view table.watch-list input.value {
+    border-left: none;
+}
+
+.tts-panel-view .watch-list .tab-bar {
+    max-height: @tts-height;
+    height: @tts-height;
+}
+
+.tts-panel-view .watch-list .tab-bar .tab {
+  max-width: 100%;
+  width: 100%;
+  max-height: @tts-height;
+  height: @tts-height;
+  vertical-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.tts-panel-view .watch-list .tab-bar .tab .close-icon {
+  //top: (@tts-height / 2) - (@component-icon-size / 32);
+  margin-top: -(@component-icon-size*0.5);
+  top: (@tts-height / 2);
+  left: 4px;
+  right: auto;
+  line-height: @component-icon-size;
+}
+
+.tts-panel-view .watch-list input.input-text {
+  margin-top: 1px;
+}
+
+.tts-panel-view .watch-list input.input-text.error {
+  color: #ff3333;
+}
+
+.tts-panel-view .snippets .snippet {
+
+}
+
+.tts-panel-view .snippets .snippet .execute {
+    margin-top: 2px;
+    float: right;
+}
+
+.modal.overlay.from-top::before {
+  z-index: -1;
 }
 
 status-bar {
