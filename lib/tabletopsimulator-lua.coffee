@@ -1497,7 +1497,7 @@ module.exports = TabletopsimulatorLua =
     TabletopsimulatorLua.connection.write msg
 
   executeLuaSelection: ->
-    testMessage()
+    #@testMessage()
     editor = atom.workspace.getActiveTextEditor()
     code = editor.getSelectedText()
     if code == ''
