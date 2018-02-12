@@ -1,3 +1,8 @@
+## 10.3.0
+* Added log, logStyle
+* Force active file to open last on Save & Play so it remains active
+* Removed 'experimental' tag from some features
+
 ## 10.2.1
 * Fix #47
 
