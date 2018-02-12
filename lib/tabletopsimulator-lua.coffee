@@ -191,7 +191,6 @@ gotoFileRow = (filepath, row) ->
     editor.scrollToCursorPosition()
 
 gotoError = (message, guid) ->
-  console.log("Error jump!", message);
   # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
   if guid == "-2"
     guid = "-1"
@@ -254,6 +253,7 @@ class FileHandler
       active = (activeEditorPath == @tempfile)
     else
       active = true
+    console.log(@tempfile, active);
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active}).then (editor) =>
       @handle_connection(editor)
 
@@ -316,7 +316,9 @@ class FileHandler
     @subscriptions.dispose()
 
 readFilesFromTTS = (files, forceOpen = false) ->
-  for f,i in files
+  toOpen = []
+  lastOpen = null
+  for f, i in files
     @file = new FileHandler()
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     @file.setBasename(f.name + "." + f.guid + ".ttslua")
@@ -330,8 +332,15 @@ readFilesFromTTS = (files, forceOpen = false) ->
       @file.append(line)
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
-      @file.open()
+      if @file.tempfile == activeEditorPath
+        lastOpen = @file
+      else
+        toOpen.push(@file)
     @file = null
+  for file, i in toOpen
+    file.open()
+  if lastOpen
+    lastOpen.open()
 
 deleteCachedFiles = () ->
   try
@@ -592,6 +601,8 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleTTSPanel': => @toggleTTSPanel()
+
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:testMessage': => @testMessage()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -1512,11 +1523,11 @@ module.exports = TabletopsimulatorLua =
     TabletopsimulatorLua.connection.write msg
 
   executeLuaSelection: ->
-    #@testMessage()
     editor = atom.workspace.getActiveTextEditor()
     code = editor.getSelectedText()
     if code == ''
-      editor.selectLinesContainingCursors()
+      editor.moveToBeginningOfLine();
+      editor.selectToEndOfLine();
       code = editor.getSelectedText()
     ok = true
     try

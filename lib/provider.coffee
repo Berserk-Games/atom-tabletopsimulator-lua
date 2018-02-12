@@ -3352,6 +3352,22 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getSeatedPlayers'
           },
           {
+            snippet: 'log(${1:Var|message}, ${2:string|tag}, ${3:string|label})'
+            displayText: 'log(Var message, string tag = "", string label = "")'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Outputs a message to the system console. Specify a tag to identify it by class or subject, and label to prefix the value.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#log'
+          },
+          {
+            snippet: 'logStyle(${1:string|tag}, ${2:Color|color}, ${3:string|prefix}, ${4:string|postfix})'
+            displayText: 'logStyle(string tag, Color color, string prefix = "", string postfix = "")'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the style options for the specified tag: the color it is displayed in and any prefix or postfix text.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#logStyle'
+          },
+          {
             snippet: 'paste(${1:Table|parameters})'
             displayText: 'paste(Table parameters)'
             type: 'function'
