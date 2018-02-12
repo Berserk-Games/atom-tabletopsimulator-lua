@@ -25,3 +25,6 @@
   'ctrl-?':           'tabletopsimulator-lua:toggleSelectionCursor'
   'ctrl-i':           'tabletopsimulator-lua:displayCurrentFunction'
   "ctrl-@":           'tabletopsimulator-lua:executeLuaSelection'
+
+#'atom-workspace':
+#  'ctrl-shift-|': 'tabletopsimulator-lua:toggleTTSPanel'

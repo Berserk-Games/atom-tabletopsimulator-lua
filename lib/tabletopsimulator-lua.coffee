@@ -32,6 +32,8 @@ ATOM_MSG_SAVE_PLAY   = 1
 ATOM_MSG_CUSTOM      = 2
 ATOM_MSG_LUA         = 3
 
+CUSTOM_MSG_WATCH = 1
+
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
 # TODO remove this at some later date
@@ -251,6 +253,7 @@ class FileHandler
       active = (activeEditorPath == @tempfile)
     else
       active = true
+    console.log(@tempfile, active);
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active}).then (editor) =>
       @handle_connection(editor)
 
@@ -313,7 +316,9 @@ class FileHandler
     @subscriptions.dispose()
 
 readFilesFromTTS = (files, forceOpen = false) ->
-  for f,i in files
+  toOpen = []
+  lastOpen = null
+  for f, i in files
     @file = new FileHandler()
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     @file.setBasename(f.name + "." + f.guid + ".ttslua")
@@ -327,8 +332,15 @@ readFilesFromTTS = (files, forceOpen = false) ->
       @file.append(line)
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
-      @file.open()
+      if @file.tempfile == activeEditorPath
+        lastOpen = @file
+      else
+        toOpen.push(@file)
     @file = null
+  for file, i in toOpen
+    file.open()
+  if lastOpen
+    lastOpen.open()
 
 deleteCachedFiles = () ->
   try
@@ -364,19 +376,19 @@ module.exports = TabletopsimulatorLua =
           type: 'boolean'
           default: true
         openOtherFiles:
-          title: 'Experimental: Ignore files from outwith the TTS folder'
+          title: 'Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
           order: 3
           type: 'boolean'
-          default: false
+          default: true
         includeOtherFiles:
-          title: 'Experimental: Insert other files specified in source code'
+          title: 'Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
           order: 4
           type: 'boolean'
-          default: false
+          default: true
         includeOtherFilesPath:
-          title: 'Experimental: Base path for files you wish to #include'
+          title: 'Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
           order: 5
           type: 'string'
@@ -474,9 +486,20 @@ module.exports = TabletopsimulatorLua =
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
+    panel:
+      title: 'Tabletop Simulator Panel'
+      order: 5
+      type: 'object'
+      properties:
+        watchListLength:
+          title: 'Watch List Entries'
+          description: 'Number of rows in watch list table (requires restart)'
+          order: 1
+          type: 'integer'
+          default: 8
     hacks:
       title: 'Hacks (Experimental!)'
-      order: 5
+      order: 6
       type: 'object'
       properties:
         incrementals:
@@ -550,23 +573,13 @@ module.exports = TabletopsimulatorLua =
       .tabletopsimulator-lua-goto-function .right {
         float: right;
       }
-      table.watch-list input {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        margin: 1px;
-      }
-      .modal.overlay.from-top::before {
-        z-index: -1;
-      }
     """
     atom.styles.addStyleSheet(styleSheetSource, sourcePath: 'global-text-editor-styles')
     @blockSelectLock = false
     @isBlockSelecting = false
 
     # Tabletop Simulator panel
-    @ttsPanelView = new TTSPanelView(state.watchList)
+    @ttsPanelView = new TTSPanelView(state, @executeLua, atom.config.get('tabletopsimulator-lua.panel.watchListLength'), @checkLua)
     @ttsPanelView.setState(state)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -588,6 +601,8 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleTTSPanel': => @toggleTTSPanel()
+
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:testMessage': => @testMessage()
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
@@ -662,7 +677,6 @@ module.exports = TabletopsimulatorLua =
             @catalogFileFunctions(otherFile)
         else
           atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
-
 
   cursorChangeEvent: (event) ->
     if event
@@ -1465,7 +1479,19 @@ module.exports = TabletopsimulatorLua =
       #console.error @data.message
 
     else if id == TTS_MSG_CUSTOM
-      console.log data.customMessage
+      console.log data
+      if "messageID" of data.customMessage
+        msg = data.customMessage
+        if msg.messageID == CUSTOM_MSG_WATCH
+          for k, watch of msg.watched
+            if watch.error
+              self.ttsPanelView.updateValue(k, '-')
+            else
+              self.ttsPanelView.updateValue(k, watch.result)
+        else
+          console.log "Unknown custom message: messageID = " + msg.messageID
+      else
+        console.log data.customMessage
 
     else if id == TTS_MSG_RETURN
       if data.returnValue
@@ -1493,15 +1519,15 @@ module.exports = TabletopsimulatorLua =
     console.log "Sending test message..."
     if not TabletopsimulatorLua.if_connected
       TabletopsimulatorLua.startConnection()
-    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar" }})
+    msg = JSON.stringify({messageID: ATOM_MSG_CUSTOM, customMessage: {test: 1, foo: "bar"}})
     TabletopsimulatorLua.connection.write msg
 
   executeLuaSelection: ->
-    testMessage()
     editor = atom.workspace.getActiveTextEditor()
     code = editor.getSelectedText()
     if code == ''
-      editor.selectLinesContainingCursors()
+      editor.moveToBeginningOfLine();
+      editor.selectToEndOfLine();
       code = editor.getSelectedText()
     ok = true
     try
@@ -1518,6 +1544,14 @@ module.exports = TabletopsimulatorLua =
       if isFromTTS(fn)
         guid = getPathGUID(fn)
       @executeLua(code, guid, getExecuteReturnID())
+
+  checkLua: (lua) ->
+    ok = true
+    try
+      luaparse.parse(lua)
+    catch error
+      ok = false
+    return ok
 
   executeLua: (lua, guid, returnID) ->
     #console.log lua
@@ -1559,6 +1593,7 @@ module.exports = TabletopsimulatorLua =
       try
         @data = JSON.parse(@data_cache)
       catch error
+        console.log error
         return
       handleMessage(self, @data)
       @data_cache = ""
@@ -1592,6 +1627,7 @@ module.exports = TabletopsimulatorLua =
         try
           @data = JSON.parse(@data_cache)
         catch error
+          console.log error
           return
         handleMessage(self, @data, true)
         @data_cache = ""
