@@ -3065,6 +3065,20 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
           },
           {
+            snippet: 'onPlayerConnect(player_id)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerConnect(int player_id)'
+            type: 'function'
+            description: 'Automatically called when a Player connects.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerConnect'
+          },
+          {
+            snippet: 'onPlayerDisconnect(player_id)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerDisconnect(int player_id)'
+            type: 'function'
+            description: 'Automatically called when a Player disconnects.'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerDisconnect'
+          },
+          {
             snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
             type: 'function'
