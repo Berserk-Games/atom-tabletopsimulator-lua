@@ -1,3 +1,6 @@
+## 10.4.0
+* Added onPlayerConnect, onPlayerDisconnect
+
 ## 10.3.0
 * Added log, logStyle
 * Force active file to open last on Save & Play so it remains active
