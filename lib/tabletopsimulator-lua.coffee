@@ -288,11 +288,14 @@ class FileHandler
         else if tree.parent == null
           output.push(line)
       editor.setText(output.join('\n'))
+
+    # // REMOVED 2018.03.23: Atom no longer supports \u regexes, and this feature is no longer needed since TTS supports unicode intrinsically
     # Replace \u character codes
-    if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-      replace_unicode = (unicode) ->
-        unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
-      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
+    #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
+    #  replace_unicode = (unicode) ->
+    #    unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
+    #  editor.scan(/\\x\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
+
     if editor.isModified()
       editor.save()
 
@@ -369,34 +372,34 @@ module.exports = TabletopsimulatorLua =
             {value: 'none',    description: 'Do not automatically open any files sent from Tabletop Simulator'}
             {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
           ]
-        convertUnicodeCharacters:
-          title: 'Convert between unicode characters and \\u{xxxx} escape sequences when loading/saving'
-          description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
-          order: 2
-          type: 'boolean'
-          default: true
+    #    convertUnicodeCharacters:
+    #      title: 'Convert between unicode characters and \\u{xxxx} escape sequences when loading/saving'
+    #      description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
+    #      order: 2
+    #      type: 'boolean'
+    #      default: true
         openOtherFiles:
           title: 'Ignore files from outwith the TTS folder'
           description: 'When you Save And Play do not close files which are not in the TTS temp folder'
-          order: 3
+          order: 2
           type: 'boolean'
           default: true
         includeOtherFiles:
           title: 'Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
-          order: 4
+          order: 3
           type: 'boolean'
           default: true
         includeOtherFilesPath:
           title: 'Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
-          order: 5
+          order: 4
           type: 'string'
           default: ''
         delayLinter:
           title: 'Delay Linter When Loading'
           description: 'Delay in ``ms`` before linting a newly loaded file.'
-          order: 6
+          order: 5
           type: 'integer'
           default: 0
           minimum: 0
@@ -528,7 +531,6 @@ module.exports = TabletopsimulatorLua =
     # users have updated) everyone will be clean and this will no longer be
     # needed: remove this code at that point.
     if atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters') != undefined
-      atom.config.set('tabletopsimulator-lua.loadSave.convertUnicodeCharacters', atom.config.get('tabletopsimulator-lua.convertUnicodeCharacters'))
       atom.config.unset('tabletopsimulator-lua.convertUnicodeCharacters')
     if atom.config.get('tabletopsimulator-lua.parameterToDisplay') != undefined
       atom.config.set('tabletopsimulator-lua.autocomplete.parameterToDisplay', atom.config.get('tabletopsimulator-lua.parameterToDisplay'))
@@ -540,6 +542,9 @@ module.exports = TabletopsimulatorLua =
       else
         atom.config.set('tabletopsimulator-lua.loadSave.communicationMode', 'all')
       atom.config.unset('tabletopsimulator-lua.loadSave.openGlobalOnly')
+    # 23/03/18 - removed convertUnicodeCharacters
+    if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters') != undefined
+      atom.config.unset('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
 
     # Dynamic Editor settings
     @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
