@@ -292,7 +292,7 @@ class FileHandler
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
       replace_unicode = (unicode) ->
         unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
-      editor.scan(/\\u\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
+      editor.scan(/\\x\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
     if editor.isModified()
       editor.save()
 
