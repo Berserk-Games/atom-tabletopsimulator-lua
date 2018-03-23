@@ -1,3 +1,6 @@
+## 10.4.1
+* Fixed bug in script loading from TTS
+
 ## 10.4.0
 * Added onPlayerConnect, onPlayerDisconnect
 
