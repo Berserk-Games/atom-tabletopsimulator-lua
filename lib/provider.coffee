@@ -159,7 +159,7 @@ module.exports =
             type: 'property' # (optional)
             leftLabel: 'string' # (optional)
             description: 'Returns the Global Lua script.' # (optional)
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code' # (optional)
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#script_code' # (optional)
             #replacementPrefix: 'so' # (optional)
             #leftLabelHTML: '' # (optional)
             #rightLabel: '' # (optional)
@@ -173,7 +173,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'Returns the Global saved Lua script state.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#script_state'
           },
           # Functions
           {
@@ -182,7 +182,7 @@ module.exports =
             type: 'function'
             leftLabel: 'variable'
             description: 'Calls a Lua function owned by the Global Script and passes an optional Table as parameters to the function.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#call'
           },
           {
             snippet: 'getTable(${1:string|table_name})'
@@ -190,7 +190,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a Lua Table for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#gettable'
           },
           {
             snippet: 'getVar(${1:string|variable_name})'
@@ -198,7 +198,7 @@ module.exports =
             type: 'function'
             leftLabel: 'variable'
             description: 'Gets a Lua variable for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
           },
           {
             snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
@@ -206,7 +206,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets a Lua Table for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#settable'
           },
           {
             snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
@@ -214,7 +214,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets a Lua variable for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvar'
           },
         ]
 
@@ -856,7 +856,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'If the Clock’s timer is paused. Setting this value will pause or resume the timer.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#paused'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#paused'
           },
           # Functions
           {
@@ -865,7 +865,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the current value in stopwatch or timer mode as the number of seconds.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#getValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#getvalue'
           },
           {
             snippet: 'pauseStart()'
@@ -873,7 +873,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Toggle function for pausing and resuming a stopwatch or timer on the Clock.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#pauseStart'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#pausestart'
           },
           {
             snippet: 'setValue(${1:int|seconds})'
@@ -881,7 +881,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Switches the clock to timer mode and sets the timer to the given value in seconds.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#setValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#setvalue'
           },
           {
             snippet: 'startStopwatch()'
@@ -889,7 +889,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Switches the Clock to stopwatch mode and begins the stopwatch from 0.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#startStopwatch'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#startstopwatch'
           },
           {
             snippet: 'showCurrentTime()'
@@ -897,7 +897,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Switches the Clock back to displaying the current time.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/clock/#showCurrentTime'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/clock/#showcurrenttime'
           },
         ]
 
@@ -911,7 +911,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Resets the Counter value back to 0.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#clear'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/counter/#clear'
           },
           {
             snippet: 'decrement()'
@@ -919,7 +919,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Decrements the Counter’s value by 1.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#decrement'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/counter/#decrement'
           },
           {
             snippet: 'getValue()'
@@ -927,7 +927,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the current value of the Counter.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#getValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/counter/#getvalue'
           },
           {
             snippet: 'increment()'
@@ -935,7 +935,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Increments the Counter’s value by 1.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#increment'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/counter/#increment'
           },
           {
             snippet: 'setValue(${1:int|seconds})'
@@ -943,7 +943,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the current value of the Counter.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/counter/#setValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/counter/#setvalue'
           },
         ]
 
@@ -957,7 +957,7 @@ module.exports =
             type: 'property'
             leftLabel: 'int'
             description: 'The source of the ambient light. 1 = Background, 2 = Gradient.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_type'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#ambient_type'
           },
           {
             snippet: 'ambient_intensity'
@@ -965,7 +965,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The strength of the ambient light either from the background or gradient. Range is 0-4.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#ambient_intensity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#ambient_intensity'
           },
           {
             snippet: 'light_intensity'
@@ -973,7 +973,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The strength of the directional light shining down in the scene. Range is 0-4.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#light_intensity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#light_intensity'
           },
           {
             snippet: 'reflection_intensity'
@@ -981,7 +981,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The strength of the reflections from the background. Range is 0-1.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#reflection_intensity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#reflection_intensity'
           },
           # Functions
           {
@@ -990,7 +990,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Applies all changed made to the Lighting class. This must be called for these changes to take affect.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#apply'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#apply'
           },
           {
             snippet: 'getAmbientEquatorColor()'
@@ -998,7 +998,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Color of the gradient equator.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientEquatorColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#getambientequatorcolor'
           },
           {
             snippet: 'getAmbientGroundColor()'
@@ -1006,7 +1006,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Color of the gradient ground.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientGroundColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#getambientgroundcolor'
           },
           {
             snippet: 'getAmbientSkyColor()'
@@ -1014,7 +1014,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Color of the gradient sky.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getAmbientSkyColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#getambientskycolor'
           },
           {
             snippet: 'getLightColor()'
@@ -1022,7 +1022,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Color of the directional light.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#getLightColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#getlightcolor'
           },
           {
             snippet: 'setAmbientEquatorColor(${1:Table|color})'
@@ -1030,7 +1030,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the gradient equator.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#setambientequatorcolor'
           },
           {
             snippet: 'setAmbientGroundColor(${1:Table|color})'
@@ -1038,7 +1038,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the ambient ground.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#setambientgroundcolor'
           },
           {
             snippet: 'setAmbientSkyColor(${1:Table|color})'
@@ -1046,7 +1046,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the gradient sky.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#setambientskycolor'
           },
           {
             snippet: 'setLightColor(${1:Table|color})'
@@ -1054,7 +1054,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the directional light.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#setlightcolor'
           },
         ]
 
@@ -1068,7 +1068,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Casts a shape based on Info and returns a table of multiple Hit.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/#cast'
           },
           {
             snippet:
@@ -1085,7 +1085,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Casts a shape based on Info and returns a table of multiple Hit.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#cast'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/#cast'
           },
           {
             snippet: 'getGravity()'
@@ -1093,7 +1093,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the gravity Vector.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#getGravity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/#getgravity'
           },
           {
             snippet: 'setGravity(${1:Table|vector})'
@@ -1101,7 +1101,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the gravity Vector.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setGravity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/#setgravity'
           },
         ]
 
@@ -1115,7 +1115,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Black player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Blue'
@@ -1123,7 +1123,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Blue player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Brown'
@@ -1131,7 +1131,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Brown player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Green'
@@ -1139,7 +1139,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Green player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Orange'
@@ -1147,7 +1147,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Orange player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Pink'
@@ -1155,7 +1155,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Pink player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Purple'
@@ -1163,7 +1163,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Purple player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Red'
@@ -1171,7 +1171,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Red player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Teal'
@@ -1179,7 +1179,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Teal player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'White'
@@ -1187,7 +1187,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The White player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           {
             snippet: 'Yellow'
@@ -1195,7 +1195,7 @@ module.exports =
             type: 'constant'
             leftLabel: 'Player'
             description: 'The Yellow player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/'
           },
           # Functions
           {
@@ -1204,7 +1204,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table of all Players.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayers'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getplayers'
           },
           {
             snippet: 'getSpectators()'
@@ -1212,7 +1212,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table of spectator Players.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getSpectators'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getspectators'
           },
         ]
 
@@ -1226,7 +1226,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Is the player currently promoted or hosting the game? Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#admin'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#admin'
           },
           {
             snippet: 'blindfolded'
@@ -1234,7 +1234,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Is the player blindfolded?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#blindfolded'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#blindfolded'
           },
           {
             snippet: 'color'
@@ -1242,7 +1242,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The player\'s color. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#color'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#color'
           },
           {
             snippet: 'host'
@@ -1250,7 +1250,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Is the player the host?.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#host'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#host'
           },
           {
             snippet: 'lift_height'
@@ -1258,7 +1258,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The player\'s lift height from 0 to 1.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lift_height'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#lift_height'
           },
           {
             snippet: 'promoted'
@@ -1266,7 +1266,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Is the player currently promoted? Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promoted'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#promoted'
           },
           {
             snippet: 'seated'
@@ -1274,7 +1274,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'Is the player currently seated at the table? Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#seated'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#seated'
           },
           {
             snippet: 'steam_id'
@@ -1282,7 +1282,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The player\'s Steam ID. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_id'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#steam_id'
           },
           {
             snippet: 'steam_name'
@@ -1290,7 +1290,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The player\'s Steam name. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#steam_name'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#steam_name'
           },
           {
             snippet: 'team'
@@ -1298,7 +1298,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The player\'s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#team'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#team'
           },
           # Functions
           {
@@ -1307,7 +1307,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Makes a player\'s camera follow an Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#attachcameratoobject'
           },
           {
             snippet:
@@ -1319,7 +1319,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Makes a player\'s camera follow an Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#attachCameraToObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#attachcameratoobject'
           },
           {
             snippet: 'broadcast(${1:string|message})'
@@ -1327,7 +1327,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Broadcasts a message to the player. This also sends a message to the top center of the screen.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#broadcast'
           },
           {
             snippet: 'broadcast(${1:string|message}, ${2:string|color})'
@@ -1335,7 +1335,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Broadcasts a message to the player with Color. This also sends a message to the top center of the screen.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#broadcast'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#broadcast'
           },
           {
             snippet: 'changeColor(${1:string|new_color})'
@@ -1343,7 +1343,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Changes the player\'s color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#changeColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#changecolor'
           },
           {
             snippet: 'getHandCount()'
@@ -1351,7 +1351,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the number of hands that exist for this player color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandCount'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#gethandcount'
           },
           {
             snippet: 'getHandObjects(${1:int|index})'
@@ -1359,7 +1359,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a list of all the Cards and Mahjong Tiles in the player\'s hand. Specify index for additional hands.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#gethandobjects'
           },
           {
             snippet: 'getHandTransform(${1:int|hand_index})'
@@ -1367,7 +1367,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Transform of the player’s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#gethandtransform'
           },
           {
             snippet:
@@ -1382,15 +1382,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the Transform of the player’s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform'
-          },
-          {
-            snippet: 'getPlayerHand()'
-            displayText: 'getPlayerHand()'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns a Lua Table with the position and rotation of the given player\'s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayerHand'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#gethandtransform'
           },
           {
             snippet: 'getPointerPosition()'
@@ -1398,7 +1390,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the position of the given player color\'s pointer.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerPosition'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getpointerposition'
           },
           {
             snippet: 'getPointerRotation()'
@@ -1406,7 +1398,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the y-axis rotation of the given player color\'s pointer in degrees.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getpointerrotation'
           },
           {
             snippet: 'getHoldingObjects()'
@@ -1414,7 +1406,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Lua Table representing a list of all the Objects currently held by the player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoldingObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getholdingobjects'
           },
           {
             snippet: 'getHoverObject()'
@@ -1422,7 +1414,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the object that this player is hovering their pointer over.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHoverObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#gethoverobject'
           },
           {
             snippet: 'getSelectedObjects()'
@@ -1430,7 +1422,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Lua Table representing a list of all the Objects currently selected by the player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPointerRotation'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getpointerrotation'
           },
           {
             snippet: 'kick()'
@@ -1438,7 +1430,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Kicks the player from the game.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#kick'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#kick'
           },
           {
             snippet: 'lookAt(${1:Table|parameters})'
@@ -1446,7 +1438,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Moves the Player\'s camera to look at a specific point.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#lookat'
           },
           {
             snippet:
@@ -1460,7 +1452,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Moves the Player\'s camera to look at a specific point.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#lookAt'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#lookat'
           },
           {
             snippet: 'mute()'
@@ -1468,7 +1460,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Mutes or unmutes the player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#mute'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#mute'
           },
           {
             snippet: 'print(${1:string|message})'
@@ -1476,7 +1468,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a message to the player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#print'
           },
           {
             snippet: 'print(${1:string|message}, ${2:string|color})'
@@ -1484,7 +1476,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a message to the player with Color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#print'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#print'
           },
           {
             snippet: 'promote()'
@@ -1492,7 +1484,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Promotes or demotes the player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#promote'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#promote'
           },
           {
             snippet: 'setHandTransform(${1:Table|transform}, ${2:int|hand_index})'
@@ -1500,7 +1492,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Transform of the player’s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#sethandtransform'
           },
           {
             snippet:
@@ -1516,7 +1508,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Transform of the player’s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#setHandTransform'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#sethandtransform'
           },
         ]
 
@@ -1530,7 +1522,7 @@ module.exports =
             type: 'function'
             leftLabel: 'variable'
             description: 'Decodes a valid JSON string into a Lua string, number, or Table.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#decode'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/json/#decode'
           },
           {
             snippet: 'encode(${1:variable})'
@@ -1538,7 +1530,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Encodes a Lua string, number, or Table into a valid JSON string. This will not work with Object references.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/json/#encode'
           },
           {
             snippet: 'encode_pretty(${1:variable})'
@@ -1546,7 +1538,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Encodes a Lua string, number, or Table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json/#encode_pretty'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/json/#encode_pretty'
           },
         ]
 
@@ -1560,7 +1552,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#create'
           },
           {
             snippet:
@@ -1576,7 +1568,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#create'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#create'
           },
           {
             snippet: 'destroy(${1:string|identifier})'
@@ -1584,7 +1576,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Destroys an existing timer.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/#destroy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#destroy'
           },
         ]
 
@@ -1598,7 +1590,7 @@ module.exports =
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#get'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#get'
           },
           {
             snippet:
@@ -1614,7 +1606,7 @@ module.exports =
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#get'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#get'
           },
           {
             snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback})'
@@ -1622,7 +1614,7 @@ module.exports =
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Post the form to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#post'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#post'
           },
           {
             snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
@@ -1637,18 +1629,18 @@ module.exports =
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Post the form to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#post'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#post'
           },
           {
-            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
-            displayText: 'post(string url, string data, Object callback_owner, string callback)'
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
+            displayText: 'put(string url, string data, Object callback_owner, string callback)'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#put'
           },
           {
-            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
               '-- download_progress    bool      (0.0 - 1.0)\n\t' +
               '-- error                string\n\t' +
               '-- is_error             bool\n\t' +
@@ -1656,11 +1648,11 @@ module.exports =
               '-- text                 string\n\t' +
               '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
               '-- url                  string'
-            displayText: 'post(string url, string data, Object callback_owner, string callback) -- returns ...'
+            displayText: 'put(string url, string data, Object callback_owner, string callback) -- returns ...'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#put'
           },
         ]
 
@@ -1674,7 +1666,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Plays a random attack animation.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#attack'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/rpgfigurine/#attack'
           },
           {
             snippet: 'changeMode()'
@@ -1682,7 +1674,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Changes the RPG Figurine\'s current mode.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#changeMode'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/rpgfigurine/#changemode'
           },
           {
             snippet: 'die()'
@@ -1690,21 +1682,21 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Plays the death animation. Call die() again to reset the RPG Figurine.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#die'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/rpgfigurine/#die'
           },
           {
             snippet: 'onAttack(hit_list)\n\t${0:-- body...}\nend'
             displayText: 'onAttack(Table hit_list)'
             type: 'function'
             description: 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onAttack'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/rpgfigurine/#onattack'
           },
           {
             snippet: 'onHit(attacker)\n\t${0:-- body...}\nend'
             displayText: 'onHit(Object attacker)'
             type: 'function'
             description: 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/rpgfigurine/#onHit'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/rpgfigurine/#onhit'
           },
         ]
 
@@ -1718,7 +1710,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the current font color as a Lua Table keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#getfontcolor'
           },
           {
             snippet: 'getFontSize()'
@@ -1726,7 +1718,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the current font size.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getFontSize'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#getfontsize'
           },
           {
             snippet: 'getValue()'
@@ -1734,7 +1726,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Returns the current text.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#getValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#getvalue'
           },
           {
             snippet: 'setFontColor(${1:Table|color})'
@@ -1742,7 +1734,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the current font color. The Lua Table parameter should be keyed as Table[\'r\'], Table[\'g\'], and Table[\'b\'].'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#setfontcolor'
           },
           {
             snippet: 'setFontSize(${1:int|font_size})'
@@ -1750,7 +1742,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the current font size.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setFontSize'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#setfontsize'
           },
           {
             snippet: 'setValue(${1:string|text})'
@@ -1758,7 +1750,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the current text.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/texttool/#setValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/texttool/#setvalue'
           },
         ]
 
@@ -1772,7 +1764,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s angular drag.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#angular_drag'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#angular_drag'
           },
           {
             snippet: 'AssetBundle'
@@ -1780,7 +1772,7 @@ module.exports =
             type: 'property'
             leftLabel: 'AssetBundle'
             description: 'A reference to the AssetBundle class attached to this Object, or nil. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#AssetBundle'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#assetbundle'
           },
           {
             snippet: 'auto_raise'
@@ -1788,7 +1780,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should this Object automatically raise above other Objects when held?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#auto_raise'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#auto_raise'
           },
           {
             snippet: 'bounciness'
@@ -1796,7 +1788,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s bounciness.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#bounciness'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#bounciness'
           },
           {
             snippet: 'Clock'
@@ -1804,7 +1796,7 @@ module.exports =
             type: 'property'
             leftLabel: 'Clock'
             description: 'A reference to the Clock class attached to this Object. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Clock'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clock'
           },
           {
             snippet: 'Counter'
@@ -1812,7 +1804,7 @@ module.exports =
             type: 'property'
             leftLabel: 'Counter'
             description: 'A reference to the Counter class attached to this Object. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#Counter'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#counter'
           },
           {
             snippet: 'drag'
@@ -1820,7 +1812,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s drag.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#drag'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#drag'
           },
           {
             snippet: 'dynamic_friction'
@@ -1828,7 +1820,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s dynamic friction.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dynamic_friction'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#dynamic_friction'
           },
           {
             snippet: 'grid_projection'
@@ -1836,7 +1828,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should the grid project onto this object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#grid_projection'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#grid_projection'
           },
           {
             snippet: 'guid'
@@ -1844,7 +1836,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The Object’s guid. This is the same as the getGUID function. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#guid'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#guid'
           },
           {
             snippet: 'held_by_color'
@@ -1852,7 +1844,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The color of the Player currently holding the Object. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#held_by_color'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#held_by_color'
           },
           {
             snippet: 'interactable'
@@ -1860,7 +1852,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#interactable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#interactable'
           },
           {
             snippet: 'mass'
@@ -1868,7 +1860,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s mass.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#mass'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#mass'
           },
           {
             snippet: 'name'
@@ -1876,7 +1868,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The Object’s formated name or nickname if applicable. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#name'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#name'
           },
           {
             snippet: 'resting'
@@ -1884,7 +1876,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Returns true if this Object is not moving. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#resting'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#resting'
           },
           {
             snippet: 'RPGFigurine'
@@ -1892,7 +1884,7 @@ module.exports =
             type: 'property'
             leftLabel: 'RPGFigurine'
             description: 'A reference to the RPGFigurine class attached to this Object. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#RPGFigurine'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#rpgfigurine'
           },
           {
             snippet: 'script_code'
@@ -1900,7 +1892,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'Returns the Lua script on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_code'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#script_code'
           },
           {
             snippet: 'script_state'
@@ -1908,7 +1900,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'Returns the saved Lua script state on the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#script_state'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#script_state'
           },
           {
             snippet: 'static_friction'
@@ -1916,7 +1908,7 @@ module.exports =
             type: 'property'
             leftLabel: 'float'
             description: 'The Object\'s static friction.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#static_friction'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#static_friction'
           },
           {
             snippet: 'sticky'
@@ -1924,7 +1916,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should Objects on top of this Object stick to this Object when this Object is picked up?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#sticky'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#sticky'
           },
           {
             snippet: 'tag'
@@ -1932,7 +1924,7 @@ module.exports =
             type: 'property'
             leftLabel: 'string'
             description: 'The tag of the Object representing its type. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tag'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#tag'
           },
           {
             snippet: 'tooltip'
@@ -1940,7 +1932,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should Object show tooltips when hovering over it.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#tooltip'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#tooltip'
           },
           {
             snippet: 'TextTool'
@@ -1948,7 +1940,7 @@ module.exports =
             type: 'property'
             leftLabel: 'TextTool'
             description: 'A reference to the TextTool class attached to this Object. Read only.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#TextTool'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#texttool'
           },
           {
             snippet: 'use_gravity'
@@ -1956,7 +1948,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Does gravity affect this Object?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_gravity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_gravity'
           },
           {
             snippet: 'use_grid'
@@ -1964,7 +1956,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should this Object snap to grid points?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_grid'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_grid'
           },
           {
             snippet: 'use_hands'
@@ -1972,7 +1964,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should this Object go into player hands?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_hands'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_hands'
           },
           {
             snippet: 'use_snap_points'
@@ -1980,7 +1972,7 @@ module.exports =
             type: 'property'
             leftLabel: 'bool'
             description: 'Should this Object snap to snap points?'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#use_snap_points'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_snap_points'
           },
           # Functions
           {
@@ -1989,7 +1981,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Adds a force vector to the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addForce'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#addforce'
           },
           {
             snippet: 'addTorque(${1:Table|torque_vector}, ${2:int|force_type})'
@@ -1997,7 +1989,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Adds a torque vector to the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#addTorque'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#addtorque'
           },
           {
             snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
@@ -2005,7 +1997,7 @@ module.exports =
             type: 'function'
             leftLabel: 'variable'
             description: 'Calls a Lua function owned by this Object and passes an optional Table as parameters to the function.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#call'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#call'
           },
           {
             snippet: 'clearButtons()'
@@ -2013,7 +2005,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Clears all 3D UI buttons on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearButtons'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clearbuttons'
           },
           {
             snippet: 'clearInputs()'
@@ -2021,7 +2013,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Clears all 3D UI text inputs on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clearInputs'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clearinputs'
           },
           {
             snippet: 'clone(${1:Table|parameters})'
@@ -2029,7 +2021,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clone'
           },
           {
             snippet:
@@ -2041,7 +2033,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Copies and pastes this Object. Returns a reference to the newly spawned Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#clone'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clone'
           },
           {
             snippet: 'createButton(${1:Table|parameters})'
@@ -2049,7 +2041,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI button on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#createbutton'
           },
           {
             snippet:
@@ -2071,7 +2063,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI button on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createButton'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#createbutton'
           },
           {
             snippet: 'createInput(${1:Table|parameters})'
@@ -2079,7 +2071,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createInput'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#createinput'
           },
           {
             snippet:
@@ -2105,7 +2097,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI text input on this Object. If input_function returns a string it overrides the input contents.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#createInput'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#createinput'
           },
           {
             snippet: 'cut()'
@@ -2113,7 +2105,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Cuts this Object if it is a Deck or a Stack.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#cut'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#cut'
           },
           {
             snippet: 'deal(${1:int|number}, ${2:string|player_color}, ${3:int|hand_index})'
@@ -2121,7 +2113,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Deals to player’s hand. If no player_color supplied it will deal to all seated players.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#deal'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#deal'
           },
           {
             snippet: 'dealToColorWithOffset(${1:Vector|offset}, ${2:bool|flip}, ${3:string|player_color})'
@@ -2129,7 +2121,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Deals a Card to a player with an offset from their hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#dealToColorWithOffset'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#dealtocolorwithoffset'
           },
           {
             snippet: 'destruct()'
@@ -2137,7 +2129,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Destroys this Object. Mainly so you can call self.destruct().'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#destruct'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#destruct'
           },
           {
             snippet: 'editButton(${1:Table|parameters})'
@@ -2145,7 +2137,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits a 3D UI button on this Object based on its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#editbutton'
           },
           {
             snippet:
@@ -2167,7 +2159,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits a 3D UI button on this Object based on its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editButton'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#editbutton'
           },
           {
             snippet: 'editInput(${1:Table|parameters})'
@@ -2175,7 +2167,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits a 3D UI input on this Object based on its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editInput'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#editinput'
           },
           {
             snippet:
@@ -2202,7 +2194,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits a 3D UI input on this Object based on its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editInput'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#editinput'
           },
           {
             snippet: 'flip()'
@@ -2210,7 +2202,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Flips this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#flip'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#flip'
           },
           {
             snippet: 'getAngularVelocity()'
@@ -2218,7 +2210,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the current angular velocity vector of the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getAngularVelocity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getangularvelocity'
           },
           {
             snippet: 'getBounds()'
@@ -2226,7 +2218,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the world space axis aligned Bounds of the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBounds'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getbounds'
           },
           {
             snippet: 'getBoundsNormalized()'
@@ -2234,7 +2226,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the world space axis aligned Bounds of the Object at zero rotation.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getBoundsNormalized'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getboundsnormalized'
           },
           {
             snippet: 'getButtons()'
@@ -2242,7 +2234,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a list of all the 3D UI buttons on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getbuttons'
           },
           {
             snippet: 'getButtons() -- returns table:\n\t' +
@@ -2253,7 +2245,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a list of all the 3D UI buttons on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getButtons'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getbuttons'
           },
           {
             snippet: 'getColorTint()'
@@ -2261,7 +2253,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the color tint for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getColorTint'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcolortint'
           },
           {
             snippet: 'getCustomObject()'
@@ -2269,7 +2261,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the custom parameters on a Custom Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcustomobject'
           },
           {
             snippet:
@@ -2297,7 +2289,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the custom parameters on a Custom Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getCustomObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcustomobject'
           },
           {
             snippet: 'getDescription()'
@@ -2305,7 +2297,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Gets the description for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getDescription'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdescription'
           },
           {
             snippet: 'getGUID()'
@@ -2313,7 +2305,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Returns the GUID that belongs to this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getGUID'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getguid'
           },
           {
             snippet: 'getInputs()'
@@ -2321,7 +2313,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a list of all the 3D UI inputs on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getInputs'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getinputs'
           },
           {
             snippet:
@@ -2347,7 +2339,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a list of all the 3D UI inputs on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getInputs'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getinputs'
           },
           {
             snippet: 'getLoopingEffectIndex()'
@@ -2355,7 +2347,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the index of the currently looping effect.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffectIndex'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/assetbundle/#getloopingeffectindex'
           },
           {
             snippet: 'getLoopingEffects()'
@@ -2363,7 +2355,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table with the keys “index” and “name” for each looping effect.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getLoopingEffects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/assetbundle/#getloopingeffects'
           },
           {
             snippet: 'getLock()'
@@ -2371,7 +2363,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Get the lock status of this object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLock'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getlock'
           },
           {
             snippet: 'getLuaScript()'
@@ -2379,7 +2371,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Returns the Lua script for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getLuaScript'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getluascript'
           },
           {
             snippet: 'getName()'
@@ -2387,7 +2379,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Returns the nickname for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getName'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getname'
           },
           {
             snippet: 'getObjects()'
@@ -2395,7 +2387,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns all the Objects inside of this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Bag.getObjects() returns {{int index, string guid, string name}, ...}'
@@ -2403,7 +2395,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns all the Objects inside of this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Deck.getObjects() returns:\n\t-- {{int index, string nickname, string description, string guid, string lua_script}, ...}'
@@ -2411,7 +2403,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns all the Objects inside of this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
             snippet: 'getObjects()$1\n\t-- Zone.getObjects() returns {Object, ...}'
@@ -2419,7 +2411,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns all the Objects inside of this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
             snippet: 'getPosition()'
@@ -2427,7 +2419,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the position for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getPosition'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getposition'
           },
           {
             snippet: 'getQuantity()'
@@ -2435,7 +2427,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the number of Objects in a stack.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getQuantity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getquantity'
           },
           {
             snippet: 'getRotation()'
@@ -2443,7 +2435,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the rotation of this Object in degrees.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotation'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getrotation'
           },
           {
             snippet: 'getRotationValues()'
@@ -2451,7 +2443,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the rotation values for this Object. List of Tables with Keys: “value” and “rotation”.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotationValues'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getrotationvalues'
           },
           {
             snippet: 'getRotationValues()$1\n\t-- getRotationValues returns:\n\t-- {{int value, Vector rotation}, ...}'
@@ -2459,7 +2451,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the rotation values for this Object. List of Tables with Keys: “value” and “rotation”.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getRotationValues'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getrotationvalues'
           },
           {
             snippet: 'getScale()'
@@ -2467,7 +2459,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the scale for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getScale'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getscale'
           },
           {
             snippet: 'getStateId()'
@@ -2475,7 +2467,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns id of the active state for this object. Will return -1 if the object has no states.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStateId'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getstateid'
           },
           {
             snippet: 'getStates()'
@@ -2483,15 +2475,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table with the keys “name”, “guid”, and “id”.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStates'
-          },
-          {
-            snippet: 'getStatesCount()'
-            displayText: 'getStatesCount()'
-            type: 'function'
-            leftLabel: 'int'
-            description: 'Returns the number of States on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStatesCount'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getstates'
           },
           {
             snippet: 'getTable(${1:string|table_name})'
@@ -2499,7 +2483,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets a Lua Table for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#gettable'
           },
           {
             snippet: 'getTransformForward()'
@@ -2507,7 +2491,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the forward direction of this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformForward'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#gettransformforward'
           },
           {
             snippet: 'getTransformRight()'
@@ -2515,7 +2499,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the right direction of this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformRight'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#gettransformright'
           },
           {
             snippet: 'getTransformUp()'
@@ -2523,7 +2507,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Gets the up direction of this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getTransformUp'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#gettransformup'
           },
           {
             snippet: 'getTriggerEffects()'
@@ -2531,7 +2515,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table with the keys “index” and “name” for each trigger effect.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#getTriggerEffects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/assetbundle/#gettriggereffects'
           },
           {
             snippet: 'getValue()'
@@ -2539,7 +2523,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Returns the value for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvalue'
           },
           {
             snippet: 'getVar(${1:string|variable_name})'
@@ -2547,7 +2531,7 @@ module.exports =
             type: 'function'
             leftLabel: 'variable'
             description: 'Gets a Lua variable for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVar'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
           },
           {
             snippet: 'getVelocity()'
@@ -2555,7 +2539,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the current velocity vector of the Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getVelocity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvelocity'
           },
           {
             snippet: 'highlightOff()'
@@ -2563,7 +2547,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Stop highlighting this object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOff'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#highlightoff'
           },
           {
             snippet: 'highlightOn(${1:Table|color}, ${2:float|duration})'
@@ -2571,7 +2555,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Highlight this object with color for an optional duration. Color values are between 0 and 1.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#highlightOn'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#highlighton'
           },
           {
             snippet: 'isSmoothMoving()'
@@ -2579,7 +2563,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Is the object smoothly moving from our smooth functions.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#isSmoothMoving'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#issmoothmoving'
           },
           {
             snippet: 'playLoopingEffect(${1:int|index})'
@@ -2587,7 +2571,7 @@ module.exports =
             type: 'function'
             leftLabel: 'void'
             description: 'Starts playing a looping effect. Index starts at 0.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playLoopingEffect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/assetbundle/#playloopingeffect'
           },
           {
             snippet: 'playTriggerEffect(${1:int|index})'
@@ -2595,7 +2579,7 @@ module.exports =
             type: 'function'
             leftLabel: 'void'
             description: 'Starts playing a trigger effect. Index starts at 0.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/assetbundle/#playTriggerEffect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/assetbundle/#playtriggereffect'
           },
           {
             snippet: 'positionToLocal(${1:Table|vector})'
@@ -2603,7 +2587,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Converts the world position to a local position of this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToLocal'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#positiontolocal'
           },
           {
             snippet: 'positionToWorld(${1:Table|vector})'
@@ -2611,7 +2595,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Converts the local position of this Object to a world position.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#positionToWorld'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#positiontoworld'
           },
           {
             snippet: 'putObject(${1:Object|object})'
@@ -2619,7 +2603,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Add this object to the current object. Works for stacking chips, decks, and bags.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#putObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#putobject'
           },
           {
             snippet: 'randomize()'
@@ -2627,7 +2611,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Same as pressing the ‘R’ key on an Object. Shuffles deck/bag, rolls dice/coin, lifts any other object up in the air.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#randomize'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#randomize'
           },
           {
             snippet: 'reload()'
@@ -2635,7 +2619,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Reloads this object by destroying and spawning it place. Returns the newly spawned object. Very useful if using setCustomObject().'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reload'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#reload'
           },
           {
             snippet: 'removeButton(${1:int|index})'
@@ -2643,7 +2627,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Removes a 3D UI button from this Object by its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeButton'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#removebutton'
           },
           {
             snippet: 'removeInput(${1:int|index})'
@@ -2651,7 +2635,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Removes a 3D UI text input from this Object by its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#removeInput'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#removeinput'
           },
           {
             snippet: 'reset()'
@@ -2659,7 +2643,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Resets this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rest'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#reset'
           },
           {
             snippet: 'roll()'
@@ -2667,7 +2651,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Rolls this Object. Works on Dice and Coins.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#roll'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#roll'
           },
           {
             snippet: 'rotate(${1:Table|rotation})'
@@ -2675,7 +2659,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Smoothly rotates this Object with the given offset in degrees.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rotate'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#rotate'
           },
           {
             snippet: 'scale(${1:Table|scale})'
@@ -2683,7 +2667,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Scales this Object by the given amount.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scale'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#scale'
           },
           {
             snippet: 'scale(${1:float|scale})'
@@ -2691,7 +2675,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Scales this Object in all axes by the given amount.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scaleAllAxes'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#scale'
           },
           {
             snippet: 'setAngularVelocity(${1:Table|vector})'
@@ -2699,7 +2683,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the angular velocity of the object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setAngularVelocity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setangularvelocity'
           },
           {
             snippet: 'setColorTint(${1:Table|color})'
@@ -2707,7 +2691,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the color tint for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setColorTint'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setcolortint'
           },
           {
             snippet: 'setCustomObject(${1:Table|parameters})'
@@ -2715,7 +2699,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Used to create a Custom Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setCustomObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setcustomobject'
           },
           {
             snippet: 'setDescription(${1:string|description})'
@@ -2723,7 +2707,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the description for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setDescription'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdescription'
           },
           {
             snippet: 'setLock(${1:bool|lock})'
@@ -2731,7 +2715,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Set the lock status of an object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLock'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setlock'
           },
           {
             snippet: 'setLuaScript(${1:string|script})'
@@ -2739,7 +2723,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Lua script for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setLuaScript'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setluascript'
           },
           {
             snippet: 'setName(${1:string|nickname})'
@@ -2747,7 +2731,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the nickname for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setName'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setname'
           },
           {
             snippet: 'setPosition(${1:Table|position})'
@@ -2755,7 +2739,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the world space position for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPosition'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setposition'
           },
           {
             snippet: 'setPositionSmooth(${1:Table|position}, ${2:bool|collide}, ${3:bool|fast})'
@@ -2763,7 +2747,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Smoothly moves this Object from its current position to a given world space position.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setPositionSmooth'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setpositionsmooth'
           },
           {
             snippet: 'setRotation(${1:Table|rotation})'
@@ -2771,7 +2755,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the rotation of this Object in degrees.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotation'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setrotation'
           },
           {
             snippet: 'setRotationSmooth(${1:Table|rotation}, ${2:bool|collide}, ${3:bool|fast})'
@@ -2779,7 +2763,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Smoothly rotates this Object to the given orientation in degrees.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationSmooth'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setrotationsmooth'
           },
           {
             snippet: 'setRotationValues(${1:Table|rotation_values})'
@@ -2787,7 +2771,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the rotation values of this Object: {{int value, Vector rotation}, ...}'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setRotationValues'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setrotationvalues'
           },
           {
             snippet: 'setScale(${1:Table|scale})'
@@ -2795,7 +2779,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the scale for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setScale'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setscale'
           },
           {
             snippet: 'setState(${1:int|state})'
@@ -2803,7 +2787,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Sets the State on this Object and returns reference to the new State.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setState'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setstate'
           },
           {
             snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
@@ -2811,7 +2795,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets a Lua Table for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setTable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#settable'
           },
           {
             snippet: 'setValue(${1:variable|value})'
@@ -2819,7 +2803,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the value for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setValue'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvalue'
           },
           {
             snippet: 'setVar(${1:string|variable_name}, ${2:variable|value})'
@@ -2827,7 +2811,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets a Lua variable for this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVar'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvar'
           },
           {
             snippet: 'setVelocity(${1:Table|vector})'
@@ -2835,7 +2819,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the velocity of the object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#setVelocity'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvelocity'
           },
           {
             snippet: 'shuffle()'
@@ -2843,7 +2827,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Shuffles this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffle'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#shuffle'
           },
           {
             snippet: 'shuffleStates()'
@@ -2851,7 +2835,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Shuffles the States on this Object and returns reference to the new State.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#shuffleStates'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#shufflestates'
           },
           {
             snippet: 'takeObject(${1:Table|parameters})'
@@ -2859,7 +2843,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Takes an Object from this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#takeobject'
           },
           {
             snippet:
@@ -2879,7 +2863,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Takes an Object from this container.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#takeObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#takeobject'
           },
           {
             snippet: 'translate(${1:Table|position})'
@@ -2887,7 +2871,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Smoothly moves this Object from its current position to a given offset.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#translate'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#translate'
           },
         ]
 
@@ -2907,7 +2891,7 @@ module.exports =
               displayText: 'onCollisionEnter(Table collision_info)'
               type: 'function'
               description: 'Automatically called when this Object collides with another Object.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionEnter'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#oncollisionenter'
             },
             {
               snippet:
@@ -2920,7 +2904,7 @@ module.exports =
               displayText: 'onCollisionExit(Table collision_info)'
               type: 'function'
               description: 'Automatically called when this Object stops touching another Object.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionExit'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#oncollisionexit'
             },
             {
               snippet:
@@ -2933,28 +2917,28 @@ module.exports =
               displayText: 'onCollisionStay(Table collision_info)'
               type: 'function'
               description: 'Automatically called when this Object is touching another Object.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onCollisionStay'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#oncollisionstay'
             },
             {
               snippet: 'onDestroy()\n\t${0:-- body...}\nend'
               displayText: 'onDestroy()'
               type: 'function'
               description: 'Automatically called when this Object is destroyed.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDestroy'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ondestroy'
             },
             {
-              snippet: 'onDropped(player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onDropped(string player_color)'
+              snippet: 'onDrop(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onDrop(string player_color)'
               type: 'function'
               description: 'Automatically called when this Object is dropped.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDropped'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ondrop'
             },
             {
-              snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onPickedUp(string player_color)'
+              snippet: 'onPickUp(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onPickUp(string player_color)'
               type: 'function'
               description: 'Automatically called when this Object is picked up.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickedUp'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onpickup'
             },
           ]
         suggestions = suggestions.concat [
@@ -2963,7 +2947,7 @@ module.exports =
             displayText: 'onChat(string message, Player player)'
             type: 'function'
             description: 'This function is called every time a player sends a chat message.  Return false to cancel that message.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onChat'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onchat'
           },
           {
             snippet: 'onExternalMessage(table)\n\t${0:-- body...}\nend'
@@ -2971,140 +2955,140 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'This function called when a message is received from the External Editor API.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/external-editor-api/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/externaleditorapi/'
           },
           {
             snippet: 'onFixedUpdate()\n\t${0:-- body...}\nend'
             displayText: 'onFixedUpdate()'
             type: 'function'
             description: 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onFixedUpdate'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onfixedupdate'
           },
           {
             snippet: 'onLoad(save_state)\n\t${0:-- body...}\nend'
             displayText: 'onLoad(string save_state)'
             type: 'function'
             description: 'Automatically called when a game save is finished loading every Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onload'
           },
           {
-            snippet: 'onObjectDestroyed(dying_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDestroyed(Object dying_object)'
+            snippet: 'onObjectDestroy(dying_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDestroy(Object dying_object)'
             type: 'function'
             description: 'Automatically called when an Object is destroyed.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdestroy'
           },
           {
-            snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDropped(string player_color, Object dropped_object)'
+            snippet: 'onObjectDrop(player_color, dropped_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDrop(string player_color, Object dropped_object)'
             type: 'function'
             description: 'Automatically called when an Object is dropped.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdrop'
           },
           {
             snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectEnterScriptingZone(Object zone, Object enter_object)'
             type: 'function'
             description: 'Automatically called when an Object enters a Scripting Zone.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectEnterScriptingZone'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectenterscriptingzone'
           },
           {
             snippet: 'onObjectLeaveContainer(container, leave_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLeaveContainer(Object container, Object leave_object)'
             type: 'function'
             description: 'Automatically called when an Object leaves any container(Deck, Bag, Chip Stack, etc).'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveContainer'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectleavecontainer'
           },
           {
             snippet: 'onObjectLeaveScriptingZone(zone, leave_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLeaveScriptingZone(Object zone, Object leave_object)'
             type: 'function'
             description: 'Automatically called when an Object leaves a Scripting Zone.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLeaveScriptingZone'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectleavescriptingzone'
           },
           {
             snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLoopingEffect(Object object, int index)'
             type: 'function'
             description: "Automatically called when an asset Object's loop is started."
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectloopingeffect'
           },
           {
-            snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)'
+            snippet: 'onObjectPickUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickUp(string player_color, Object picked_up_object)'
             type: 'function'
             description: 'Automatically called when an Object is picked up.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpickup'
           },
           {
             snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
             displayText: 'onObjectRandomize(Object object, string player_color)'
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectRandomize'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectrandomize'
           },
           {
             snippet: 'onObjectSpawn(object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectSpawn(Object object)'
             type: 'function'
             description: 'Automatically called when an Object is spawned.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectSpawn'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectspawn'
           },
           {
             snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
             displayText: 'onObjectTriggerEffect(Object object, int index)'
             type: 'function'
             description: 'Automatically called when an asset Object is triggered.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjecttriggereffect'
           },
           {
-            snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerChangedColor(string player_color)'
+            snippet: 'onPlayerChangeColor(player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerChangeColor(string player_color)'
             type: 'function'
             description: 'Automatically called when a Player changes color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerchangecolor'
           },
           {
             snippet: 'onPlayerConnect(player_id)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerConnect(int player_id)'
             type: 'function'
             description: 'Automatically called when a Player connects.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerConnect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerconnect'
           },
           {
             snippet: 'onPlayerDisconnect(player_id)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerDisconnect(int player_id)'
             type: 'function'
             description: 'Automatically called when a Player disconnects.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerDisconnect'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerdisconnect'
           },
           {
             snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
             type: 'function'
             description: 'Automatically called at the end of a Player\'s turn.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnEnd'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerturnend'
           },
           {
             snippet: 'onPlayerTurnStart(player_color_start, player_color_previous)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerTurnStart(string player_color_start, string player_color_previous)'
             type: 'function'
             description: 'Automatically called at the start of a Player\'s turn.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerTurnStart'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerturnstart'
           },
           {
             snippet: 'onSave()\n\t${0:-- body...}\nend'
             displayText: 'onSave()'
             type: 'function'
             description: 'Automatically called when the game saves (including auto-save for Rewinding).'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onSave'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsave'
           },
           {
             snippet: 'onUpdate()\n\t${0:-- body...}\nend'
             displayText: 'onUpdate()'
             type: 'function'
             description: 'Automatically called once every frame.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onUpdate'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onupdate'
           },
         ]
 
@@ -3138,21 +3122,21 @@ module.exports =
             displayText: 'Global'
             type: 'constant'
             description: 'A reference to the Global Script.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object'
           },
           {
             snippet: 'JSON'
             displayText: 'JSON'
             type: 'constant'
             description: 'The JSON class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/json'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/json'
           },
           {
             snippet: 'Lighting'
             displayText: 'Lighting'
             type: 'constant'
             description: 'The Lighting class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/'
           },
           {
             snippet: 'math'
@@ -3173,21 +3157,21 @@ module.exports =
             displayText: 'Physics'
             type: 'constant'
             description: 'The Physics class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/'
           },
           {
             snippet: 'Player'
             displayText: 'Player'
             type: 'constant'
             description: 'The Player class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player'
           },
           {
             snippet: 'self'
             displayText: 'self'
             type: 'constant'
             description: 'A reference to this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object'
           },
           {
             snippet: 'string'
@@ -3208,14 +3192,14 @@ module.exports =
             displayText: 'Timer'
             type: 'constant'
             description: 'The Timer class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/timer/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/'
           },
           {
             snippet: 'WebRequest'
             displayText: 'WebRequest'
             type: 'constant'
             description: 'The WebRequest class.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/'
           },
           # Global Management Functions
           {
@@ -3224,7 +3208,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
           },
           {
             snippet:
@@ -3237,7 +3221,7 @@ module.exports =
             type: 'function'
             leftLabel: 'int'
             description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#addNotebookTab'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
           },
           {
             snippet: 'clearPixelPaint()'
@@ -3245,7 +3229,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Clears all pixel paint.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearPixelPaint'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#clearpixelpaint'
           },
           {
             snippet: 'clearVectorPaint()'
@@ -3253,7 +3237,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Clears all vector paint.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#clearVectorPaint'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#clearvectorpaint'
           },
           {
             snippet: 'copy(${1:Table|objects})'
@@ -3261,7 +3245,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Copies a list of Objects.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#copy'
           },
           {
             snippet: 'destroyObject(${1:Object|obj})'
@@ -3269,7 +3253,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Destroys an Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#destroyObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#destroyobject'
           },
           {
             snippet: 'editNotebookTab(${1:Table|parameters})'
@@ -3277,7 +3261,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits an existing Tab on the Notebook.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
           },
           {
             snippet:
@@ -3291,7 +3275,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits an existing Tab on the Notebook.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editNotebookTab'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
           },
           {
             snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
@@ -3299,7 +3283,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a message to the screen and chat window on all connected clients.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToAll'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttoall'
           },
           {
             snippet: 'broadcastToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
@@ -3307,7 +3291,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a private message to the screen and chat window to the player matching the player color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#broadcastToColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttocolor'
           },
           {
             snippet: 'flipTable()'
@@ -3315,7 +3299,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Flip the table in a fit of rage.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#flipTable'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#fliptable'
           },
           {
             snippet: 'getAllObjects()'
@@ -3323,7 +3307,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table of all the spawned Objects in the game.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getAllObjects'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getallobjects'
           },
           {
             snippet: 'getNotebookTabs()'
@@ -3331,7 +3315,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
           },
           {
             snippet: 'getNotebookTabs()$1\n\t-- getNotebookTabs returns:\n\t-- {{int index, string title, string body, string color}, ...}'
@@ -3339,7 +3323,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotebookTabs'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
           },
           {
             snippet: 'getNotes()'
@@ -3347,7 +3331,7 @@ module.exports =
             type: 'function'
             leftLabel: 'string'
             description: 'Returns the current on-screen notes as a string.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getNotes'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotes'
           },
           {
             snippet: 'getObjectFromGUID(${1:string|guid})'
@@ -3355,7 +3339,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getobjectfromguid'
           },
           {
             snippet: 'getSeatedPlayers()'
@@ -3363,7 +3347,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns an indexed Lua Table of all the seated Player colors.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getSeatedPlayers'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getseatedplayers'
           },
           {
             snippet: 'log(${1:Var|message}, ${2:string|tag}, ${3:string|label})'
@@ -3371,7 +3355,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Outputs a message to the system console. Specify a tag to identify it by class or subject, and label to prefix the value.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#log'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#log'
           },
           {
             snippet: 'logStyle(${1:string|tag}, ${2:Color|color}, ${3:string|prefix}, ${4:string|postfix})'
@@ -3379,7 +3363,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the style options for the specified tag: the color it is displayed in and any prefix or postfix text.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#logStyle'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#logstyle'
           },
           {
             snippet: 'paste(${1:Table|parameters})'
@@ -3387,7 +3371,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#copy'
           },
           {
             snippet:
@@ -3399,14 +3383,14 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#copy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#copy'
           },
           {
             snippet: 'print(${1:string|message})'
             displayText: 'print(string message)'
             type: 'function'
             description: 'Prints a message to the chat window only on the host.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#print'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#print'
           },
           {
             snippet: 'printToAll(${1:string|message}, ${2:Table|text_color})'
@@ -3414,7 +3398,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a message to the chat window on all connected clients.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToAll'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#printtoall'
           },
           {
             snippet: 'printToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
@@ -3422,7 +3406,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Prints a message to the chat window of a specific Player.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#printToColor'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#printtocolor'
           },
           {
             snippet: 'removeNotebookTab(${1:int|index})'
@@ -3430,7 +3414,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Removes a Tab from the Notebook at a given index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#removeNotebookTab'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#removenotebooktab'
           },
           {
             snippet: 'sendExternalMessage(${1:Table|table})'
@@ -3438,7 +3422,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sends table to whatever is connected to the External Editor API.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/external-editor-api/'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/externaleditorapi/'
           },
           {
             snippet: 'setNotes(${1:string|notes})'
@@ -3446,7 +3430,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the current on-screen notes. BBCOde is allowed for styling.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#setNotes'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#setnotes'
           },
           {
             snippet: 'spawnObject(${1:Table|paremeters})'
@@ -3454,7 +3438,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobject'
           },
           {
             snippet:
@@ -3473,7 +3457,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#spawnObject'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobject'
           },
           {
             snippet: 'startLuaCoroutine(${1:Object|func_owner}, ${2:string|func_name})'
@@ -3481,7 +3465,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Starts a Lua function as a coroutine.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#startLuaCoroutine'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#startluacoroutine'
           },
           {
             snippet: 'stringColorToRGB(${1:string|player_color})'
@@ -3489,7 +3473,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Converts a color string (player colors) to its RGB values.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#stringColorToRGB'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#stringcolortorgb'
           },
           {
             snippet: 'tonumber(${1:e})'
@@ -3528,7 +3512,7 @@ module.exports =
                       type: 'function'
                       leftLabel: 'Object'
                       description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
-                      descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
+                      descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getobjectfromguid'
                     }
               )
             for c, i in identifier
@@ -3545,7 +3529,7 @@ module.exports =
                           type: 'function'
                           leftLabel: 'Object'
                           description: 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn’t exist.'
-                          descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#getObjectFromGUID'
+                          descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getobjectfromguid'
                         }
                   )
             break
