@@ -1030,7 +1030,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the gradient equator.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientEquatorColor'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#setAmbientEquatorColor'
           },
           {
             snippet: 'setAmbientGroundColor(${1:Table|color})'
@@ -1038,7 +1038,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the ambient ground.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientGroundColor'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#setAmbientGroundColor'
           },
           {
             snippet: 'setAmbientSkyColor(${1:Table|color})'
@@ -1046,7 +1046,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the gradient sky.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setAmbientSkyColor'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#setAmbientSkyColor'
           },
           {
             snippet: 'setLightColor(${1:Table|color})'
@@ -1054,7 +1054,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the Color of the directional light.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-physics/#setLightColor'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/scripting-lighting/#setLightColor'
           },
         ]
 
@@ -1385,14 +1385,6 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getHandTransform'
           },
           {
-            snippet: 'getPlayerHand()'
-            displayText: 'getPlayerHand()'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns a Lua Table with the position and rotation of the given player\'s hand.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/player/#getPlayerHand'
-          },
-          {
             snippet: 'getPointerPosition()'
             displayText: 'getPointerPosition()'
             type: 'function'
@@ -1640,15 +1632,15 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#post'
           },
           {
-            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
-            displayText: 'post(string url, string data, Object callback_owner, string callback)'
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
+            displayText: 'put(string url, string data, Object callback_owner, string callback)'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#put'
           },
           {
-            snippet: 'pull(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
               '-- download_progress    bool      (0.0 - 1.0)\n\t' +
               '-- error                string\n\t' +
               '-- is_error             bool\n\t' +
@@ -1656,11 +1648,11 @@ module.exports =
               '-- text                 string\n\t' +
               '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
               '-- url                  string'
-            displayText: 'post(string url, string data, Object callback_owner, string callback) -- returns ...'
+            displayText: 'put(string url, string data, Object callback_owner, string callback) -- returns ...'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#pull'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/webrequest/#put'
           },
         ]
 
@@ -2175,7 +2167,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Edits a 3D UI input on this Object based on its index.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#editInput'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#editInput'
           },
           {
             snippet:
@@ -2486,14 +2478,6 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStates'
           },
           {
-            snippet: 'getStatesCount()'
-            displayText: 'getStatesCount()'
-            type: 'function'
-            leftLabel: 'int'
-            description: 'Returns the number of States on this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#getStatesCount'
-          },
-          {
             snippet: 'getTable(${1:string|table_name})'
             displayText: 'getTable(string table_name)'
             type: 'function'
@@ -2659,7 +2643,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Resets this Object.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#rest'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#reset'
           },
           {
             snippet: 'roll()'
@@ -2691,7 +2675,7 @@ module.exports =
             type: 'function'
             leftLabel: 'bool'
             description: 'Scales this Object in all axes by the given amount.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scaleAllAxes'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/object/#scale'
           },
           {
             snippet: 'setAngularVelocity(${1:Table|vector})'
@@ -2943,18 +2927,18 @@ module.exports =
               descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDestroy'
             },
             {
-              snippet: 'onDropped(player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onDropped(string player_color)'
+              snippet: 'onDrop(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onDrop(string player_color)'
               type: 'function'
               description: 'Automatically called when this Object is dropped.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDropped'
+              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onDrop'
             },
             {
-              snippet: 'onPickedUp(player_color)\n\t${0:-- body...}\nend'
-              displayText: 'onPickedUp(string player_color)'
+              snippet: 'onPickUp(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onPickUp(string player_color)'
               type: 'function'
               description: 'Automatically called when this Object is picked up.'
-              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickedUp'
+              descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPickUp'
             },
           ]
         suggestions = suggestions.concat [
@@ -2988,18 +2972,18 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onLoad'
           },
           {
-            snippet: 'onObjectDestroyed(dying_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDestroyed(Object dying_object)'
+            snippet: 'onObjectDestroy(dying_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDestroy(Object dying_object)'
             type: 'function'
             description: 'Automatically called when an Object is destroyed.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroyed'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDestroy'
           },
           {
-            snippet: 'onObjectDropped(player_color, dropped_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDropped(string player_color, Object dropped_object)'
+            snippet: 'onObjectDrop(player_color, dropped_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDrop(string player_color, Object dropped_object)'
             type: 'function'
             description: 'Automatically called when an Object is dropped.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDropped'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectDrop'
           },
           {
             snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
@@ -3030,11 +3014,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectLoopingEffect'
           },
           {
-            snippet: 'onObjectPickedUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPickedUp(string player_color, Object picked_up_object)'
+            snippet: 'onObjectPickUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickUp(string player_color, Object picked_up_object)'
             type: 'function'
             description: 'Automatically called when an Object is picked up.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickedUp'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectPickUp'
           },
           {
             snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
@@ -3058,11 +3042,11 @@ module.exports =
             descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onObjectTriggerEffect'
           },
           {
-            snippet: 'onPlayerChangedColor(player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onPlayerChangedColor(string player_color)'
+            snippet: 'onPlayerChangeColor(player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerChangeColor(string player_color)'
             type: 'function'
             description: 'Automatically called when a Player changes color.'
-            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangedColor'
+            descriptionMoreURL: 'http://berserk-games.com/knowledgebase/api/#onPlayerChangeColor'
           },
           {
             snippet: 'onPlayerConnect(player_id)\n\t${0:-- body...}\nend'
