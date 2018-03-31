@@ -1,3 +1,6 @@
+## 10.4.2
+* Updated API links in autocomplete snippets to point to new API website
+
 ## 10.4.1
 * Fixed bug in script loading from TTS
 
