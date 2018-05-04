@@ -358,7 +358,10 @@ readFilesFromTTS = (files, forceOpen = false) ->
   for f, i in files
     @file = new FileHandler()
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-    @file.setBasename(f.name + "." + f.guid + ".ttslua")
+    if f.guid == "-2"
+      @file.setBasename(f.name + "." + f.guid + ".xml")
+    else
+      @file.setBasename(f.name + "." + f.guid + ".ttslua")
     @file.setDatasize(lengthInUtf8Bytes(f.script))
     @file.create()
 
@@ -1512,7 +1515,6 @@ module.exports = TabletopsimulatorLua =
 
 
   handleMessage: (self, data, fromTTS = false) ->
-    console.log data
     id = data.messageID
     if data.savePath and data.savePath != undefined
       self.parseSavePath(self, data.savePath)
