@@ -1632,7 +1632,8 @@ module.exports = TabletopsimulatorLua =
         try
           @data = JSON.parse(@data_cache)
         catch error
-          console.log error
+          if !String(error).startsWith("SyntaxError: Unexpected end of JSON input")
+            console.log error
           return
         handleMessage(self, @data, true)
         @data_cache = ""
