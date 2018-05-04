@@ -1,3 +1,6 @@
+## 10.5.1
+* Fixed editor window not focussing when selected object script sent from TTS.
+
 ## 10.5.0
 * Added onSearchStart(player), onSearchEnd(player), onObjectSearchStart(object, player), onObjectSearchEnd(object, player)
 * Added `hover_color` and `press_color` parameters to `object.createButton`
