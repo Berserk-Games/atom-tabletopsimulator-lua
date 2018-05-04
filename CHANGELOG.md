@@ -1,3 +1,6 @@
+## 10.5.3
+* Forced TTS connection restart whenever Get Lua Scripts of Save & Play executed (should stop deadlock problem)
+
 ## 10.5.2
 * Fixed .xml extension
 
