@@ -34,12 +34,14 @@ ATOM_MSG_LUA         = 3
 
 CUSTOM_MSG_WATCH = 1
 
+
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
 # TODO remove this at some later date
 try
   atom.project.removePath(path.join(os.tmpdir(), "TabletopSimulator", "Lua"))
 catch error
+
 
 # Check atom version; if 1.19+ then editor.save has become async
 # TODO when 1.19 has been out long enough remove this check and require atom 1.19 in package.json
@@ -49,23 +51,29 @@ try
     async_save = false
 catch error
 
+
 # Store cursor positions and open editors between loads
 cursors = {}
 editors = []
 ttsEditors = {}
-activeEditorPath = ''
+globals = {}
+globals.activeEditorPath = null
+globals.count = 0
 mutex = {}
 mutex.doingSaveAndPlay = false
 mutex.functionCount = 0
 mutex.returnID = 0
 
+
 luaFunctionName = ->
   mutex.functionCount += 1
   return "atom_lua_function_" + mutex.functionCount
 
+
 getExecuteReturnID = ->
   mutex.returnID += 1
   return mutex.returnID
+
 
 # Ping function not used at the moment
 ping = (socket, delay) ->
@@ -91,6 +99,7 @@ if os.platform() == 'win32'
 else
   PATH_SEPERATOR = '/'
 
+
 completeFilepath = (fn, dir) ->
   filepath = fn
   if not filepath.endsWith('.ttslua')
@@ -109,6 +118,7 @@ completeFilepath = (fn, dir) ->
     dir = getRootPath()
   return path.join(dir, filepath)
 
+
 getRootPath = () ->
   rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath')
   if rootpath == ''
@@ -116,6 +126,7 @@ getRootPath = () ->
   if rootpath.match(/^~[\\/]/) # home dir selector ~
     rootpath = path.join(os.homedir(), rootpath[2..])
   return rootpath
+
 
 extractFileMap = (text, filepath) ->
   lines = text.split(/\n/)
@@ -144,14 +155,20 @@ extractFileMap = (text, filepath) ->
 isFromTTS = (fn) ->
   return fn and path.dirname(fn) == ttsLuaDir
 
+
 isGlobalScript = (fn) ->
   return fn and path.basename(fn) == 'Global.-1.ttslua'
+
 
 getPathGUID = (fn) ->
   [name, guid, ext] = fn.split('.')
   return guid
 
+
 destroyTTSEditors = ->
+  try
+    globals.activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
+  catch error
   if not atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
     force = true
   for editor,i in atom.workspace.getTextEditors()
@@ -160,6 +177,7 @@ destroyTTSEditors = ->
         editor.destroy()
       catch error
         console.log error
+
 
 findFileRow = (filepath, row) ->
   if fileMap[filepath]
@@ -178,6 +196,7 @@ findFileRow = (filepath, row) ->
       filepath = fp
   return [filepath, row]
 
+
 gotoFileRow = (filepath, row) ->
   [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
@@ -189,6 +208,7 @@ gotoFileRow = (filepath, row) ->
   else
     editor.setCursorBufferPosition([row, 0])
     editor.scrollToCursorPosition()
+
 
 gotoError = (message, guid) ->
   # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
@@ -208,26 +228,32 @@ gotoError = (message, guid) ->
   if fname != ""
     gotoFileRow(fname, row)
 
+
 lengthInUtf8Bytes = (str) ->
   m = encodeURIComponent(str).match(/%[89ABab]/g)
   return str.length + (if m then m.length else 0)
+
 
 class FileHandler
   constructor: ->
     @readbytes = 0
     @ready = false
 
+
   setBasename: (basename) ->
     @basename = basename
 
+
   setDatasize: (datasize) ->
     @datasize = datasize
+
 
   create: ->
     @tempfile = path.join(ttsLuaDir, @basename)
     dirname = path.dirname(@tempfile)
     mkdirp.sync(dirname)
     @fd = fs.openSync(@tempfile, 'w')
+
 
   append: (line) ->
     if @readbytes < @datasize
@@ -241,6 +267,7 @@ class FileHandler
       fs.closeSync @fd
       @ready = true
 
+
   open: ->
     #atom.focus()
     row = 0
@@ -249,13 +276,16 @@ class FileHandler
       row = cursors[@tempfile].row
       col = cursors[@tempfile].column
     catch error
-    if activeEditorPath
-      active = (activeEditorPath == @tempfile)
+    if !isFromTTS(globals.activeEditorPath)
+      globals.activeEditorPath = null
+    if globals.activeEditorPath
+      active = (globals.activeEditorPath == @tempfile)
     else
-      active = true
-    console.log(@tempfile, active);
-    atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active}).then (editor) =>
+      active = isGlobalScript(@tempfile)
+    console.log @tempfile, active
+    atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
       @handle_connection(editor)
+
 
   handle_connection: (editor) ->
     cursorPosition =  editor.getCursorBufferPosition()
@@ -318,9 +348,11 @@ class FileHandler
   close: ->
     @subscriptions.dispose()
 
+
 readFilesFromTTS = (files, forceOpen = false) ->
   toOpen = []
-  lastOpen = null
+  @files_opened = []
+
   for f, i in files
     @file = new FileHandler()
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
@@ -335,15 +367,25 @@ readFilesFromTTS = (files, forceOpen = false) ->
       @file.append(line)
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
-      if @file.tempfile == activeEditorPath
-        lastOpen = @file
-      else
-        toOpen.push(@file)
+      toOpen.push(@file)
     @file = null
-  for file, i in toOpen
-    file.open()
-  if lastOpen
-    lastOpen.open()
+
+  toOpen.sort (a, b) ->
+    if isGlobalScript(a.tempfile)
+      return 1
+    else if isGlobalScript(b.tempfile)
+      return -1
+    else
+      return if a.tempfile < b.tempfile then 1 else -1
+
+  openFilesInOrder = (files) ->
+    file = files.shift()
+    if file
+      file.open().then =>
+        openFilesInOrder(files)
+
+  openFilesInOrder(toOpen)
+
 
 deleteCachedFiles = () ->
   try
@@ -351,6 +393,7 @@ deleteCachedFiles = () ->
       deletefile = path.join(ttsLuaDir, oldfile)
       fs.unlinkSync(deletefile)
   catch error
+
 
 module.exports = TabletopsimulatorLua =
   subscriptions: null
@@ -635,10 +678,12 @@ module.exports = TabletopsimulatorLua =
     # Start server to receive push information from Unity
     @startServer()
 
+
   deactivate: ->
     @subscriptions.dispose()
     @statusBarFunctionView.destroy()
     @statusBarTile?.destroy()
+
 
   onLoad: (event) ->
     editor = event.item
@@ -666,6 +711,7 @@ module.exports = TabletopsimulatorLua =
         @doCatalog(editor.getText(), event.path)
         break
 
+
   doCatalog: (text, filepath, includeSiblings = false) ->
     otherFiles = @catalogFunctions(text, filepath)
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
@@ -682,6 +728,7 @@ module.exports = TabletopsimulatorLua =
             @catalogFileFunctions(otherFile)
         else
           atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
+
 
   cursorChangeEvent: (event) ->
     if event
@@ -785,8 +832,10 @@ module.exports = TabletopsimulatorLua =
                 end
               """)
 
+
   highlightGUIDObjectChange: (newValue) ->
     @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
+
 
   getFunctions: (editor, startRow) ->
     line = editor.lineTextForBufferRow(startRow)
@@ -842,14 +891,18 @@ module.exports = TabletopsimulatorLua =
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addLeftTile(item: @statusBarFunctionView, priority: 2)
 
+
   serialize: ->
     return @ttsPanelView.getState()
 
+
   getProvider: -> provider
+
 
   # Adapted from https://github.com/yujinakayama/atom-auto-update-packages
   updatePackage: (isAutoUpdate = true) ->
     @runApmUpgrade()
+
 
   runApmUpgrade: (callback) ->
     command = atom.packages.getApmPath()
@@ -875,11 +928,14 @@ module.exports = TabletopsimulatorLua =
 
     new BufferedProcess({command, args, stdout, exit})
 
+
   openHelp: ->
     shell.openExternal('https://github.com/Knils/atom-tabletopsimulator-lua/wiki')
 
+
   toggleTTSPanel: ->
     @ttsPanelView.toggle()
+
 
   getObjects: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
@@ -903,6 +959,7 @@ module.exports = TabletopsimulatorLua =
             TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
         No: -> return
+
 
   # hack needed because atom 1.19 makes save() async
   blocking_save: (editor) =>
@@ -929,11 +986,6 @@ module.exports = TabletopsimulatorLua =
     f = () ->
       mutex.doingSaveAndPlay = false
     setTimeout f, 3000
-
-    # Store active editor
-    try
-      activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
-    catch error
 
     # Save any open files
     openFiles = 0
@@ -988,6 +1040,9 @@ module.exports = TabletopsimulatorLua =
               #  @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
               @luaObjects.scriptStates.push(@luaObject)
 
+          destroyTTSEditors()
+          deleteCachedFiles()
+
           console.log "Connected:", @if_connected
           if not @if_connected
             @startConnection()
@@ -1026,13 +1081,16 @@ module.exports = TabletopsimulatorLua =
           lines[i] = marker + '\n' + marker
     return lines.join('\n')
 
+
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
+
 
   showFunctionChange: (newValue) ->
     @statusBarActive = atom.config.get('tabletopsimulator-lua.editor.showFunctionName')
     if not @statusBarActive
       @statusBarFunctionView.updateFunction(null)
+
 
   displayFunction: ->
     editor = atom.workspace.getActiveTextEditor()
@@ -1068,12 +1126,14 @@ module.exports = TabletopsimulatorLua =
           details += '\n' + path.basename(parentFilePath) + " line " + (parentRow + row + 1)
     atom.notifications.addInfo(info, {icon: 'type-function', detail: details})
 
+
   gotoFunction: ->
     editor = atom.workspace.getActiveTextEditor()
     text = editor.getSelectedText()
     if not text.match(/^\w+$/)
       text = ''
     @functionListView = new FunctionListView(@functionByName, fileMap[editor.getPath()]).toggle(text)
+
 
   catalogFileFunctions: (filepath) ->
     if not (filepath of @functionPaths)
@@ -1082,6 +1142,7 @@ module.exports = TabletopsimulatorLua =
       for otherFile of otherFiles
         if not (otherFile of @functionPaths)
           @catalogFileFunctions(otherFile)
+
 
   catalogFunctions: (text, filepath, root = null) ->
     @functionPaths[filepath] = {}
@@ -1129,6 +1190,7 @@ module.exports = TabletopsimulatorLua =
           @functionPaths[filepath][functionDescription.functionName] = row
     return otherFiles
 
+
   jumpToCursorFunction: ->
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith(".ttslua")
@@ -1154,8 +1216,10 @@ module.exports = TabletopsimulatorLua =
       editor.selectWordsContainingCursors()
       @gotoFunction()
 
+
   gotoLastError: ->
     gotoError(lastError.message, lastError.guid)
+
 
   getFunctionRow: (text, function_name) ->
     #deprecated: TODO remove
@@ -1169,6 +1233,7 @@ module.exports = TabletopsimulatorLua =
         return row
       row += 1
     return null
+
 
   selectCurrentFunction: ->
     editor = atom.workspace.getActiveTextEditor()
@@ -1212,6 +1277,7 @@ module.exports = TabletopsimulatorLua =
           editor.scrollToCursorPosition()
           return
         row += 1
+
 
   expandSelection: ->
     editor = atom.workspace.getActiveTextEditor()
@@ -1312,6 +1378,7 @@ module.exports = TabletopsimulatorLua =
     @blockSelectLock = false
     editor.scrollToCursorPosition()
 
+
   retractSelection: ->
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith(".ttslua") or not @isBlockSelecting
@@ -1329,6 +1396,7 @@ module.exports = TabletopsimulatorLua =
       @blockSelectCursorPosition = null
       @isBlockSelecting = false
 
+
   toggleCursorSelectionEnd: ->
     editor = atom.workspace.getActiveTextEditor()
     if not editor or not editor.getPath().endsWith(".ttslua")
@@ -1343,6 +1411,7 @@ module.exports = TabletopsimulatorLua =
         editor.setCursorBufferPosition(selected.end)
         editor.selectToBufferPosition(selected.start)
       editor.scrollToCursorPosition()
+
 
   generateGUIDFunction: () ->
     editor = atom.workspace.getActiveTextEditor()
@@ -1416,6 +1485,7 @@ module.exports = TabletopsimulatorLua =
       editor.insertText(s, {select: true})
     @checkboxList = new CheckboxList(@guids, editor).toggle(insert)
 
+
   parseSavePath: (self, savePath) ->
     self.savePath = savePath
     self.guids = {}
@@ -1435,6 +1505,7 @@ module.exports = TabletopsimulatorLua =
         walkSave(node[k], guid)
     walkSave(save, null)
 
+
   handleMessage: (self, data, fromTTS = false) ->
     id = data.messageID
     if data.savePath and data.savePath != undefined
@@ -1450,8 +1521,6 @@ module.exports = TabletopsimulatorLua =
 
     else if id == TTS_MSG_NEW_GAME
       #console.log "Received data from TTS", Date.now()
-      destroyTTSEditors()
-      deleteCachedFiles()
       readFilesFromTTS(data.scriptStates)
       #console.log "Finished receiving data from TTS", Date.now()
       mutex.doingSaveAndPlay = false
@@ -1632,7 +1701,8 @@ module.exports = TabletopsimulatorLua =
         try
           @data = JSON.parse(@data_cache)
         catch error
-          console.log error
+          if !String(error).startsWith("SyntaxError: Unexpected end of JSON input")
+            console.log error
           return
         handleMessage(self, @data, true)
         @data_cache = ""

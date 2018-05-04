@@ -2057,9 +2057,11 @@ module.exports =
               'font_size      = ${9:-- int},\n\t' +
               'color          = ${10:-- Color},\n\t' +
               'font_color     = ${11:-- Color},\n\t' +
-              'tooltip        = ${12:-- string},\n' +
+              'hover_color    = $(12:-- Color},\n\t' +
+              'press_color    = $(13:-- Color},\n\t' +
+              'tooltip        = ${14:-- string},\n' +
               '})'
-            displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color})'
+            displayText: 'createButton({string click_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, Color hover_color, Color press_color, string tooltip})'
             type: 'function'
             leftLabel: 'bool'
             description: 'Creates a 3D UI button on this Object.'
@@ -2940,6 +2942,20 @@ module.exports =
               description: 'Automatically called when this Object is picked up.'
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onpickup'
             },
+            {
+              snippet: 'onSearchStart(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onSearchStart(string player_color)'
+              type: 'function'
+              description: 'Automatically called when player_color starts to search this object.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsearchstart'
+            },
+            {
+              snippet: 'onSearchEnd(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onSearchEnd(string player_color)'
+              type: 'function'
+              description: 'Automatically called when player_color stops searching this object.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsearchend'
+            },
           ]
         suggestions = suggestions.concat [
           {
@@ -3026,6 +3042,20 @@ module.exports =
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectrandomize'
+          },
+          {
+            snippet: 'onObjectSearchStart(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchStart(Object object, string player_color)'
+            type: 'function'
+            description: 'Automatically called when player_color starts searching asset object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchstart'
+          },
+          {
+            snippet: 'onObjectSearchEnd(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchEnd(Object object, string player_color)'
+            type: 'function'
+            description: 'Automatically called when player_color stops searching asset object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchend'
           },
           {
             snippet: 'onObjectSpawn(object)\n\t${0:-- body...}\nend'
