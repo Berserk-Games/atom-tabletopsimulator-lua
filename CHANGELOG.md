@@ -1,3 +1,6 @@
+## 10.5.2
+* Fixed .xml extension
+
 ## 10.5.1
 * Fixed editor window not focussing when selected object script sent from TTS.
 
