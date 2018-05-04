@@ -963,8 +963,8 @@ module.exports = TabletopsimulatorLua =
           # Add temp dir to atom
           atom.project.addPath(ttsLuaDir)
 
-          if not TabletopsimulatorLua.if_connected
-            TabletopsimulatorLua.startConnection()
+          #if not TabletopsimulatorLua.if_connected
+          TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
         No: -> return
 
@@ -1051,9 +1051,8 @@ module.exports = TabletopsimulatorLua =
           destroyTTSEditors()
           deleteCachedFiles()
 
-          console.log "Connected:", @if_connected
-          if not @if_connected
-            @startConnection()
+          #if not @if_connected
+          @startConnection()
           try
             @connection.write JSON.stringify(@luaObjects)
           catch error
@@ -1685,6 +1684,10 @@ module.exports = TabletopsimulatorLua =
       @tabletopsimulator.stopConnection()
 
     @connection.on 'end', (data) ->
+      #console.log "Connection closed"
+      @tabletopsimulator.if_connected = false
+
+    @connection.on 'close', (had_error) ->
       #console.log "Connection closed"
       @tabletopsimulator.if_connected = false
 
