@@ -1,3 +1,9 @@
+## 10.5.0
+* Added onSearchStart(player), onSearchEnd(player), onObjectSearchStart(object, player), onObjectSearchEnd(object, player)
+* Added `hover_color` and `press_color` parameters to `object.createButton`
+* Added rudimentary XMLUI support
+* Some file-handling stability fixes
+
 ## 10.4.2
 * Updated API links in autocomplete snippets to point to new API website
 
