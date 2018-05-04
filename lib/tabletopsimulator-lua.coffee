@@ -268,7 +268,7 @@ class FileHandler
       @ready = true
 
 
-  open: ->
+  open: (forceActive = false) ->
     #atom.focus()
     row = 0
     col = 0
@@ -282,6 +282,8 @@ class FileHandler
       active = (globals.activeEditorPath == @tempfile)
     else
       active = isGlobalScript(@tempfile)
+    if forceActive
+      active = true
     console.log @tempfile, active
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
       @handle_connection(editor)
@@ -370,21 +372,24 @@ readFilesFromTTS = (files, forceOpen = false) ->
       toOpen.push(@file)
     @file = null
 
-  toOpen.sort (a, b) ->
-    if isGlobalScript(a.tempfile)
-      return 1
-    else if isGlobalScript(b.tempfile)
-      return -1
-    else
-      return if a.tempfile < b.tempfile then 1 else -1
+  if toOpen.length == 1
+    toOpen[0].open(true)
+  else
+    toOpen.sort (a, b) ->
+      if isGlobalScript(a.tempfile)
+        return 1
+      else if isGlobalScript(b.tempfile)
+        return -1
+      else
+        return if a.tempfile < b.tempfile then 1 else -1
 
-  openFilesInOrder = (files) ->
-    file = files.shift()
-    if file
-      file.open().then =>
-        openFilesInOrder(files)
+    openFilesInOrder = (files) ->
+      file = files.shift()
+      if file
+        file.open().then =>
+          openFilesInOrder(files)
 
-  openFilesInOrder(toOpen)
+    openFilesInOrder(toOpen)
 
 
 deleteCachedFiles = () ->
@@ -1507,6 +1512,7 @@ module.exports = TabletopsimulatorLua =
 
 
   handleMessage: (self, data, fromTTS = false) ->
+    console.log data
     id = data.messageID
     if data.savePath and data.savePath != undefined
       self.parseSavePath(self, data.savePath)
