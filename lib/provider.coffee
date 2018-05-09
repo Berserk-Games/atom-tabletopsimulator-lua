@@ -2381,6 +2381,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getinputs'
           },
           {
+            snippet: 'getJSON()'
+            displayText: 'getJSON()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a serialization of the JSON string which represents this item.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#get-functions'
+          },
+          {
             snippet: 'getLoopingEffectIndex()'
             displayText: 'getLoopingEffectIndex()'
             type: 'function'
