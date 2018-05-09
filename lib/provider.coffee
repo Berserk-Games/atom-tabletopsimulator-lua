@@ -3370,6 +3370,20 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/'
           },
           {
+            snippet: 'Turns'
+            displayText: 'Turns'
+            type: 'constant'
+            description: 'The Turns class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/'
+          },
+          {
+            snippet: 'UI'
+            displayText: 'UI'
+            type: 'constant'
+            description: 'The UI class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/'
+          },
+          {
             snippet: 'WebRequest'
             displayText: 'WebRequest'
             type: 'constant'
