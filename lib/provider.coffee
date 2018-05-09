@@ -757,6 +757,43 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack'
           },
         ]
+      # Section: ui Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "UI") || line.endsWith("UI.") || (previous_token == "UI" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'getAttribute(${1:string|id}, ${2:string|attribute})'
+            displayText: "getAttribute(string id, string attribute)"
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Obtains the value of a specified attribute of a UI element. Returns typically a string or number.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattribute'
+          },
+          {
+            snippet: 'getAttributes(${1:string|id})'
+            displayText: "getAttributes(string id)"
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns the attributes and their values of a UI element that have been set by the user.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattributes'
+          },
+          {
+            snippet: 'setAttribute(${1:string|id}, ${2:string|attribute}, ${3:variable|value})'
+            displayText: "setAttribute(string id, string attribute, variable value)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the value of a specified attribute of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattribute'
+          },
+          {
+            snippet: 'setAttributes(${1:string|id}, ${2:table|data})'
+            displayText: "setAttributes(string id, table data)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Updates the value of the supplied attributes of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattributes'
+          },
+        ]
       # Section: coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
         suggestions = [
@@ -3502,6 +3539,33 @@ module.exports =
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobject'
+          },
+          {
+            snippet: 'spawnObjectJSON(${1:Table|paremeters})'
+            displayText: 'spawnObjectJSON(Table parameters)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object using a JSON string and returns a reference to it.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobjectjson'
+          },
+          {
+            snippet:
+              'spawnObjectJSON({\n\t' +
+              'json           = ${1:-- string},\n\t' +
+              'position       = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation       = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback       = ${5:-- string},\n\t' +
+              'callback_owner = ${6:-- Object},\n\t' +
+              'sound          = ${7:-- bool},\n\t' +
+              'params         = ${8:-- Table},\n\t' +
+              'snap_to_grid   = ${9:-- bool},\n' +
+              '})'
+            displayText: 'spawnObjectJSON({string json, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, bool sound, Table params, bool snap_to_grid})'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object using a JSON string and returns a reference to it.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobjectjson'
           },
           {
             snippet: 'startLuaCoroutine(${1:Object|func_owner}, ${2:string|func_name})'
