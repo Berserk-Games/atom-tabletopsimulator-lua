@@ -3114,6 +3114,20 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsave'
           },
           {
+            snippet: 'onScriptingButtonDown(index, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onScriptingButtonDown(int index, string player_color)'
+            type: 'function'
+            description: 'Automatically called when a player presses down one of the scripting button hotkeys.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onscriptingbuttondown'
+          },
+          {
+            snippet: 'onScriptingButtonUp(index, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onScriptingButtonUp(int index, string player_color)'
+            type: 'function'
+            description: 'Automatically called when a player releases one of the scripting button hotkeys.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onscriptingbuttonup'
+          },
+          {
             snippet: 'onUpdate()\n\t${0:-- body...}\nend'
             displayText: 'onUpdate()'
             type: 'function'
