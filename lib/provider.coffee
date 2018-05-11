@@ -757,6 +757,129 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack'
           },
         ]
+      # Section: turns Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Turns") || line.endsWith("Turns.") || (previous_token == "Turns" && this_token_intact)
+        suggestions = [
+          # Member Variables
+          {
+            snippet: 'enable'
+            displayText: 'enable'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Enable/disable the turns system.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'type'
+            displayText: 'type'
+            type: 'property'
+            leftLabel: 'int'
+            description: 'If the turn order is automatic or custom. 1=auto, 2=custom.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'order'
+            displayText: 'order'
+            type: 'property'
+            leftLabel: 'table'
+            description: 'A table of strings, representing the player turn order.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'reverse_order'
+            displayText: 'reverse_order'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Enable/disable reversing turn rotation direction.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'skip_empty_hands'
+            displayText: 'skip_empty_hands'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Enable/disable skipping empty hands.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'disable_interactations'
+            displayText: 'disable_interactations'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Enable/disable the blocking of players ability to interact with Objects when it is not their turn.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'pass_turns'
+            displayText: 'pass_turns'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Enable/disable a player\'s ability to pass their turn to another.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          {
+            snippet: 'turn_color'
+            displayText: 'turn_color'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'The color of the Player who\'s turn it is.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#member-variables'
+          },
+          # Functions
+          {
+            snippet: 'getNextTurnColor()'
+            displayText: "getNextTurnColor()"
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the Player Color string of the next player in the turn order.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#functions'
+          },
+          {
+            snippet: 'getPreviousTurnColor()'
+            displayText: "getPreviousTurnColor()"
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the Player Color string of the previous player in the turn order.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/#functions'
+          },
+        ]
+      # Section: ui Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "UI") || line.endsWith("UI.") || (previous_token == "UI" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'getAttribute(${1:string|id}, ${2:string|attribute})'
+            displayText: "getAttribute(string id, string attribute)"
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Obtains the value of a specified attribute of a UI element. Returns typically a string or number.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattribute'
+          },
+          {
+            snippet: 'getAttributes(${1:string|id})'
+            displayText: "getAttributes(string id)"
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns the attributes and their values of a UI element that have been set by the user.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattributes'
+          },
+          {
+            snippet: 'setAttribute(${1:string|id}, ${2:string|attribute}, ${3:variable|value})'
+            displayText: "setAttribute(string id, string attribute, variable value)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the value of a specified attribute of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattribute'
+          },
+          {
+            snippet: 'setAttributes(${1:string|id}, ${2:table|data})'
+            displayText: "setAttributes(string id, table data)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Updates the value of the supplied attributes of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattributes'
+          },
+        ]
       # Section: coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
         suggestions = [
@@ -2344,6 +2467,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getinputs'
           },
           {
+            snippet: 'getJSON()'
+            displayText: 'getJSON()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns a serialization of the JSON string which represents this item.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#get-functions'
+          },
+          {
             snippet: 'getLoopingEffectIndex()'
             displayText: 'getLoopingEffectIndex()'
             type: 'function'
@@ -3114,6 +3245,20 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsave'
           },
           {
+            snippet: 'onScriptingButtonDown(index, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onScriptingButtonDown(int index, string player_color)'
+            type: 'function'
+            description: 'Automatically called when a player presses down one of the scripting button hotkeys.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onscriptingbuttondown'
+          },
+          {
+            snippet: 'onScriptingButtonUp(index, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onScriptingButtonUp(int index, string player_color)'
+            type: 'function'
+            description: 'Automatically called when a player releases one of the scripting button hotkeys.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onscriptingbuttonup'
+          },
+          {
             snippet: 'onUpdate()\n\t${0:-- body...}\nend'
             displayText: 'onUpdate()'
             type: 'function'
@@ -3223,6 +3368,20 @@ module.exports =
             type: 'constant'
             description: 'The Timer class.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/'
+          },
+          {
+            snippet: 'Turns'
+            displayText: 'Turns'
+            type: 'constant'
+            description: 'The Turns class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/turns/'
+          },
+          {
+            snippet: 'UI'
+            displayText: 'UI'
+            type: 'constant'
+            description: 'The UI class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/'
           },
           {
             snippet: 'WebRequest'
@@ -3488,6 +3647,33 @@ module.exports =
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobject'
+          },
+          {
+            snippet: 'spawnObjectJSON(${1:Table|paremeters})'
+            displayText: 'spawnObjectJSON(Table parameters)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object using a JSON string and returns a reference to it.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobjectjson'
+          },
+          {
+            snippet:
+              'spawnObjectJSON({\n\t' +
+              'json           = ${1:-- string},\n\t' +
+              'position       = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation       = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback       = ${5:-- string},\n\t' +
+              'callback_owner = ${6:-- Object},\n\t' +
+              'sound          = ${7:-- bool},\n\t' +
+              'params         = ${8:-- Table},\n\t' +
+              'snap_to_grid   = ${9:-- bool},\n' +
+              '})'
+            displayText: 'spawnObjectJSON({string json, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, bool sound, Table params, bool snap_to_grid})'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Spawns an Object using a JSON string and returns a reference to it.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#spawnobjectjson'
           },
           {
             snippet: 'startLuaCoroutine(${1:Object|func_owner}, ${2:string|func_name})'
