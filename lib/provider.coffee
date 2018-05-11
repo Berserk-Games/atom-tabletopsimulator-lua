@@ -864,6 +864,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattributes'
           },
           {
+            snippet: 'hide(${1:string|id})'
+            displayText: "hide(string id)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Hides the given UI element. .'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#hide'
+          },
+          {
             snippet: 'setAttribute(${1:string|id}, ${2:string|attribute}, ${3:variable|value})'
             displayText: "setAttribute(string id, string attribute, variable value)"
             type: 'function'
@@ -878,6 +886,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Updates the value of the supplied attributes of a UI element.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattributes'
+          },
+          {
+            snippet: 'show(${1:string|id})'
+            displayText: "show(string id)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Shows the given UI element. .'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#show'
           },
         ]
       # Section: coroutine Class
