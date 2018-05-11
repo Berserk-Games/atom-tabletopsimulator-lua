@@ -1,4 +1,7 @@
 ## 10.5.3
+* Added UI and Turns classes (and a couple of misc functions) to autocomplete
+
+## 10.5.3
 * Forced TTS connection restart whenever Get Lua Scripts of Save & Play executed (should stop deadlock problem)
 
 ## 10.5.2
