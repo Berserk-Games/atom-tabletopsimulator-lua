@@ -1,3 +1,7 @@
+## 10.6.0
+* Added support for sending/receving xml ui scripts
+* Added `setLookingForPlayers`
+
 ## 10.5.4
 * Added UI and Turns classes (and a couple of misc functions) to autocomplete
 
