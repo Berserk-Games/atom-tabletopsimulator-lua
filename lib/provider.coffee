@@ -201,6 +201,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
           },
           {
+            snippet: 'setLookingForPlayers(${1:bool|looking_for_players})'
+            displayText: 'setLookingForPlayers(bool looking_for_players)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets whether server will be listed as looking for players in server browser.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setlookingforplayers'
+          },
+          {
             snippet: 'setTable(${1:string|table_name}, ${2:Table|table})'
             displayText: 'setTable(string table_name, Table table)'
             type: 'function'

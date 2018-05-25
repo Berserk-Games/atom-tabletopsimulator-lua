@@ -356,24 +356,38 @@ readFilesFromTTS = (files, forceOpen = false) ->
   @files_opened = []
 
   for f, i in files
-    @file = new FileHandler()
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
-    if f.guid == "-2"
-      @file.setBasename(f.name + "." + f.guid + ".xml")
-    else
-      @file.setBasename(f.name + "." + f.guid + ".ttslua")
-    @file.setDatasize(lengthInUtf8Bytes(f.script))
-    @file.create()
-
-    lines = f.script.split(/\n/)
-    for line,i in lines
-      if i < lines.length-1
-        line = line + "\n"
-      @file.append(line)
+    basename = f.name + "." + f.guid + ".ttslua"
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-    if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(@file.basename)) or ttsEditors[@file.basename]
+    if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
+      @file = new FileHandler()
+      @file.setBasename(basename)
+      @file.setDatasize(lengthInUtf8Bytes(f.script))
+      @file.create()
+      lines = f.script.split(/\n/)
+      for line,i in lines
+        if i < lines.length-1
+          line = line + "\n"
+        @file.append(line)
+      mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
       toOpen.push(@file)
-    @file = null
+      @file = null
+
+    if f.ui
+      basename = f.name + "." + f.guid + ".xml"
+      if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
+        @file = new FileHandler()
+        @file.setBasename(basename)
+        @file.setDatasize(lengthInUtf8Bytes(f.ui))
+        @file.create()
+
+        lines = f.ui.split(/\n/)
+        for line,i in lines
+          if i < lines.length-1
+            line = line + "\n"
+          @file.append(line)
+        toOpen.push(@file)
+        @file = null
 
   if toOpen.length == 1
     toOpen[0].open(true)
@@ -1026,27 +1040,39 @@ module.exports = TabletopsimulatorLua =
           @luaObjects.messageID = 1
           @luaObjects.scriptStates = []
           @luafiles = fs.readdirSync(ttsLuaDir)
+          uis = {}
           for luafile,i in @luafiles
             fname = path.join(ttsLuaDir, luafile)
             if not fs.statSync(fname).isDirectory()
-              @luaObject = {}
-              tokens = luafile.split "."
-              @luaObject.name = luafile
-              @luaObject.guid = tokens[tokens.length-2]
-              @luaObject.script = fs.readFileSync(fname, 'utf8')
-              # Insert included files
-              if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-                @luaObject.script = @insertFiles(@luaObject.script)
-              # TODO this section commented out because TTS now handles unicode correctly
-              # When setting is enabled we still convert \u codes to utf8 when loading
-              # but we no longer write \u codes to TTS.
-              # This setting should be removed entirely at a future date
-              #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-              # Replace with \u character codes
-              #  replace_character = (character) ->
-              #    return "\\u{" + character.codePointAt(0).toString(16) + "}"
-              #  @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
-              @luaObjects.scriptStates.push(@luaObject)
+              if fname.endsWith(".ttslua")
+                @luaObject = {}
+                tokens = luafile.split "."
+                @luaObject.name = luafile
+                @luaObject.guid = tokens[tokens.length-2]
+                @luaObject.script = fs.readFileSync(fname, 'utf8')
+                # Insert included files
+                if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+                  @luaObject.script = @insertFiles(@luaObject.script)
+                # TODO this section commented out because TTS now handles unicode correctly
+                # When setting is enabled we still convert \u codes to utf8 when loading
+                # but we no longer write \u codes to TTS.
+                # This setting should be removed entirely at a future date
+                #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
+                # Replace with \u character codes
+                #  replace_character = (character) ->
+                #    return "\\u{" + character.codePointAt(0).toString(16) + "}"
+                #  @luaObject.script = @luaObject.script.replace(/[\u0080-\uFFFF]/g, replace_character)
+                @luaObjects.scriptStates.push(@luaObject)
+              else if fname.endsWith(".xml")
+                tokens = luafile.split "."
+                name = luafile
+                guid = tokens[tokens.length-2]
+                ui = fs.readFileSync(fname, 'utf8')
+                uis[guid] = ui
+
+          for @luaObject in @luaObjects.scriptStates
+            if @luaObject.guid of uis
+              @luaObject.ui = uis[@luaObject.guid]
 
           destroyTTSEditors()
           deleteCachedFiles()
