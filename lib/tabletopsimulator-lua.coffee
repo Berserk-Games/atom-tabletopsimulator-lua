@@ -34,6 +34,23 @@ ATOM_MSG_LUA         = 3
 
 CUSTOM_MSG_WATCH = 1
 
+ttsMessageID = (id) ->
+  if id == -1
+    return 'TTS_MSG_NONE'
+  else if id == 0
+    return 'TTS_MSG_NEW_OBJECTS'
+  else if id == 1
+    return 'TTS_MSG_NEW_GAME'
+  else if id == 2
+    return 'TTS_MSG_PRINT'
+  else if id == 3
+    return 'TTS_MSG_ERROR'
+  else if id == 4
+    return 'TTS_MSG_CUSTOM'
+  else if id == 5
+    return 'TTS_MSG_RETURN'
+  else
+    return '<UNKNOWN MESSAGE : ' + id + '>'
 
 ttsLuaDir = path.join(os.tmpdir(), "TabletopSimulator", "Tabletop Simulator Lua")
 # remove old name for temp dir, for people who have used previous versions (21/08/17)
@@ -59,6 +76,8 @@ ttsEditors = {}
 globals = {}
 globals.activeEditorPath = null
 globals.count = 0
+globals.verbose = false
+
 mutex = {}
 mutex.doingSaveAndPlay = false
 mutex.functionCount = 0
@@ -81,6 +100,10 @@ ping = (socket, delay) ->
   socket.write "Ping"
   nextPing = -> ping(socket, delay)
   setTimeout nextPing, delay
+
+log = (msg) ->
+  return if !globals.verbose
+  console.log msg
 
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
@@ -159,6 +182,8 @@ isFromTTS = (fn) ->
 isGlobalScript = (fn) ->
   return fn and path.basename(fn) == 'Global.-1.ttslua'
 
+isGlobalUI = (fn) ->
+  return fn and path.basename(fn) == 'Global.-1.xml'
 
 getPathGUID = (fn) ->
   [name, guid, ext] = fn.split('.')
@@ -169,10 +194,8 @@ destroyTTSEditors = ->
   try
     globals.activeEditorPath = atom.workspace.getActiveTextEditor().getPath()
   catch error
-  if not atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles')
-    force = true
   for editor,i in atom.workspace.getTextEditors()
-    if force or isFromTTS(editor.getPath())
+    if isFromTTS(editor.getPath())
       try
         editor.destroy()
       catch error
@@ -201,7 +224,7 @@ gotoFileRow = (filepath, row) ->
   [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
   if filepath and filepath != editor.getPath()
-    console.log "Opening file in Go-To-File-Row", filepath
+    log "Opening file in Go-To-File-Row", filepath
     atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
       editor.setCursorBufferPosition([row, 0])
       editor.scrollToCursorPosition()
@@ -234,26 +257,56 @@ lengthInUtf8Bytes = (str) ->
   return str.length + (if m then m.length else 0)
 
 
+processIncludeFiles = (filepath, text) ->
+  lines = text.split(/\n/)
+  tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
+  output = []
+  for line, row in lines
+    found = line.match(insertedFileRegexp)
+    #console.log tree
+    if found
+      dir = null
+      if tree.label
+        dir = path.dirname(tree.label)
+      label = completeFilepath(found[2], dir)
+      if found[2] == tree.closeTag #closing include
+        tree.endRow = row
+        tree = tree.parent
+        if tree.parent == null
+          output.push(found[1])
+      else #opening include
+        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1, closeTag: found[2]})
+        tree = tree.children[tree.children.length-1]
+        if not (label of appearsInFile)
+          appearsInFile[label] = {}
+        appearsInFile[label][filepath] = tree.depth
+    else if tree.parent == null
+      output.push(line)
+  return output.join('\n')
+
+
 class FileHandler
   constructor: ->
     @readbytes = 0
     @ready = false
 
-
   setBasename: (basename) ->
     @basename = basename
 
+  getBasename: () ->
+    return @basename
+
+  getPath: () ->
+    return @tempfile
 
   setDatasize: (datasize) ->
     @datasize = datasize
-
 
   create: ->
     @tempfile = path.join(ttsLuaDir, @basename)
     dirname = path.dirname(@tempfile)
     mkdirp.sync(dirname)
     @fd = fs.openSync(@tempfile, 'w')
-
 
   append: (line) ->
     if @readbytes < @datasize
@@ -267,8 +320,7 @@ class FileHandler
       fs.closeSync @fd
       @ready = true
 
-
-  open: (forceActive = false) ->
+  open: (activate) ->
     #atom.focus()
     row = 0
     col = 0
@@ -282,62 +334,13 @@ class FileHandler
       active = (globals.activeEditorPath == @tempfile)
     else
       active = isGlobalScript(@tempfile)
-    if forceActive
+    if activate
       active = true
-    console.log @tempfile, active
+    log @tempfile, active
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
       @handle_connection(editor)
 
-
   handle_connection: (editor) ->
-    cursorPosition =  editor.getCursorBufferPosition()
-    filepath = editor.getPath()
-    # Map and remove included files
-    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-      text = editor.getText()
-      lines = text.split(/\n/)
-      tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
-      output = []
-      for line, row in lines
-        found = line.match(insertedFileRegexp)
-        #console.log tree
-        if found
-          dir = null
-          if tree.label
-            dir = path.dirname(tree.label)
-          label = completeFilepath(found[2], dir)
-          if found[2] == tree.closeTag #closing include
-            tree.endRow = row
-            tree = tree.parent
-            if tree.parent == null
-              output.push(found[1])
-          else #opening include
-            tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1, closeTag: found[2]})
-            tree = tree.children[tree.children.length-1]
-            if not (label of appearsInFile)
-              appearsInFile[label] = {}
-            appearsInFile[label][filepath] = tree.depth
-        else if tree.parent == null
-          output.push(line)
-      editor.setText(output.join('\n'))
-
-    # // REMOVED 2018.03.23: Atom no longer supports \u regexes, and this feature is no longer needed since TTS supports unicode intrinsically
-    # Replace \u character codes
-    #if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
-    #  replace_unicode = (unicode) ->
-    #    unicode.replace(String.fromCharCode(parseInt(unicode.match[1],16)))
-    #  editor.scan(/\\x\{([a-zA-Z0-9]{1,4})\}/g, replace_unicode)
-
-    if editor.isModified()
-      editor.save()
-
-    # Restore cursor position (may have been curtailed due to include)
-    try
-      editor.setCursorBufferPosition(cursors[filepath])
-    catch error
-      editor.setCursorBufferPosition(cursorPosition)
-    editor.scrollToCursorPosition()
-
     buffer = editor.getBuffer()
     @subscriptions = new CompositeDisposable
     @subscriptions.add buffer.onDidSave =>
@@ -351,31 +354,39 @@ class FileHandler
     @subscriptions.dispose()
 
 
-readFilesFromTTS = (files, forceOpen = false) ->
+readFilesFromTTS = (self, files, onlyOpen = false) ->
   toOpen = []
-  @files_opened = []
+  sent_from_tts = {}
 
   for f, i in files
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
-    if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
+    if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
+      # write ttslua script
       @file = new FileHandler()
       @file.setBasename(basename)
       @file.setDatasize(lengthInUtf8Bytes(f.script))
       @file.create()
-      lines = f.script.split(/\n/)
+      text = f.script
+      filepath = @file.getPath()
+      if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+        text = processIncludeFiles(filepath, text)
+      self.doCatalog(text, filepath, !isFromTTS(filepath))
+      lines = text.split(/\n/)
       for line,i in lines
         if i < lines.length-1
           line = line + "\n"
         @file.append(line)
       mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
       toOpen.push(@file)
+      sent_from_tts[basename] = true
       @file = null
 
     if f.ui
+      #write xml ui file
       basename = f.name + "." + f.guid + ".xml"
-      if forceOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
+      if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
         @file = new FileHandler()
         @file.setBasename(basename)
         @file.setDatasize(lengthInUtf8Bytes(f.ui))
@@ -387,15 +398,66 @@ readFilesFromTTS = (files, forceOpen = false) ->
             line = line + "\n"
           @file.append(line)
         toOpen.push(@file)
+        sent_from_tts[basename] = true
         @file = null
 
-  if toOpen.length == 1
-    toOpen[0].open(true)
-  else
+  # check which files are currently open in Atom, clean up rest
+  alreadyOpen = {}
+  updated = 0
+  opened = toOpen.length
+  removed = 0
+  errors = 0
+  for editor, i in atom.workspace.getTextEditors()
+    filepath = editor.getPath()
+    if isFromTTS(filepath)
+      basename = path.basename(filepath)
+      if(basename of sent_from_tts)
+        # should automatically reload?
+        if !(basename of alreadyOpen)
+          updated += 1
+        alreadyOpen[basename] = true
+      else
+        if !onlyOpen
+          # wasn't sent from tts, so remove the temp file
+          try
+            editor.destroy()
+          catch error
+            console.log error
+          try
+            fs.unlinkSync(filepath)
+            removed += 1
+          catch error
+            console.log error
+            errors += 1
+
+  # check for any further stragglers
+  # (files not open in Atom and which were not sent from TTS this message)
+  for oldfile, i in fs.readdirSync(ttsLuaDir)
+    deletefile = path.join(ttsLuaDir, oldfile)
+    if !(oldfile of sent_from_tts) && !onlyOpen
+      try
+        fs.unlinkSync(deletefile)
+        removed += 1
+      catch error
+        console.log error
+        errors += 1
+
+  # don't open files which are already open (Atom will automatically refresh those)
+  for i in [0...toOpen.length].reverse()
+    if toOpen[i].getBasename() of alreadyOpen
+      opened -= 1
+      toOpen.splice(i, 1)
+
+  # open remaining files in order
+  if toOpen.length > 0
     toOpen.sort (a, b) ->
       if isGlobalScript(a.tempfile)
         return 1
       else if isGlobalScript(b.tempfile)
+        return -1
+      else if isGlobalUI(a.tempfile)
+        return 1
+      else if isGlobalUI(b.tempfile)
         return -1
       else
         return if a.tempfile < b.tempfile then 1 else -1
@@ -403,10 +465,21 @@ readFilesFromTTS = (files, forceOpen = false) ->
     openFilesInOrder = (files) ->
       file = files.shift()
       if file
-        file.open().then =>
+        file.open(onlyOpen).then =>
           openFilesInOrder(files)
 
     openFilesInOrder(toOpen)
+
+  # notify user
+  info = "Received files from TTS: "
+  info += "" + updated + " updated | " + opened + " opened | " + removed + " removed"
+  if errors > 0
+    info += " | " + errors + " errors."
+    atom.notifications.addError(info, {icon: 'radio-tower'})
+  else
+    info += "."
+    atom.notifications.addInfo(info, {icon: 'radio-tower'})
+  log info
 
 
 deleteCachedFiles = () ->
@@ -437,34 +510,22 @@ module.exports = TabletopsimulatorLua =
             {value: 'none',    description: 'Do not automatically open any files sent from Tabletop Simulator'}
             {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
           ]
-    #    convertUnicodeCharacters:
-    #      title: 'Convert between unicode characters and \\u{xxxx} escape sequences when loading/saving'
-    #      description: 'When loading from TTS automatically convert to unicode character from instances of ``\\u{xxxx}``.  When saving to TTS do the reverse.  e.g. it will convert ``é`` from/to ``\\u{00e9}``'
-    #      order: 2
-    #      type: 'boolean'
-    #      default: true
-        openOtherFiles:
-          title: 'Ignore files from outwith the TTS folder'
-          description: 'When you Save And Play do not close files which are not in the TTS temp folder'
-          order: 2
-          type: 'boolean'
-          default: true
         includeOtherFiles:
           title: 'Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
-          order: 3
+          order: 2
           type: 'boolean'
           default: true
         includeOtherFilesPath:
           title: 'Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
-          order: 4
+          order: 3
           type: 'string'
           default: ''
         delayLinter:
           title: 'Delay Linter When Loading'
           description: 'Delay in ``ms`` before linting a newly loaded file.'
-          order: 5
+          order: 4
           type: 'integer'
           default: 0
           minimum: 0
@@ -554,9 +615,20 @@ module.exports = TabletopsimulatorLua =
           description: 'Prefix all function names with the keyword \'function\' when using the Go To Function command.'
           type: 'boolean'
           default: true
+    developer:
+      title: 'Developer'
+      order: 5
+      type: 'object'
+      properties:
+        verboseLogging:
+          title: 'Verbose Logging'
+          description: 'Extra logging to the developer console to aid in debugging.'
+          order: 1
+          type: 'boolean'
+          default: false
     panel:
       title: 'Tabletop Simulator Panel'
-      order: 5
+      order: 6
       type: 'object'
       properties:
         watchListLength:
@@ -567,7 +639,7 @@ module.exports = TabletopsimulatorLua =
           default: 8
     hacks:
       title: 'Hacks (Experimental!)'
-      order: 6
+      order: 7
       type: 'object'
       properties:
         incrementals:
@@ -610,6 +682,9 @@ module.exports = TabletopsimulatorLua =
     # 23/03/18 - removed convertUnicodeCharacters
     if atom.config.get('tabletopsimulator-lua.loadSave.convertUnicodeCharacters') != undefined
       atom.config.unset('tabletopsimulator-lua.loadSave.convertUnicodeCharacters')
+    # 27/05/18 - removed openOtherFiles
+    if atom.config.get('tabletopsimulator-lua.loadSave.openOtherFiles') != undefined
+      atom.config.unset('tabletopsimulator-lua.loadSave.openOtherFiles')
 
     # Dynamic Editor settings
     @highlightGUIDObject = atom.config.get('tabletopsimulator-lua.editor.highlightGUIDObject')
@@ -676,6 +751,7 @@ module.exports = TabletopsimulatorLua =
 
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.developer.verboseLogging', (newValue) => @verboseLogging()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.highlightGUIDObject', (newValue) => @highlightGUIDObjectChange()
     @subscriptions.add atom.workspace.onDidOpen (event) => @onLoad(event)
@@ -685,16 +761,9 @@ module.exports = TabletopsimulatorLua =
       @subscriptions.add editor.onDidSave (event) =>
         @onSave(event)
 
-    # Close any open files
-    #for editor,i in atom.workspace.getTextEditors()
-    #  try
-    #    #atom.commands.dispatch(atom.views.getView(editor), 'core:close')
-    #    editor.destroy()
-    #  catch error
-    #    console.log error
-    destroyTTSEditors()
+    @verboseLogging()
 
-    # Delete any existing cached Lua files
+    destroyTTSEditors()
     deleteCachedFiles()
 
     # Start server to receive push information from Unity
@@ -968,18 +1037,17 @@ module.exports = TabletopsimulatorLua =
       detailedMessage: 'This will erase any local changes that you may have done.'
       buttons:
         Yes: ->
-          #console.log "Request at", Date.now()
-          destroyTTSEditors()
-
-          # Delete any existing cached Lua files
-          deleteCachedFiles()
+          #destroyTTSEditors()
+          #deleteCachedFiles()
 
           # Add temp dir to atom
           atom.project.addPath(ttsLuaDir)
 
+          log "Sending request to TTS..."
           #if not TabletopsimulatorLua.if_connected
           TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
+          log "Sent."
         No: -> return
 
 
@@ -991,7 +1059,7 @@ module.exports = TabletopsimulatorLua =
       else
         return Promise.resolve(editor.getBuffer())
     else
-      console.log "Non-async save"
+      log "Non-async save"
       try
         editor.save()
       catch error
@@ -1023,14 +1091,14 @@ module.exports = TabletopsimulatorLua =
       else
         editors.push(editor.getPath())
 
-    console.log "Starting to save..."
+    log "Starting to save..."
 
     for editor, i in atom.workspace.getTextEditors()
       @blocking_save(editor).then (buffer) =>
-        console.log buffer.getPath(), buffer.isModified()
+        log buffer.getPath(), buffer.isModified()
         savedFiles += 1
         if savedFiles == openFiles
-          console.log "All done!"
+          log "All done!"
           # This is a horrible hack I feel - we see how many editors are open, then
           # run this block after each save, but only do the below code if the
           # number of files we have saved is the number of files open.  Urgh.
@@ -1074,13 +1142,15 @@ module.exports = TabletopsimulatorLua =
             if @luaObject.guid of uis
               @luaObject.ui = uis[@luaObject.guid]
 
-          destroyTTSEditors()
-          deleteCachedFiles()
+          #destroyTTSEditors()
+          #deleteCachedFiles()
 
           #if not @if_connected
           @startConnection()
           try
+            log "Sending files to TTS..."
             @connection.write JSON.stringify(@luaObjects)
+            log "Sent."
           catch error
             console.log error
 
@@ -1117,6 +1187,10 @@ module.exports = TabletopsimulatorLua =
 
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
+
+
+  verboseLogging: (newValue) ->
+    globals.verbose = atom.config.get('tabletopsimulator-lua.developer.verboseLogging')
 
 
   showFunctionChange: (newValue) ->
@@ -1541,21 +1615,19 @@ module.exports = TabletopsimulatorLua =
 
   handleMessage: (self, data, fromTTS = false) ->
     id = data.messageID
+    log "Received message from TTS: [" + id + "] " + ttsMessageID(id)
+
     if data.savePath and data.savePath != undefined
       self.parseSavePath(self, data.savePath)
 
     if id == TTS_MSG_NONE
       return
 
-    else if id == TTS_MSG_NEW_OBJECTS
-      #console.log "Received data from TTS", Date.now()
-      readFilesFromTTS(data.scriptStates, fromTTS)
-      #console.log "Finished receiving data from TTS", Date.now()
+    else if id == TTS_MSG_NEW_OBJECTS # player has right-clicked->Scripting->Scripting Editor on an object
+      readFilesFromTTS(self, data.scriptStates, fromTTS)
 
-    else if id == TTS_MSG_NEW_GAME
-      #console.log "Received data from TTS", Date.now()
-      readFilesFromTTS(data.scriptStates)
-      #console.log "Finished receiving data from TTS", Date.now()
+    else if id == TTS_MSG_NEW_GAME # Get Lua Scripts results in this, as does Save & Play (because it causes game to reload)
+      readFilesFromTTS(self, data.scriptStates)
       mutex.doingSaveAndPlay = false
 
     else if id == TTS_MSG_PRINT
@@ -1583,7 +1655,6 @@ module.exports = TabletopsimulatorLua =
           dismissable: popup == "close",
           buttons: btns,
         })
-      #console.error @data.message
 
     else if id == TTS_MSG_CUSTOM
       console.log data
