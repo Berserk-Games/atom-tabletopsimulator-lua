@@ -1,3 +1,7 @@
+## 10.6.1
+* No longer wipes temp files or closes tabs when communicating with TTS
+* Added verbose logging option in settings
+
 ## 10.6.0
 * Added support for sending/receving xml ui scripts
 * Added `setLookingForPlayers`
