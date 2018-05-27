@@ -358,6 +358,12 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   toOpen = []
   sent_from_tts = {}
 
+  # Add temp dir to atom to make sure it exists
+  try
+    mkdirp.sync(ttsLuaDir)
+  catch error
+  atom.project.addPath(ttsLuaDir)
+
   for f, i in files
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
@@ -1039,9 +1045,6 @@ module.exports = TabletopsimulatorLua =
         Yes: ->
           #destroyTTSEditors()
           #deleteCachedFiles()
-
-          # Add temp dir to atom
-          atom.project.addPath(ttsLuaDir)
 
           log "Sending request to TTS..."
           #if not TabletopsimulatorLua.if_connected
