@@ -374,6 +374,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   catch error
   atom.project.addPath(ttsLuaDir)
 
+  count = 0
   for f, i in files
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
@@ -400,6 +401,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     log({basename: basename, filepath: filepath, text: text})
     sent_from_tts[basename] = true
     @file = null
+    count += 1
 
     if f.ui
       #write xml ui file
@@ -420,6 +422,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
       log({basename: basename, filepath: filepath, text: f.ui})
       sent_from_tts[basename] = true
       @file = null
+      count += 1
 
   # check which files are currently open in Atom, clean up rest
   alreadyOpen = {}
@@ -491,7 +494,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     openFilesInOrder(toOpen)
 
   # notify user
-  info = "Received files from TTS: "
+  info = "Received " + count + " files from TTS. Tabs: "
   info += "" + updated + " updated | " + opened + " opened | " + removed + " removed"
   if errors > 0
     info += " | " + errors + " errors."
