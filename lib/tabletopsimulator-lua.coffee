@@ -101,9 +101,15 @@ ping = (socket, delay) ->
   nextPing = -> ping(socket, delay)
   setTimeout nextPing, delay
 
+
 log = (msg) ->
   return if !globals.verbose
   console.log msg
+
+log_seperator = () ->
+  return if !globals.verbose
+  console.log "----------"
+
 
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
@@ -336,7 +342,6 @@ class FileHandler
       active = isGlobalScript(@tempfile)
     if activate
       active = true
-    log @tempfile, active
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
       @handle_connection(editor)
 
@@ -359,6 +364,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   sent_from_tts = {}
 
   if globals.verbose
+    log("Received " + files.length + " script states:")
     @lastMessage = files
     log(@lastMessage)
 
@@ -372,44 +378,48 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+    # write ttslua script
+    @file = new FileHandler()
+    @file.setBasename(basename)
+    @file.setDatasize(lengthInUtf8Bytes(f.script))
+    @file.create()
+    text = f.script
+    filepath = @file.getPath()
+    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+      text = processIncludeFiles(filepath, text)
+    self.doCatalog(text, filepath, !isFromTTS(filepath))
+    lines = text.split(/\n/)
+    for line,i in lines
+      if i < lines.length-1
+        line = line + "\n"
+      @file.append(line)
+    mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
-      # write ttslua script
-      @file = new FileHandler()
-      @file.setBasename(basename)
-      @file.setDatasize(lengthInUtf8Bytes(f.script))
-      @file.create()
-      text = f.script
-      filepath = @file.getPath()
-      if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-        text = processIncludeFiles(filepath, text)
-      self.doCatalog(text, filepath, !isFromTTS(filepath))
-      lines = text.split(/\n/)
-      for line,i in lines
-        if i < lines.length-1
-          line = line + "\n"
-        @file.append(line)
-      mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
       toOpen.push(@file)
-      sent_from_tts[basename] = true
-      @file = null
+    log("Writing Lua:")
+    log({basename: basename, filepath: filepath, text: text})
+    sent_from_tts[basename] = true
+    @file = null
 
     if f.ui
       #write xml ui file
       basename = f.name + "." + f.guid + ".xml"
-      if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
-        @file = new FileHandler()
-        @file.setBasename(basename)
-        @file.setDatasize(lengthInUtf8Bytes(f.ui))
-        @file.create()
-
-        lines = f.ui.split(/\n/)
-        for line,i in lines
-          if i < lines.length-1
-            line = line + "\n"
-          @file.append(line)
+      @file = new FileHandler()
+      @file.setBasename(basename)
+      @file.setDatasize(lengthInUtf8Bytes(f.ui))
+      @file.create()
+      filepath = @file.getPath()
+      lines = f.ui.split(/\n/)
+      for line,i in lines
+        if i < lines.length-1
+          line = line + "\n"
+        @file.append(line)
+      if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalUI(basename)) or ttsEditors[basename]
         toOpen.push(@file)
-        sent_from_tts[basename] = true
-        @file = null
+      log("Writing XML:")
+      log({basename: basename, filepath: filepath, text: f.ui})
+      sent_from_tts[basename] = true
+      @file = null
 
   # check which files are currently open in Atom, clean up rest
   alreadyOpen = {}
@@ -1049,8 +1059,8 @@ module.exports = TabletopsimulatorLua =
         Yes: ->
           #destroyTTSEditors()
           #deleteCachedFiles()
-
-          log "Sending request to TTS..."
+          log_seperator()
+          log "Get Lua Scripts: Sending request to TTS..."
           #if not TabletopsimulatorLua.if_connected
           TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
@@ -1079,6 +1089,8 @@ module.exports = TabletopsimulatorLua =
     if mutex.doingSaveAndPlay
       return
     mutex.doingSaveAndPlay = true
+    log_seperator()
+    log "Save & Play: Sending request to TTS..."
     #clear this after some time in case a problem occured during save and play
     f = () ->
       mutex.doingSaveAndPlay = false
@@ -1156,6 +1168,7 @@ module.exports = TabletopsimulatorLua =
           @startConnection()
           try
             log "Sending files to TTS..."
+            log @luaObjects
             @connection.write JSON.stringify(@luaObjects)
             log "Sent."
           catch error
