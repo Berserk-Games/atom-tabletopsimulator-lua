@@ -358,6 +358,10 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   toOpen = []
   sent_from_tts = {}
 
+  if globals.verbose
+    @lastMessage = files
+    log(@lastMessage)
+
   # Add temp dir to atom to make sure it exists
   try
     mkdirp.sync(ttsLuaDir)
