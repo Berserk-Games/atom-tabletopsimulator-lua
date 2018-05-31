@@ -1,3 +1,8 @@
+## 10.6.2
+* Fixed Open Global Only and Open None behaviour
+* Better feedback on files received from TTS
+* Added more verbose logging
+
 ## 10.6.1
 * No longer wipes temp files or closes tabs when communicating with TTS
 * Added verbose logging option in settings
