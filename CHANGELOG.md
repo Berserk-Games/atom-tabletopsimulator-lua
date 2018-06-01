@@ -1,3 +1,10 @@
+## 10.6.3
+* Now checks if the active save has been altered in TTS; if so it prompts user about overwrite when they Save & Play
+* Improved confirmation dialogs
+* Added automatic creation of empty XML when object sent from TTS, and setting toggle for it.
+* Added menu option to create XML stub for object
+* Fixed Goto Last Error bug
+
 ## 10.6.2
 * Fixed Open Global Only and Open None behaviour
 * Better feedback on files received from TTS
