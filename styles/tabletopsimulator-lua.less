@@ -108,20 +108,35 @@
 }
 
 .tts-panel-view #throttle {
-    background-color: @panel-bg-color !important;
-    color: @base-border-color !important;
+    background-color: @panel-bg-color;
+    color: @base-border-color;
 }
 
 .tts-panel-view #throttle-label {
-    border: none !important;
-    background-color: @panel-bg-color !important;
-    color: @text-color !important;
-    text-align: center !important;
-    width: 4em !important;
+    border: none;
+    background-color: @panel-bg-color;
+    color: @text-color;
+    text-align: center;
+    width: 4em;
 }
 
 .tts-panel-view .watch-control table tr .throttle-container {
-    width: 4em !important;
+    width: 4em;
+}
+
+.tts-panel-view .watch-control #watch-table-footer tr td.button-container {
+    width: @tts-height;
+}
+
+.tts-panel-view .watch-control #watch-table-footer tr td.button-container button.btn {
+    width: @tts-height;
+    height: @tts-height;
+    font-weight: bold;
+    font-size: @tts-height * 0.55;
+    text-align: center;
+    vertical-align: center;
+    transform: rotate(180deg);
+    border: none;
 }
 
 .tts-panel-view .watch-list input.input-text {
