@@ -229,7 +229,7 @@ findFileRow = (filepath, row) ->
 gotoFileRow = (filepath, row) ->
   [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
-  if filepath and filepath != editor.getPath()
+  if filepath and (!editor or filepath != editor.getPath())
     log "Opening file in Go-To-File-Row", filepath
     atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
       editor.setCursorBufferPosition([row, 0])
@@ -362,6 +362,7 @@ class FileHandler
 readFilesFromTTS = (self, files, onlyOpen = false) ->
   toOpen = []
   sent_from_tts = {}
+  self.recordSaveTimestamp()
 
   if globals.verbose
     log("Received " + files.length + " script states:")
@@ -375,10 +376,11 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   atom.project.addPath(ttsLuaDir)
 
   count = 0
+  mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
+  createXML = atom.config.get('tabletopsimulator-lua.loadSave.createXML')
   for f, i in files
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
-    mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     # write ttslua script
     @file = new FileHandler()
     @file.setBasename(basename)
@@ -397,29 +399,36 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
       toOpen.push(@file)
-    log("Writing Lua:")
+    log("Wrote Lua:")
     log({basename: basename, filepath: filepath, text: text})
     sent_from_tts[basename] = true
     @file = null
     count += 1
 
-    if f.ui
+    if f.ui or (onlyOpen and createXML)
       #write xml ui file
       basename = f.name + "." + f.guid + ".xml"
       @file = new FileHandler()
       @file.setBasename(basename)
-      @file.setDatasize(lengthInUtf8Bytes(f.ui))
-      @file.create()
-      filepath = @file.getPath()
-      lines = f.ui.split(/\n/)
-      for line,i in lines
-        if i < lines.length-1
-          line = line + "\n"
-        @file.append(line)
+      filepath = ''
+      if f.ui
+        @file.setDatasize(lengthInUtf8Bytes(f.ui))
+        @file.create()
+        filepath = @file.getPath()
+        lines = f.ui.split(/\n/)
+        for line,i in lines
+          if i < lines.length-1
+            line = line + "\n"
+          @file.append(line)
+        log("Wrote XML:")
+      else
+        @file.setDatasize(0)
+        @file.create()
+        filepath = @file.getPath()
+        log("Created XML file:")
+      log({basename: basename, filepath: filepath, text: f.ui})
       if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalUI(basename)) or ttsEditors[basename]
         toOpen.push(@file)
-      log("Writing XML:")
-      log({basename: basename, filepath: filepath, text: f.ui})
       sent_from_tts[basename] = true
       @file = null
       count += 1
@@ -494,7 +503,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     openFilesInOrder(toOpen)
 
   # notify user
-  info = "Received " + count + " files from TTS. Tabs: "
+  info = "Received " + count + " files. Tabs: "
   info += "" + updated + " updated | " + opened + " opened | " + removed + " removed"
   if errors > 0
     info += " | " + errors + " errors."
@@ -533,22 +542,28 @@ module.exports = TabletopsimulatorLua =
             {value: 'none',    description: 'Do not automatically open any files sent from Tabletop Simulator'}
             {value: 'disable', description: 'DISABLE: Do not communicate with Tabletop Simulator at all (requires restart when switching to/from this option)'}
           ]
+        createXML:
+          title: 'Create XML UI file when object sent from Tabletop Simulator'
+          description: 'When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.'
+          order: 2
+          type: 'boolean'
+          default: true
         includeOtherFiles:
           title: 'Insert other files specified in source code'
           description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
-          order: 2
+          order: 3
           type: 'boolean'
           default: true
         includeOtherFilesPath:
           title: 'Base path for files you wish to #include'
           description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
-          order: 3
+          order: 4
           type: 'string'
           default: ''
         delayLinter:
           title: 'Delay Linter When Loading'
           description: 'Delay in ``ms`` before linting a newly loaded file.'
-          order: 4
+          order: 5
           type: 'integer'
           default: 0
           minimum: 0
@@ -728,6 +743,7 @@ module.exports = TabletopsimulatorLua =
 
     # JSON of currently loaded mod save file
     @savePath = ""
+    @saveTimestamp = 0
     @guids = {}
 
     # Set font for Go To Function UI
@@ -769,6 +785,7 @@ module.exports = TabletopsimulatorLua =
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:executeLuaSelection': => @executeLuaSelection()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:openSaveFile': => @openSaveFile()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:toggleTTSPanel': => @toggleTTSPanel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:createXML': => @createXMLStub()
 
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:testMessage': => @testMessage()
 
@@ -1057,9 +1074,9 @@ module.exports = TabletopsimulatorLua =
     # Confirm just in case they misclicked Save & Play
     atom.confirm
       message: 'Get Lua Scripts from game?'
-      detailedMessage: 'This will erase any local changes that you may have done.'
+      detailedMessage: 'This will erase any changes that you have made in Atom since the last Save & Play.'
       buttons:
-        Yes: ->
+        'Get Scripts': ->
           #destroyTTSEditors()
           #deleteCachedFiles()
           log_seperator()
@@ -1068,7 +1085,7 @@ module.exports = TabletopsimulatorLua =
           TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
           log "Sent."
-        No: -> return
+        Cancel: -> return
 
 
   # hack needed because atom 1.19 makes save() async
@@ -1091,6 +1108,20 @@ module.exports = TabletopsimulatorLua =
       return
     if mutex.doingSaveAndPlay
       return
+
+    # If TTS Save has been overwritten then confirm
+    if @saveHasBeenUpdated()
+      getObjects = @getObjects
+      exit = true
+      atom.confirm
+        message: 'Overwrite Tabletop Simulator save?'
+        detailedMessage: 'Tabletop Simulator save file has been modified since the last time scripts were fetched from it.  If you continue any changes made in Tabletop Simulator will be lost.'
+        buttons:
+          Overwrite: -> exit = false
+          Cancel: ->
+          'Get Scripts': -> getObjects()
+      return if exit
+
     mutex.doingSaveAndPlay = true
     log_seperator()
     log "Save & Play: Sending request to TTS..."
@@ -1348,7 +1379,23 @@ module.exports = TabletopsimulatorLua =
 
 
   gotoLastError: ->
-    gotoError(lastError.message, lastError.guid)
+    gotoError(lastError.message, lastError.guid
+
+
+  createXMLStub: ->
+    editor = atom.workspace.getActiveTextEditor()
+    return if not editor
+    filepath = editor.getPath()
+    return if not (filepath.endsWith(".ttslua") and isFromTTS(filepath))
+    filepath = filepath.substring(0, filepath.length - 7) + '.xml'
+
+    if not fs.existsSync(filepath)
+      @file = new FileHandler()
+      @file.setBasename(path.basename(filepath))
+      @file.setDatasize(0)
+      @file.create()
+      @file = null
+    atom.workspace.open(filepath)
 
 
   getFunctionRow: (text, function_name) ->
@@ -1766,9 +1813,20 @@ module.exports = TabletopsimulatorLua =
       @returnIDs[returnID] = lua
     TabletopsimulatorLua.connection.write JSON.stringify(msg)
 
+
   openSaveFile: ->
     if @savePath != ''
       atom.workspace.open(@savePath)
+
+  recordSaveTimestamp: ->
+    if @savePath != '' and fs.existsSync(@savePath)
+        @saveTimestamp = fs.statSync(@savePath).mtime
+
+  saveHasBeenUpdated: ->
+    return @savePath != '' and
+          fs.existsSync(@savePath) and
+          fs.statSync(@savePath).mtime > @saveTimestamp
+
 
   startConnection: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'

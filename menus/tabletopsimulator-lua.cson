@@ -19,6 +19,11 @@
         },
         {type: 'separator'},
         {
+          'label': 'Create XML UI File'
+          'command': 'tabletopsimulator-lua:createXML'
+        },
+        {type: 'separator'},
+        {
           'label': 'Go To Function'
           'command': 'tabletopsimulator-lua:gotoFunction'
         },
@@ -92,6 +97,11 @@
         {
           'label': 'Open Save File'
           'command': 'tabletopsimulator-lua:openSaveFile'
+        },
+        {type: 'separator'},
+        {
+          'label': 'Create XML UI File'
+          'command': 'tabletopsimulator-lua:createXML'
         },
         {type: 'separator'},
         {
