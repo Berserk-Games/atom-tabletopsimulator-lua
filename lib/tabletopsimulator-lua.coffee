@@ -513,6 +513,10 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     atom.notifications.addInfo(info, {icon: 'radio-tower'})
   log info
 
+  # attach debugger if autoattach checked
+  if self.ttsPanelView.visible() and self.ttsPanelView.getAutoAttach()
+    self.ttsPanelView.attachToTTS()
+
 
 deleteCachedFiles = () ->
   try
@@ -694,7 +698,7 @@ module.exports = TabletopsimulatorLua =
 
 
 
-  activate: (state = {visible: false, watchList: []}) ->
+  activate: (state) ->
     # See if there are any Updates
     @updatePackage()
 
@@ -1379,7 +1383,7 @@ module.exports = TabletopsimulatorLua =
 
 
   gotoLastError: ->
-    gotoError(lastError.message, lastError.guid
+    gotoError(lastError.message, lastError.guid)
 
 
   createXMLStub: ->
@@ -1727,15 +1731,26 @@ module.exports = TabletopsimulatorLua =
         })
 
     else if id == TTS_MSG_CUSTOM
-      console.log data
       if "messageID" of data.customMessage
         msg = data.customMessage
+        #console.log msg
+        errors = {}
+        results = {}
         if msg.messageID == CUSTOM_MSG_WATCH
-          for k, watch of msg.watched
-            if watch.error
+          for key, value of msg
+            if key.startsWith('error')
+              k = parseInt(key.substring(5))
+              errors[k] = value
+            else if key.startsWith('result')
+              k = parseInt(key.substring(6))
+              results[k] = value
+          for k, error of errors
+            if error
               self.ttsPanelView.updateValue(k, '-')
+            else if results[k] != undefined
+              self.ttsPanelView.updateValue(k, results[k])
             else
-              self.ttsPanelView.updateValue(k, watch.result)
+              self.ttsPanelView.updateValue(k, 'nil')
         else
           console.log "Unknown custom message: messageID = " + msg.messageID
       else
