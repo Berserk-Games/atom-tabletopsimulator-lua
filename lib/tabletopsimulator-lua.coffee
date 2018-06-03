@@ -456,7 +456,8 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
           catch error
             console.log error
           try
-            fs.unlinkSync(filepath)
+            if fs.existsSync(filepath)
+              fs.unlinkSync(filepath)
             removed += 1
           catch error
             console.log error
