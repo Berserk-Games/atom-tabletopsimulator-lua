@@ -456,7 +456,8 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
           catch error
             console.log error
           try
-            fs.unlinkSync(filepath)
+            if fs.existsSync(filepath)
+              fs.unlinkSync(filepath)
             removed += 1
           catch error
             console.log error
@@ -478,7 +479,8 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   for i in [0...toOpen.length].reverse()
     if toOpen[i].getBasename() of alreadyOpen
       opened -= 1
-      toOpen.splice(i, 1)
+      if !onlyOpen # if opening to activate tab then don't prune
+        toOpen.splice(i, 1)
 
   # open remaining files in order
   if toOpen.length > 0
