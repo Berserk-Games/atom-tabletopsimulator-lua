@@ -18,13 +18,15 @@ domain = 'localhost'
 clientport = 39999
 serverport = 39998
 
-TTS_MSG_NONE        = -1
-TTS_MSG_NEW_OBJECTS = 0
-TTS_MSG_NEW_GAME    = 1
-TTS_MSG_PRINT       = 2
-TTS_MSG_ERROR       = 3
-TTS_MSG_CUSTOM      = 4
-TTS_MSG_RETURN      = 5
+TTS_MSG_NONE           = -1
+TTS_MSG_NEW_OBJECTS    = 0
+TTS_MSG_NEW_GAME       = 1
+TTS_MSG_PRINT          = 2
+TTS_MSG_ERROR          = 3
+TTS_MSG_CUSTOM         = 4
+TTS_MSG_RETURN         = 5
+TTS_MSG_GAME_SAVED     = 6
+TTS_MSG_OBJECT_CREATED = 7
 
 ATOM_MSG_NONE        = -1
 ATOM_MSG_GET_SCRIPTS = 0
@@ -362,7 +364,6 @@ class FileHandler
 readFilesFromTTS = (self, files, onlyOpen = false) ->
   toOpen = []
   sent_from_tts = {}
-  self.recordSaveTimestamp()
 
   if globals.verbose
     log("Received " + files.length + " script states:")
@@ -748,8 +749,9 @@ module.exports = TabletopsimulatorLua =
     @functionPaths = {}
 
     # JSON of currently loaded mod save file
-    @savePath = ""
+    @savePath = ''
     @saveTimestamp = 0
+    @lastObjectAdded = 0
     @guids = {}
 
     # Set font for Go To Function UI
@@ -1112,20 +1114,19 @@ module.exports = TabletopsimulatorLua =
   saveAndPlay: ->
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
-    if mutex.doingSaveAndPlay
+    if mutex.doingSaveAndPlay or @savePath == ''
       return
 
     # If TTS Save has been overwritten then confirm
-    if @saveHasBeenUpdated()
+    if @objectsAddedToGame()
       getObjects = @getObjects
       exit = true
       atom.confirm
         message: 'Overwrite Tabletop Simulator save?'
-        detailedMessage: 'Tabletop Simulator save file has been modified since the last time scripts were fetched from it.  If you continue any changes made in Tabletop Simulator will be lost.'
+        detailedMessage: 'Components have been added in Tabletop Simulator but have not been saved.  If you continue any such components may be lost.'
         buttons:
           Overwrite: -> exit = false
           Cancel: ->
-          'Get Scripts': -> getObjects()
       return if exit
 
     mutex.doingSaveAndPlay = true
@@ -1670,11 +1671,14 @@ module.exports = TabletopsimulatorLua =
 
 
   parseSavePath: (self, savePath) ->
-    self.savePath = savePath
     self.guids = {}
-    if savePath == ""
+    if savePath == ''
+      self.savePath = ''
       return
-    save = JSON.parse(fs.readFileSync(savePath, 'utf8'))
+    self.savePath = path.normalize(savePath)
+    log "Parsing savepath " + self.savePath
+    self.recordSaveTimestamp()
+    save = JSON.parse(fs.readFileSync(self.savePath, 'utf8'))
     walkSave = (node, parent) ->
       nodes = []
       guid = parent
@@ -1779,6 +1783,16 @@ module.exports = TabletopsimulatorLua =
           dismissable: popup == "close",
         })
 
+    else if id == TTS_MSG_GAME_SAVED
+      # handled by parseSavePath call above
+
+    else if id == TTS_MSG_OBJECT_CREATED
+      guid = data.guid
+      # @todo store guids and give user access to them
+      # for example, menu item to add them to code
+      self.lastObjectAdded = new Date(Date.now())
+      log "Component created: " + guid
+
 
   testMessage: ->
     console.log "Sending test message..."
@@ -1839,10 +1853,11 @@ module.exports = TabletopsimulatorLua =
     if @savePath != '' and fs.existsSync(@savePath)
         @saveTimestamp = fs.statSync(@savePath).mtime
 
-  saveHasBeenUpdated: ->
+  objectsAddedToGame: ->
+    filedate = new Date(fs.statSync(@savePath).mtime)
     return @savePath != '' and
           fs.existsSync(@savePath) and
-          fs.statSync(@savePath).mtime > @saveTimestamp
+          filedate < @lastObjectAdded
 
 
   startConnection: ->
