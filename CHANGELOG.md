@@ -1,3 +1,7 @@
+## 10.6.6
+* Fixed file leak which would occur when using #include directive
+* Added tags to logging system; can specify which verbose logs are displayed in package settings.
+
 ## 10.6.5
 * Prep for next TTS update: If user creates object in TTS without saving in TTS then doing a Save & Play in Atom will generate a warning.
 * Atom reparses TTS save when save occurs
