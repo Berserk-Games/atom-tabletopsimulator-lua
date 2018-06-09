@@ -1,7 +1,11 @@
+## 10.6.4
+* Fixed erroneously trying to delete non-existent .xml file
+* Fixed tab not focussing when user right-clicked object->scripting and file was already open
+
 ## 10.6.3
 * Now checks if the active save has been altered in TTS; if so it prompts user about overwrite when they Save & Play
 * Improved confirmation dialogs
-* Added automatic creation of empty XML when object sent from TTS, and setting toggle for it.
+* Added automatic creation of empty XML when object sent from TTS, and setting toggle for it
 * Added menu option to create XML stub for object
 * Fixed Goto Last Error bug
 
