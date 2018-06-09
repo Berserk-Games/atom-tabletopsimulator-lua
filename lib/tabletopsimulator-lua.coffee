@@ -103,13 +103,22 @@ ping = (socket, delay) ->
   nextPing = -> ping(socket, delay)
   setTimeout nextPing, delay
 
+# log tags
+LOG_MSG  = 'msg'
+LOG_FILE = 'file'
+LOG_FS   = 'fs'
+LOG_ERR  = 'err'
+allLoggingTags = [LOG_MSG, LOG_FILE, LOG_FS, LOG_ERR]
+loggingTags = {}
+for tag in allLoggingTags
+  loggingTags[tag] = true
 
-log = (msg) ->
-  return if !globals.verbose
+log = (tag, msg) ->
+  return if !globals.verbose or !loggingTags[tag]
   console.log msg
 
-log_seperator = () ->
-  return if !globals.verbose
+log_seperator = (tag) ->
+  return if !globals.verbose or !loggingTags[tag]
   console.log "----------"
 
 
@@ -232,7 +241,7 @@ gotoFileRow = (filepath, row) ->
   [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
   if filepath and (!editor or filepath != editor.getPath())
-    log "Opening file in Go-To-File-Row", filepath
+    log LOG_ERR, "Opening file in Go-To-File-Row" + filepath
     atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
       editor.setCursorBufferPosition([row, 0])
       editor.scrollToCursorPosition()
@@ -311,10 +320,12 @@ class FileHandler
     @datasize = datasize
 
   create: ->
-    @tempfile = path.join(ttsLuaDir, @basename)
+    @tempfile = path.normalize(path.join(ttsLuaDir, @basename))
     dirname = path.dirname(@tempfile)
     mkdirp.sync(dirname)
+    log LOG_FS, 'Opening ' + @basename + '...'
     @fd = fs.openSync(@tempfile, 'w')
+    log LOG_FS, 'Opened ' + @basename
 
   append: (line) ->
     if @readbytes < @datasize
@@ -323,9 +334,12 @@ class FileHandler
       if @readbytes == @datasize + 1 and line.slice(-1) is "\n"
         @readbytes = @datasize
         line = line.slice(0, -1)
+      log LOG_FS, 'Writing to ' + @basename + '[' + @readbytes + '/' + @datasize + ']...'
       fs.writeSync(@fd, line)
     if @readbytes >= @datasize
+      log LOG_FS, 'Closing ' + @basename
       fs.closeSync @fd
+      log LOG_FS, 'Closed ' + @basename
       @ready = true
 
   open: (activate) ->
@@ -366,15 +380,16 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   sent_from_tts = {}
 
   if globals.verbose
-    log("Received " + files.length + " script states:")
+    log LOG_FILE, "Received " + files.length + " script states:"
     @lastMessage = files
-    log(@lastMessage)
+    log LOG_FILE, @lastMessage
 
   # Add temp dir to atom to make sure it exists
   try
     mkdirp.sync(ttsLuaDir)
   catch error
   atom.project.addPath(ttsLuaDir)
+  log LOG_FS, "Temp folder is: " + ttsLuaDir
 
   count = 0
   mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
@@ -391,6 +406,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     filepath = @file.getPath()
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = processIncludeFiles(filepath, text)
+      @file.setDatasize(lengthInUtf8Bytes(text))
     self.doCatalog(text, filepath, !isFromTTS(filepath))
     lines = text.split(/\n/)
     for line,i in lines
@@ -400,8 +416,8 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
       toOpen.push(@file)
-    log("Wrote Lua:")
-    log({basename: basename, filepath: filepath, text: text})
+    log LOG_FILE, "Wrote Lua:"
+    log LOG_FILE, {basename: basename, filepath: filepath, text: text}
     sent_from_tts[basename] = true
     @file = null
     count += 1
@@ -421,13 +437,13 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
           if i < lines.length-1
             line = line + "\n"
           @file.append(line)
-        log("Wrote XML:")
+        log LOG_FILE, "Wrote XML:"
       else
         @file.setDatasize(0)
         @file.create()
         filepath = @file.getPath()
-        log("Created XML file:")
-      log({basename: basename, filepath: filepath, text: f.ui})
+        log LOG_FILE, "Created XML file:"
+      log LOG_FILE, {basename: basename, filepath: filepath, text: f.ui}
       if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalUI(basename)) or ttsEditors[basename]
         toOpen.push(@file)
       sent_from_tts[basename] = true
@@ -514,7 +530,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   else
     info += "."
     atom.notifications.addInfo(info, {icon: 'radio-tower'})
-  log info
+  log LOG_FILE, info
 
   # attach debugger if autoattach checked
   if self.ttsPanelView.visible() and self.ttsPanelView.getAutoAttach()
@@ -671,6 +687,12 @@ module.exports = TabletopsimulatorLua =
           order: 1
           type: 'boolean'
           default: false
+        verboseLoggingTags:
+          title: 'Tags to Log'
+          description: 'Comma seperated list of tags to display (will display all by default).'
+          order: 2
+          type: 'string'
+          default: 'msg, file, fs, err'
     panel:
       title: 'Tabletop Simulator Panel'
       order: 6
@@ -812,6 +834,7 @@ module.exports = TabletopsimulatorLua =
     # Register events
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.autocomplete.excludeLowerPriority', (newValue) => @excludeChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.developer.verboseLogging', (newValue) => @verboseLogging()
+    @subscriptions.add atom.config.observe 'tabletopsimulator-lua.developer.verboseLoggingTags', (newValue) => @verboseLogging()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.showFunctionName', (newValue) => @showFunctionChange()
     @subscriptions.add atom.config.observe 'tabletopsimulator-lua.editor.highlightGUIDObject', (newValue) => @highlightGUIDObjectChange()
     @subscriptions.add atom.workspace.onDidOpen (event) => @onLoad(event)
@@ -1100,12 +1123,12 @@ module.exports = TabletopsimulatorLua =
         'Get Scripts': ->
           #destroyTTSEditors()
           #deleteCachedFiles()
-          log_seperator()
-          log "Get Lua Scripts: Sending request to TTS..."
+          log_seperator(LOG_MSG)
+          log LOG_MSG, "Get Lua Scripts: Sending request to TTS..."
           #if not TabletopsimulatorLua.if_connected
           TabletopsimulatorLua.startConnection()
           TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
-          log "Sent."
+          log LOG_MSG, "Sent."
         Cancel: -> return
 
 
@@ -1117,7 +1140,7 @@ module.exports = TabletopsimulatorLua =
       else
         return Promise.resolve(editor.getBuffer())
     else
-      log "Non-async save"
+      log LOG_FS, "Non-async save"
       try
         editor.save()
       catch error
@@ -1143,8 +1166,8 @@ module.exports = TabletopsimulatorLua =
       return if exit
 
     mutex.doingSaveAndPlay = true
-    log_seperator()
-    log "Save & Play: Sending request to TTS..."
+    log_seperator(LOG_MSG)
+    log LOG_MSG, "Save & Play: Sending request to TTS..."
     #clear this after some time in case a problem occured during save and play
     f = () ->
       mutex.doingSaveAndPlay = false
@@ -1164,14 +1187,14 @@ module.exports = TabletopsimulatorLua =
       else
         editors.push(editor.getPath())
 
-    log "Starting to save..."
+    log LOG_MSG, "Starting to save..."
 
     for editor, i in atom.workspace.getTextEditors()
       @blocking_save(editor).then (buffer) =>
-        log buffer.getPath(), buffer.isModified()
+        log LOG_MSG, buffer.getPath()
         savedFiles += 1
         if savedFiles == openFiles
-          log "All done!"
+          log LOG_MSG, "All done!"
           # This is a horrible hack I feel - we see how many editors are open, then
           # run this block after each save, but only do the below code if the
           # number of files we have saved is the number of files open.  Urgh.
@@ -1226,15 +1249,15 @@ module.exports = TabletopsimulatorLua =
           # notify user
           info = "Sending " + count + " files..."
           atom.notifications.addInfo(info, {icon: 'radio-tower'})
-          log info
+          log LOG_MSG, info
 
           #if not @if_connected
           @startConnection()
           try
-            log "Sending files to TTS..."
-            log @luaObjects
+            log LOG_MSG, "Sending files to TTS..."
+            log LOG_MSG, @luaObjects
             @connection.write JSON.stringify(@luaObjects)
-            log "Sent."
+            log LOG_MSG, "Sent."
           catch error
             console.log error
 
@@ -1275,6 +1298,11 @@ module.exports = TabletopsimulatorLua =
 
   verboseLogging: (newValue) ->
     globals.verbose = atom.config.get('tabletopsimulator-lua.developer.verboseLogging')
+    for tag in allLoggingTags
+      loggingTags[tag] = false
+    for tag in atom.config.get('tabletopsimulator-lua.developer.verboseLoggingTags').split(',')
+      tag = tag.toLowerCase().trim()
+      loggingTags[tag] = true
 
 
   showFunctionChange: (newValue) ->
@@ -1699,7 +1727,7 @@ module.exports = TabletopsimulatorLua =
       self.savePath = ''
       return
     self.savePath = path.normalize(savePath)
-    log "Parsing savepath " + self.savePath
+    log LOG_MSG, "Parsing savepath " + self.savePath
     self.recordSaveTimestamp()
     save = JSON.parse(fs.readFileSync(self.savePath, 'utf8'))
     walkSave = (node, parent) ->
@@ -1718,7 +1746,7 @@ module.exports = TabletopsimulatorLua =
 
   handleMessage: (self, data, fromTTS = false) ->
     id = data.messageID
-    log "Received message from TTS: [" + id + "] " + ttsMessageID(id)
+    log LOG_MSG, "Received message from TTS: [" + id + "] " + ttsMessageID(id)
 
     if data.savePath and data.savePath != undefined
       self.parseSavePath(self, data.savePath)
@@ -1814,7 +1842,7 @@ module.exports = TabletopsimulatorLua =
       # @todo store guids and give user access to them
       # for example, menu item to add them to code
       self.lastObjectAdded = new Date(Date.now())
-      log "Component created: " + guid
+      log LOG_MSG, "Component created: " + guid
 
 
   testMessage: ->
