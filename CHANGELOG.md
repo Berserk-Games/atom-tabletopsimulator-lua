@@ -1,3 +1,8 @@
+## 10.6.5
+* Prep for next TTS update: If user creates object in TTS without saving in TTS then doing a Save & Play in Atom will generate a warning.
+* Atom reparses TTS save when save occurs
+* Fixed bug with goto error getting confused by .xml files
+
 ## 10.6.4
 * Fixed erroneously trying to delete non-existent .xml file
 * Fixed tab not focussing when user right-clicked object->scripting and file was already open
