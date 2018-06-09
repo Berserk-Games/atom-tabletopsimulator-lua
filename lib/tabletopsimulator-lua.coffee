@@ -251,7 +251,7 @@ gotoError = (message, guid) ->
   luafiles = fs.readdirSync(ttsLuaDir)
   for luafile, i in luafiles
     guid_string = luafile.match(/\.(.+)\.ttslua$/)
-    if guid_string[1] == guid
+    if guid_string and guid_string[1] == guid #won't check .xml because of regexp
       fname = path.join(ttsLuaDir, luafile)
       break
   if fname != ""
@@ -679,6 +679,12 @@ module.exports = TabletopsimulatorLua =
           order: 1
           type: 'integer'
           default: 8
+        maxSnippets:
+          title: 'Max Snippets'
+          description: 'Maximum number of stored snippets (requires restart)'
+          order: 2
+          type: 'integer'
+          default: 20
     hacks:
       title: 'Hacks (Experimental!)'
       order: 7
@@ -767,7 +773,13 @@ module.exports = TabletopsimulatorLua =
     @isBlockSelecting = false
 
     # Tabletop Simulator panel
-    @ttsPanelView = new TTSPanelView(state, @executeLua, atom.config.get('tabletopsimulator-lua.panel.watchListLength'), @checkLua)
+    @ttsPanelView = new TTSPanelView(
+      state,
+      @executeLua,
+      atom.config.get('tabletopsimulator-lua.panel.watchListLength'),
+      @checkLua,
+      atom.config.get('tabletopsimulator-lua.panel.maxSnippets'),
+    )
     @ttsPanelView.setState(state)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -815,6 +827,7 @@ module.exports = TabletopsimulatorLua =
 
 
   deactivate: ->
+    @ttsPanelView.dispose()
     @subscriptions.dispose()
     @statusBarFunctionView.destroy()
     @statusBarTile?.destroy()
@@ -1166,6 +1179,7 @@ module.exports = TabletopsimulatorLua =
           @luaObjects.scriptStates = []
           @luafiles = fs.readdirSync(ttsLuaDir)
           uis = {}
+          count = 0
           for luafile,i in @luafiles
             fname = path.join(ttsLuaDir, luafile)
             if not fs.statSync(fname).isDirectory()
@@ -1178,6 +1192,8 @@ module.exports = TabletopsimulatorLua =
                 # Insert included files
                 if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                   @luaObject.script = @insertFiles(@luaObject.script)
+                if @luaObject.script != ''
+                  count += 1
                 # TODO this section commented out because TTS now handles unicode correctly
                 # When setting is enabled we still convert \u codes to utf8 when loading
                 # but we no longer write \u codes to TTS.
@@ -1194,6 +1210,8 @@ module.exports = TabletopsimulatorLua =
                 guid = tokens[tokens.length-2]
                 ui = fs.readFileSync(fname, 'utf8')
                 uis[guid] = ui
+                if ui != ''
+                  count += 1
 
           for @luaObject in @luaObjects.scriptStates
             if @luaObject.guid of uis
@@ -1201,6 +1219,11 @@ module.exports = TabletopsimulatorLua =
 
           #destroyTTSEditors()
           #deleteCachedFiles()
+
+          # notify user
+          info = "Sending " + count + " files..."
+          atom.notifications.addInfo(info, {icon: 'radio-tower'})
+          log info
 
           #if not @if_connected
           @startConnection()
