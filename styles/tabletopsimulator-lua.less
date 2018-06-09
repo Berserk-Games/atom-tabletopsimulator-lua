@@ -10,6 +10,7 @@
 
 @tts-height: @ui-size * 2.5;
 @panel-bg-color: darken(@background, 1%);
+@tts-panel-width: 315px;
 
 .tabletopsimulator-lua {
 }
@@ -17,6 +18,8 @@
 .tts-panel-view {
     background-color: @panel-bg-color;
     padding-left: 2px;
+    overflow: auto;
+    width: @tts-panel-width;
 }
 
 .tts-panel-view li.tab.active {
@@ -72,8 +75,8 @@
 
 .tts-panel-view .watch-control table .button-container button {
     margin-right: 0;
-    height: @tts-height * 0.9;
-    max-height: @tts-height * 0.9;
+    height: @tts-height;
+    max-height: @tts-height;
 }
 
 .tts-panel-view table.watch-list input.entry {
@@ -134,7 +137,7 @@
     font-weight: bold;
     font-size: @tts-height * 0.55;
     text-align: center;
-    vertical-align: center;
+    vertical-align: middle;
     transform: rotate(180deg);
     border: none;
 }
@@ -151,9 +154,45 @@
 
 }
 
-.tts-panel-view .snippets .snippet .execute {
-    margin-top: 2px;
-    float: right;
+.tts-panel-view .snippets .snippet-controls {
+    width: 100%;
+    margin-top: @component-icon-size*0.5;
+    margin-bottom: @component-icon-size*0.5;
+}
+
+.tts-panel-view .snippets .snippet-controls .input-label {
+    margin-right: 2px;
+}
+
+.tts-panel-view .snippets .snippet-controls tr td #snippet-label {
+    width: 100%;
+}
+
+.tts-panel-view .snippets .snippet-controls tr td.button-container {
+    width: @tts-height;
+}
+
+.tts-panel-view .snippets .snippet-controls tr td.button-container .btn {
+    width: @tts-height;
+    height: @tts-height;
+    margin: 0;
+}
+
+.tts-panel-view .snippets .snippet-controls tr td.button-container .btn {
+    border: none;
+    width: @tts-height;
+    height: @tts-height;
+}
+
+.tts-panel-view .snippets #snippet-buttons {
+    width: @tts-panel-width;
+}
+
+.tts-panel-view .snippets #snippet-buttons button.btn {
+    display: inline;
+    margin-bottom: @component-icon-size * 0.5;
+    margin-top: @component-icon-size * 0.5;
+    margin-right: @component-icon-size * 0.5;
 }
 
 .modal.overlay.from-top::before {

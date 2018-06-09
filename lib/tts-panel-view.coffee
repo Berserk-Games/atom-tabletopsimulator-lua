@@ -1,6 +1,8 @@
 {$$, View} = require 'space-pen'
 {CompositeDisposable} = require 'atom'
 {TextEditorView} = require 'atom-space-pen-views'
+path = require 'path'
+mkdirp = require 'mkdirp'
 
 THROTTLE_VALUES = {0: 0, 1: 0.5, 2: 1, 3: 1.5, 4: 2, 5: 3, 6: 5, 7: 10, 8: 20, 9: 30, 10: 60, 11:999999}
 getThrottleText = (throttle) ->
@@ -11,9 +13,11 @@ getThrottleText = (throttle) ->
 
 module.exports = class TTSPanelView extends View
 
-  @content: (state, executeLua, watchListEntries, checkLua) ->
+  @content: (state, executeLua, watchListEntries, checkLua, maxSnippets) ->
     watchList = state.watchList
+    @snippetEditor = new TextEditorView()
     entries = 0
+    snippets = 0
     @div class: 'tts-panel-view', =>
       @ul class: 'list-inline tab-bar inset-panel', is: 'atom-tabs', location: 'right', =>
         @li class: 'tab active', is: 'tabs-tab', =>
@@ -65,22 +69,50 @@ module.exports = class TTSPanelView extends View
       @div class: 'header', =>
         @span 'Snippets'
       @div class: 'snippets', =>
+        @div id: 'snippet-buttons', =>
+          while snippets < maxSnippets
+            @button class: 'inline-block btn hidden', click: 'onSnippetClick', id: 'snippet-button-' + snippets
+            snippets++
         @div class: 'snippet', =>
-          @subview "snippetEditor", new TextEditorView()
-          @button class: 'inline-block btn execute', click: 'executeSnippet', 'Execute'
-
+          @table class: 'snippet-controls', =>
+            @tr =>
+              @td =>
+                @button class: 'inline-block btn execute', click: 'executeSnippet', 'Execute'
+              @td =>
+                @label 'Label', class: 'input-label'
+              @td =>
+                @input class: 'input-text native-key-bindings snippet-label', id: 'snippet-label', type: 'text', value: ''
+              @td class: 'button-container', =>
+                @button class: 'icon icon-arrow-up inline-block btn', click: 'onSnippetSave', id: 'snippet-save'
+              @td class: 'button-container', =>
+                @button class: 'icon icon-trashcan inline-block btn', click: 'onSnippetTrash', id: 'snippet-trash'
+          @subview "snippetEditor", @snippetEditor
       #@div class: 'editor mini editor-colors snippet', id: 'snippet', type: 'text', value: '', change: 'onSnippetChange', tabindex: entries+2
 
 
-  initialize: (state, executeLua, watchListEntries, checkLua) ->
+  initialize: (state, executeLua, watchListEntries, checkLua, maxSnippets) ->
     @executeLua = executeLua
     @checkLua = checkLua
     @panel = atom.workspace.addRightPanel(item: this, visible: false)
     @lastDetach = 0
     @detachCount = 0
     @watchListEntries = watchListEntries
-    @snippetEditor.getModel().setGrammar(atom.grammars.grammarForScopeName('source.tts.lua'))
+    @maxSnippets = maxSnippets
+    #@snippetEditor.getModel().setGrammar(atom.grammars.grammarForScopeName('source.tts.lua'))
+    #atom.textEditors.setGrammarOverride(@snippetEditor.getModel(), 'source.tts.lua')
+    @storage = path.join(path.dirname(atom.config.getUserConfigPath()), 'storage', 'TabletopSimulator')
+    mkdirp(@storage)
+    @snippetFile = path.join(@storage, "snippet.ttslua")
+    @snippetBuffer = @snippetEditor.getModel().getBuffer()
+    @snippetBuffer.setPath(@snippetFile)
+    @snippetBuffer.reload()
+    @snippets = {}
+    @snippetList = ['foo', 'bar', 'baz', 'qux', 'quux']
+    #load snippets
+    @generateSnippetButtons()
 
+  dispose: () ->
+    @snippetBuffer.save()
 
   validateState: (state) ->
     if not state
@@ -328,3 +360,34 @@ module.exports = class TTSPanelView extends View
       startLuaCoroutine(Global, '__atom_watch_list_routine')
     """
     @executeLua(lua)
+
+  executeSnippet: ->
+    @snippetEditor.getModel().save()
+
+  generateSnippetButtons: ->
+    snippet = 0
+    while snippet < @maxSnippets
+      id = 'snippet-button-' + snippet
+      button = @find('#' + id)
+      if snippet < @snippetList.length
+        button.prop('innerHTML', @snippetList[snippet])
+        button.removeClass('hidden')
+      else
+        button.addClass('hidden')
+      snippet++
+
+  onSnippetClick: (evt) ->
+    id = parseInt(evt.target.id.substring(15))
+    console.log @snippetList[id]
+
+  onSnippetSave: ->
+    snippetName = @find('#snippet-label').val()
+    console.log snippetName
+    key = snippetName.toLowerCase()
+    if !(key of @snippets)
+      i = 0
+      while i < @snippetList.length and @snippetList[i].toLowerCase() < key
+        i++
+      @snippetList.splice(i, 0, snippetName)
+      @generateSnippetButtons()
+    @snippets[key] = @snippetBuffer.getText()
