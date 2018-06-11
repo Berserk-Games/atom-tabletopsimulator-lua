@@ -1,3 +1,6 @@
+## 10.6.7
+* Rewrote file handler: much simplified, it should eliminate EPERM bugs.
+
 ## 10.6.6
 * Fixed file leak which would occur when using #include directive
 * Added tags to logging system; can specify which verbose logs are displayed in package settings.
