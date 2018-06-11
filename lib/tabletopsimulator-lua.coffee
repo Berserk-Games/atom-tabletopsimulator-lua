@@ -302,20 +302,14 @@ processIncludeFiles = (filepath, text) ->
   return output.join('\n')
 
 
-# @Note This file handler is way more complex than it needs to be: it looks like
-# it was designed to generate files as parts of the file arrived piece-by-piece
-# (via datapackets). BUT that never occurs with TTS: messages are only handled once
-# a complete JSON structure has arrived, so at the point we want to deal with files
-# we will already have the complete text for each file.
-# Should probably be rewritten to simply `create(text)` and remove `append`,
-# 'ready', 'datasize'...  Should also remove subscriptions as they don't do anything.
 class FileHandler
-  constructor: ->
-    @readbytes = 0
-    @ready = false
+  constructor: (basename) ->
+    @setBasename(basename)
+    @datasize = 0
 
   setBasename: (basename) ->
     @basename = basename
+    @tempfile = path.normalize(path.join(ttsLuaDir, @basename))
 
   getBasename: () ->
     return @basename
@@ -323,31 +317,16 @@ class FileHandler
   getPath: () ->
     return @tempfile
 
-  setDatasize: (datasize) ->
-    @datasize = datasize
-
-  create: ->
-    @tempfile = path.normalize(path.join(ttsLuaDir, @basename))
+  create: (text) ->
     dirname = path.dirname(@tempfile)
     mkdirp.sync(dirname)
     log LOG_FS, 'Opening ' + @basename + '...'
-    @fd = fs.openSync(@tempfile, 'w')
-    log LOG_FS, 'Opened ' + @basename
-
-  append: (line) ->
-    if @readbytes < @datasize
-      @readbytes += Buffer.byteLength(line)
-      # remove trailing newline if necessary
-      if @readbytes == @datasize + 1 and line.slice(-1) is "\n"
-        @readbytes = @datasize
-        line = line.slice(0, -1)
-      log LOG_FS, 'Writing to ' + @basename + '[' + @readbytes + '/' + @datasize + ']...'
-      fs.writeSync(@fd, line)
-    if @readbytes >= @datasize
-      log LOG_FS, 'Closing ' + @basename
-      fs.closeSync @fd
-      log LOG_FS, 'Closed ' + @basename
-      @ready = true
+    file = fs.openSync(@tempfile, 'w')
+    log LOG_FS, 'Writing data to ' + @basename + '...'
+    fs.writeSync(file, text)
+    fs.closeSync(file)
+    log LOG_FS, 'Closed ' + @basename
+    @datasize = lengthInUtf8Bytes(text)
 
   open: (activate) ->
     #atom.focus()
@@ -366,20 +345,21 @@ class FileHandler
     if activate
       active = true
     atom.workspace.open(@tempfile, {initialLine: row, initialColumn: col, activatePane: active, activateItem: active}).then (editor) =>
-      @handle_connection(editor)
+      @after_open(editor)
 
-  handle_connection: (editor) ->
-    buffer = editor.getBuffer()
-    @subscriptions = new CompositeDisposable
-    @subscriptions.add buffer.onDidSave =>
-      @save()
-    @subscriptions.add buffer.onDidDestroy =>
-      @close()
+  after_open: (editor) ->
+    ## if we need to add subscriptions do it like this:
+    #buffer = editor.getBuffer()
+    #@subscriptions = new CompositeDisposable
+    #@subscriptions.add buffer.onDidSave =>
+    #  @save()
+    #@subscriptions.add buffer.onDidDestroy =>
+    #  @close()
 
-  save: ->
+  #save: ->
 
-  close: ->
-    @subscriptions.dispose()
+  #close: ->
+  #  @subscriptions.dispose()
 
 
 readFilesFromTTS = (self, files, onlyOpen = false) ->
@@ -405,57 +385,39 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     f.name = f.name.replace(/([":<>/\\|?*])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     # write ttslua script
-    @file = new FileHandler()
-    @file.setBasename(basename)
-    @file.setDatasize(lengthInUtf8Bytes(f.script))
-    @file.create()
-    text = f.script
+    @file = new FileHandler(basename)
     filepath = @file.getPath()
+    text = f.script
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       text = processIncludeFiles(filepath, text)
-      @file.setDatasize(lengthInUtf8Bytes(text))
+    @file.create(text)
     self.doCatalog(text, filepath, !isFromTTS(filepath))
-    lines = text.split(/\n/)
-    for line,i in lines
-      if i < lines.length-1
-        line = line + "\n"
-      @file.append(line)
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
     if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalScript(basename)) or ttsEditors[basename]
       toOpen.push(@file)
     log LOG_FILE, "Wrote Lua:"
     log LOG_FILE, {basename: basename, filepath: filepath, text: text}
     sent_from_tts[basename] = true
-    @file = null
     count += 1
 
     if f.ui or (onlyOpen and createXML)
       #write xml ui file
       basename = f.name + "." + f.guid + ".xml"
-      @file = new FileHandler()
-      @file.setBasename(basename)
-      filepath = ''
+      @file = new FileHandler(basename)
+      filepath = @file.getPath()
       if f.ui
-        @file.setDatasize(lengthInUtf8Bytes(f.ui))
-        @file.create()
-        filepath = @file.getPath()
-        lines = f.ui.split(/\n/)
-        for line,i in lines
-          if i < lines.length-1
-            line = line + "\n"
-          @file.append(line)
+        @file.create(f.ui.trim())
         log LOG_FILE, "Wrote XML:"
       else
-        @file.setDatasize(0)
-        @file.create()
-        filepath = @file.getPath()
+        @file.create("")
         log LOG_FILE, "Created XML file:"
       log LOG_FILE, {basename: basename, filepath: filepath, text: f.ui}
       if onlyOpen or mode == 'all' or (mode == 'global' and isGlobalUI(basename)) or ttsEditors[basename]
         toOpen.push(@file)
       sent_from_tts[basename] = true
-      @file = null
       count += 1
+
+    @file = null
 
   # check which files are currently open in Atom, clean up rest
   alreadyOpen = {}
@@ -1455,11 +1417,9 @@ module.exports = TabletopsimulatorLua =
     filepath = filepath.substring(0, filepath.length - 7) + '.xml'
 
     if not fs.existsSync(filepath)
-      @file = new FileHandler()
-      @file.setBasename(path.basename(filepath))
-      @file.setDatasize(0)
-      @file.create()
-      @file = null
+      file = new FileHandler(path.basename(filepath))
+      file.create("")
+      file = null
     atom.workspace.open(filepath)
 
 
