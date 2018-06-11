@@ -302,6 +302,13 @@ processIncludeFiles = (filepath, text) ->
   return output.join('\n')
 
 
+# @Note This file handler is way more complex than it needs to be: it looks like
+# it was designed to generate files as parts of the file arrived piece-by-piece
+# (via datapackets). BUT that never occurs with TTS: messages are only handled once
+# a complete JSON structure has arrived, so at the point we want to deal with files
+# we will already have the complete text for each file.
+# Should probably be rewritten to simply `create(text)` and remove `append`,
+# 'ready', 'datasize'...  Should also remove subscriptions as they don't do anything.
 class FileHandler
   constructor: ->
     @readbytes = 0
