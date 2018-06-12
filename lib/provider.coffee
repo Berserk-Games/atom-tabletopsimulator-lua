@@ -3437,6 +3437,22 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
           },
           {
+            snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
+            displayText: 'broadcastToAll(string message, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a message to the screen and chat window on all connected clients.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttoall'
+          },
+          {
+            snippet: 'broadcastToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
+            displayText: 'broadcastToColor(string message, string player_color, Table text_color)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Prints a private message to the screen and chat window to the player matching the player color.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttocolor'
+          },      
+          {
             snippet: 'clearPixelPaint()'
             displayText: 'clearPixelPaint()'
             type: 'function'
@@ -3451,6 +3467,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Clears all vector paint.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#clearvectorpaint'
+          },
+          {
+            snippet: 'color(${1:float|red}, ${2:float|green}, ${3:float|blue}, ${4:float|alpha})'
+            displayText: 'color(float red, float green, float blue, float alpha)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Creates a Color table from rgb[a] values (alpha is optional).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#color'
           },
           {
             snippet: 'copy(${1:Table|objects})'
@@ -3489,22 +3513,6 @@ module.exports =
             leftLabel: 'bool'
             description: 'Edits an existing Tab on the Notebook.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
-          },
-          {
-            snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
-            displayText: 'broadcastToAll(string message, Table text_color)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Prints a message to the screen and chat window on all connected clients.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttoall'
-          },
-          {
-            snippet: 'broadcastToColor(${1:string|message}, ${2:string|player_color}, ${3:Table|text_color})'
-            displayText: 'broadcastToColor(string message, string player_color, Table text_color)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Prints a private message to the screen and chat window to the player matching the player color.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttocolor'
           },
           {
             snippet: 'flipTable()'
@@ -3730,6 +3738,14 @@ module.exports =
             leftLabel: 'number'
             description: 'Receives a value of any type and converts it to a string in a reasonable format.'
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring'
+          },
+          {
+            snippet: 'vector(${1:float|x}, ${2:float|y}, ${3:float|z})'
+            displayText: 'vector(float x, float y, float z)'
+            type: 'function'
+            leftLabel: 'variable'
+            description: 'Creates a Vector table from x, y, z values.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#vector'
           },
         ]
 
