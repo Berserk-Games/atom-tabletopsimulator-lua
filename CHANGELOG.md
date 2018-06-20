@@ -1,5 +1,7 @@
 ## 10.7.0
-* Added autocomplete snippets for API changes in v10.7
+* Added autocomplete snippets for API changes in v10.7.
+* Added snippets for `color` and `vector`.
+* Added `Close TTS Tabs` menu command.
 
 ## 10.6.7
 * Rewrote file handler: much simplified, it should eliminate EPERM bugs.
