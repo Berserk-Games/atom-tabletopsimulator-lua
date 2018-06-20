@@ -12,6 +12,10 @@
           label: 'Save And Play',
           command:'tabletopsimulator-lua:saveAndPlay'
         },
+        {
+          label: 'Close TTS Tabs',
+          command:'tabletopsimulator-lua:closeTTSTabs'
+        },
         {type: 'separator'},
         {
           'label': 'Open Save File'
@@ -92,6 +96,10 @@
         {
           'label': 'Save And Play'
           'command': 'tabletopsimulator-lua:saveAndPlay'
+        },
+        {
+          label: 'Close TTS Tabs',
+          command:'tabletopsimulator-lua:closeTTSTabs'
         },
         {type: 'separator'},
         {
