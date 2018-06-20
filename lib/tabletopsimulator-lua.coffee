@@ -27,6 +27,7 @@ TTS_MSG_CUSTOM         = 4
 TTS_MSG_RETURN         = 5
 TTS_MSG_GAME_SAVED     = 6
 TTS_MSG_OBJECT_CREATED = 7
+# @note If you add more messages here then be sure to update ttsMessageID below!
 
 ATOM_MSG_NONE        = -1
 ATOM_MSG_GET_SCRIPTS = 0
@@ -51,6 +52,10 @@ ttsMessageID = (id) ->
     return 'TTS_MSG_CUSTOM'
   else if id == 5
     return 'TTS_MSG_RETURN'
+  else if id == 6
+    return 'TTS_MSG_GAME_SAVED'
+  else if id == 7
+    return 'TTS_MSG_OBJECT_CREATED'
   else
     return '<UNKNOWN MESSAGE : ' + id + '>'
 
@@ -251,7 +256,7 @@ gotoFileRow = (filepath, row) ->
 
 
 gotoError = (message, guid) ->
-  # kludge for bad guid reporting in coroutines; will treat all coroutines as if they were in Global script
+  # kludge for bad guid reporting in Timers; will treat all Timers as if they were in Global script
   if guid == "-2"
     guid = "-1"
   row = 0
@@ -783,6 +788,7 @@ module.exports = TabletopsimulatorLua =
     # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:getObjects': => @getObjects()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:saveAndPlay': => @saveAndPlay()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:closeTTSTabs': => @onCloseTTSTabs()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoLastError': => @gotoLastError()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:gotoFunction': => @gotoFunction()
     @subscriptions.add atom.commands.add 'atom-workspace', 'tabletopsimulator-lua:jumpToFunction': => @jumpToCursorFunction()
@@ -854,6 +860,15 @@ module.exports = TabletopsimulatorLua =
       if editor.getPath() == event.path
         @doCatalog(editor.getText(), event.path)
         break
+
+
+  onCloseTTSTabs: (event) ->
+    activeEditor = atom.workspace.getActiveTextEditor()
+    for editor, i in atom.workspace.getTextEditors()
+      if !editor.isModified() and editor != activeEditor
+        filepath = editor.getPath()
+        if isFromTTS(filepath)
+          editor.destroy()
 
 
   doCatalog: (text, filepath, includeSiblings = false) ->
