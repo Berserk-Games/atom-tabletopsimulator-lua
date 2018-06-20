@@ -1493,6 +1493,22 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#changecolor'
           },
           {
+            snippet: 'getAvailableColors()'
+            displayText: 'getAvailableColors()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns valid seats colors at current table.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
+          },
+          {
+            snippet: 'getColors()'
+            displayText: 'getColors()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all possible seats colors.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
+          },
+          {
             snippet: 'getHandCount()'
             displayText: 'getHandCount()'
             type: 'function'
@@ -2337,7 +2353,7 @@ module.exports =
               'tooltip        = ${14:-- Color},\n\t' +
               'value          = ${15:-- string},\n\t' +
               'validation     = ${16:-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)},\n\t' +
-              'tab            = ${17:-- int (1 = None, 2 = Select Next, 3 = Indent)},\n\t' +
+              'tab            = ${17:-- int (1 = None, 2 = Select Next, 3 = Indent)},\n' +
               '})'
             displayText: 'editInput({int index, string input_function, Object function_owner, string label, Vector position, Vector rotation, Vector scale, int width, int height, int font_size, Color color, Color font_color, string tooltip, string value, int validation, int tab})'
             type: 'function'
@@ -2619,6 +2635,22 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getscale'
           },
           {
+            snippet: 'getSnapPoints()'
+            displayText: 'getSnapPoints()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the snap points attached to the Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getsnappoints'
+          },
+          {
+            snippet: 'getSnapPoints() -- returns:\n\t-- {{Vector position, Vector rotation, bool rotation_snap}, ...}'
+            displayText: 'getSnapPoints() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the snap points attached to the Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getsnappoints'
+          },
+          {
             snippet: 'getStateId()'
             displayText: 'getStateId()'
             type: 'function'
@@ -2721,6 +2753,38 @@ module.exports =
             leftLabel: 'bool'
             description: 'Is the object smoothly moving from our smooth functions.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#issmoothmoving'
+          },
+          {
+            snippet: 'jointTo(${1:Table|parameters})'
+            displayText: 'jointTo(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Joints objects together.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#jointto'
+          },
+          {
+            snippet:
+              'jointTo({\n\t' +
+              'type             = ${1:-- string (required - "Fixed", "Hinge", or "Spring")},\n\t' +
+              'collision        = ${2:-- bool},\n\t' +
+              'break_force      = ${3:-- float},\n\t' +
+              'break_torque     = ${4:-- float},\n\t' +
+              'axis             = ${5:-- Vector},\n\t' +
+              'anchor           = ${6:-- Vector},\n\t' +
+              'connected_anchor = ${7:-- Vector},\n\t' +
+              'motor_force      = ${8:-- float},\n\t' +
+              'motor_velocity   = ${9:-- float},\n\t' +
+              'motor_free_spin  = ${10:-- bool},\n\t' +
+              'spring           = ${11:-- float [10]},\n\t' +
+              'damper           = ${12:-- float [0.2]},\n\t' +
+              'max_distance     = ${13:-- float},\n\t' +
+              'min_distance     = ${14:-- float},\n' +
+              '})'
+            displayText: 'jointTo({string type, bool collision, float break_force, float break_torque, Vector axis, Vector anchor, Vector connected_anchor, float motor_force, float motor_velocity, bool motor_free_spin, float spring, float damper, float max_distance, float min_distance})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Joints objects together.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#jointTo'
           },
           {
             snippet: 'playLoopingEffect(${1:int|index})'
@@ -2931,12 +2995,45 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setrotationvalues'
           },
           {
+            snippet:
+              'setRotationValues({\n\t{\n\t\t' +
+              'value    = ${1:-- int},\n\t\t' +
+              'rotation = ${2:-- Vector},\n\t' +
+              '},\n})'
+            displayText: 'setRotationValues({{int value, Vector rotation}, })'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the rotation values of this Object: {{int value, Vector rotation}, ...}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setrotationvalues'
+          },
+          {
             snippet: 'setScale(${1:Table|scale})'
             displayText: 'setScale(Table scale)'
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the scale for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setscale'
+          },
+          {
+            snippet: 'setSnapPoints(${1:Table|snap_points})'
+            displayText: 'setSnapPoints(Table snap_points)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the snap points attached to this Object: {{Vector position, Vector rotation, bool rotation_snap}, ...}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setsnappoints'
+          },
+          {
+            snippet:
+              'setSnapPoints({\n\t{\n\t\t' +
+              'position         = ${1:-- Vector},\n\t\t' +
+              'rotation         = ${2:-- Vector},\n\t\t' +
+              'rotation_snap    = ${3:-- bool},\n\t' +
+              '},\n})'
+            displayText: 'setSnapPoints({{Vector position, Vector rotation, bool rotation_snap}, })'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the snap points attached to this Object: {{Vector position, Vector rotation, bool rotation_snap}, ...}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setsnappoints'
           },
           {
             snippet: 'setState(${1:int|state})'
@@ -3451,7 +3548,7 @@ module.exports =
             leftLabel: 'bool'
             description: 'Prints a private message to the screen and chat window to the player matching the player color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttocolor'
-          },      
+          },
           {
             snippet: 'clearPixelPaint()'
             displayText: 'clearPixelPaint()'
