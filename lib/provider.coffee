@@ -1346,6 +1346,22 @@ module.exports =
           },
           # Functions
           {
+            snippet: 'getAvailableColors()'
+            displayText: 'getAvailableColors()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns valid seats colors at current table.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
+          },
+          {
+            snippet: 'getColors()'
+            displayText: 'getColors()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all possible seats colors.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
+          },
+          {
             snippet: 'getPlayers()'
             displayText: 'getPlayers()'
             type: 'function'
@@ -1491,22 +1507,6 @@ module.exports =
             leftLabel: 'bool'
             description: 'Changes the player\'s color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#changecolor'
-          },
-          {
-            snippet: 'getAvailableColors()'
-            displayText: 'getAvailableColors()'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns valid seats colors at current table.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
-          },
-          {
-            snippet: 'getColors()'
-            displayText: 'getColors()'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns all possible seats colors.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#getavailablecolors'
           },
           {
             snippet: 'getHandCount()'
