@@ -1,3 +1,6 @@
+## 10.7.0
+* Added autocomplete snippets for API changes in v10.7
+
 ## 10.6.7
 * Rewrote file handler: much simplified, it should eliminate EPERM bugs.
 
