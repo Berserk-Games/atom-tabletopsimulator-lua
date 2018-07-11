@@ -1,3 +1,6 @@
+## 10.8.0
+* Added autocomplete snippets for API changes in v10.8.
+
 ## 10.7.0
 * Added autocomplete snippets for API changes in v10.7.
 * Added snippets for `color` and `vector`.
