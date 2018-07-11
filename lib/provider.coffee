@@ -872,6 +872,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getattributes'
           },
           {
+            snippet: 'getValue(${1:string|id})'
+            displayText: "getAttributes(string id)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Gets the value of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getvalue'
+          },
+          {
             snippet: 'hide(${1:string|id})'
             displayText: "hide(string id)"
             type: 'function'
@@ -894,6 +902,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Updates the value of the supplied attributes of a UI element.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setattributes'
+          },
+          {
+            snippet: 'setValue(${1:string|id}, ${2:string|value})'
+            displayText: "setAttributes(string id, string value)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Updates the value of a UI element.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setvalue'
           },
           {
             snippet: 'show(${1:string|id})'
@@ -1202,6 +1218,96 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets the Color of the directional light.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/lighting/#setlightcolor'
+          },
+        ]
+
+
+      # Section: Notes
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Notes") || line.endsWith("Notes.") || (previous_token == "Notes" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'addNotebookTab(${1:Table|parameters})'
+            displayText: 'addNotebookTab(Table parameters)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
+          },
+          {
+            snippet:
+              'addNotebookTab({\n\t' +
+              'title = ${1:-- string},\n\t' +
+              'body  = ${2:-- string (BBcode is allowed)},\n\t' +
+              'color = ${3:-- string [Grey]},\n' +
+              '})'
+            displayText: 'addNotebookTab({string title, string body, string color})'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
+          },
+          {
+            snippet: 'editNotebookTab(${1:Table|parameters})'
+            displayText: 'editNotebookTab(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits an existing Tab on the Notebook.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
+          },
+          {
+            snippet:
+              'editNotebookTab({\n\t' +
+              'index = ${1:-- int},\n\t' +
+              'title = ${2:-- string},\n\t' +
+              'body  = ${3:-- string (BBcode is allowed)},\n\t' +
+              'color = ${4:-- string [Grey]},\n' +
+              '})'
+            displayText: 'editNotebookTab({int index, string title, string body, string color})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Edits an existing Tab on the Notebook.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
+          },
+          {
+            snippet: 'getNotebookTabs()'
+            displayText: 'getNotebookTabs()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
+          },
+          {
+            snippet: 'getNotebookTabs()$1\n\t-- getNotebookTabs returns:\n\t-- {{int index, string title, string body, string color}, ...}'
+            displayText: 'getNotebookTabs() -- returns {{int index, string title, string body, string color}, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
+          },
+          {
+            snippet: 'getNotes()'
+            displayText: 'getNotes()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the current on-screen notes as a string.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotes'
+          },
+          {
+            snippet: 'removeNotebookTab(${1:int|index})'
+            displayText: 'removeNotebookTab(int index)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Removes a Tab from the Notebook at a given index.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#removenotebooktab'
+          },
+          {
+            snippet: 'setNotes(${1:string|notes})'
+            displayText: 'setNotes(string notes)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current on-screen notes. BBCOde is allowed for styling.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#setnotes'
           },
         ]
 
@@ -1705,51 +1811,13 @@ module.exports =
           },
         ]
 
-      # Section: Timer Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Timer") || line.endsWith("Timer.") || (previous_token == "Timer" && this_token_intact)
-        suggestions = [
-          # Functions
-          {
-            snippet: 'create(${1:Table|parameters})'
-            displayText: 'create(Table parameters)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#create'
-          },
-          {
-            snippet:
-              'create({\n\t' +
-              'identifier     = ${1:-- string (must be unique)},\n\t' +
-              'function_name  = ${2:-- string},\n\t' +
-              'function_owner = ${3:-- Object},\n\t' +
-              'parameters     = ${4:-- Table},\n\t' +
-              'delay          = ${5:-- float  [0 seconds]},\n\t' +
-              'repetitions    = ${6:-- int    [1] (0 = infinite)},\n' +
-              '})'
-            displayText: 'create({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool flip, string guid, int index, bool top})'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Creates a Timer. Timers are used for calling functions after a delay or repeatedly.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#create'
-          },
-          {
-            snippet: 'destroy(${1:string|identifier})'
-            displayText: 'destroy(string identifier)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Destroys an existing timer.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/#destroy'
-          },
-        ]
-
       # Section: WebRequest Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "WebRequest") || line.endsWith("WebRequest.") || (previous_token == "WebRequest" && this_token_intact)
         suggestions = [
           # Functions
           {
-            snippet: 'get(${1:string|url}, ${2:Object|callback_owner}, ${3:string|callback})'
-            displayText: 'get(string url, Object callback_owner, string callback)'
+            snippet: 'get(${1:string|url}, ${2:function|callback_function})'
+            displayText: 'get(string url, function callback_function)'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
@@ -1757,7 +1825,7 @@ module.exports =
           },
           {
             snippet:
-              'get(${1:string|url}, ${2:Object|callback_owner}, ${3:string|callback}) -- returns and passes to callback:\n\t' +
+              'get(${1:string|url}, ${2:function|callback_function}) -- returns and passes to callback:\n\t' +
                 '-- download_progress    bool      (0.0 - 1.0)\n\t' +
                 '-- error                string\n\t' +
                 '-- is_error             bool\n\t' +
@@ -1765,22 +1833,22 @@ module.exports =
                 '-- text                 string\n\t' +
                 '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
                 '-- url                  string'
-            displayText: 'get(string url, Object callback_owner, string callback) -- returns ...'
+            displayText: 'get(string url, function callback_function) -- returns ...'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Get data in text from the url. Callback function is supplied the WebRequest.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#get'
           },
           {
-            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback})'
-            displayText: 'post(string url, Table form, Object callback_owner, string callback)'
+            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:function|callback_function})'
+            displayText: 'post(string url, Table form, function callback_function)'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Post the form to the url. Callback function is supplied the WebRequest.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#post'
           },
           {
-            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+            snippet: 'post(${1:string|url}, ${2:Table|form}, ${3:function|callback_function}) -- returns and passes to callback:\n\t' +
               '-- download_progress    bool      (0.0 - 1.0)\n\t' +
               '-- error                string\n\t' +
               '-- is_error             bool\n\t' +
@@ -1788,22 +1856,22 @@ module.exports =
               '-- text                 string\n\t' +
               '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
               '-- url                  string'
-            displayText: 'post(string url, Table form, Object callback_owner, string callback) -- returns ...'
+            displayText: 'post(string url, Table form, function callback_function) -- returns ...'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Post the form to the url. Callback function is supplied the WebRequest.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#post'
           },
           {
-            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback})'
-            displayText: 'put(string url, string data, Object callback_owner, string callback)'
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:function|callback_function})'
+            displayText: 'put(string url, string data, function callback_function)'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/webrequest/#put'
           },
           {
-            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:Object|callback_owner}, ${4:string|callback}) -- returns and passes to callback:\n\t' +
+            snippet: 'put(${1:string|url}, ${2:string|data}, ${3:function|callback_function}) -- returns and passes to callback:\n\t' +
               '-- download_progress    bool      (0.0 - 1.0)\n\t' +
               '-- error                string\n\t' +
               '-- is_error             bool\n\t' +
@@ -1811,7 +1879,7 @@ module.exports =
               '-- text                 string\n\t' +
               '-- upload_progress      bool      (0.0 - 1.0)\n\t' +
               '-- url                  string'
-            displayText: 'put(string url, string data, Object callback_owner, string callback) -- returns ...'
+            displayText: 'put(string url, string data, function callback_function) -- returns ...'
             type: 'function'
             leftLabel: 'WebRequest'
             description: 'Put the data to the url. Callback function is supplied the WebRequest.'
@@ -1917,6 +1985,44 @@ module.exports =
           },
         ]
 
+      # Section: Wait
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Wait") || line.endsWith("Wait.") || (previous_token == "Wait" && this_token_intact)
+        suggestions = [
+          # Functions
+          {
+            snippet: 'condition(${1:function|func}, ${2:function|condition}, ${3:float|timeout}, ${4:function|timeout_func})'
+            displayText: 'condition(function func, function condition, float timeout, function timeout_func)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Activates a function when a given function returns true or activates a different function if a timeout occurs.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#condition'
+          },
+          {
+            snippet: 'frames(${1:function|func}, ${2:int|frame_count})'
+            displayText: 'frames(function func, int frame_count)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Activates a function after a set number of frames.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#frames'
+          },
+          {
+            snippet: 'stop(${1:int|id})'
+            displayText: 'stop(int id)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Stops a currently running Wait function.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#stop'
+          },
+          {
+            snippet: 'time(${1:function|func}, ${2:float|time})'
+            displayText: 'time(function func, float time)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Activates a function after a set amount of time has passed.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#time'
+          },
+        ]
+
       # Section: Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_intact)))
         suggestions = [
@@ -2018,6 +2124,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#interactable'
           },
           {
+            snippet: 'loading_custom'
+            displayText: 'loading_custom'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Indicates if the assets of a custom element are being loaded.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#loading_custom'
+          },
+          {
             snippet: 'mass'
             displayText: 'mass'
             type: 'property'
@@ -2064,6 +2178,14 @@ module.exports =
             leftLabel: 'string'
             description: 'Returns the saved Lua script state on the Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#script_state'
+          },
+          {
+            snippet: 'spawning'
+            displayText: 'spawning'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Indicates if any object is currently in the process of spawning.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#spawning'
           },
           {
             snippet: 'static_friction'
@@ -2265,11 +2387,11 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#createinput'
           },
           {
-            snippet: 'cut()'
-            displayText: 'cut()'
+            snippet: 'cut(${1:int|index})'
+            displayText: 'cut(int index)'
             type: 'function'
-            leftLabel: 'bool'
-            description: 'Cuts this Object if it is a Deck or a Stack.'
+            leftLabel: 'Table'
+            description: 'Cuts a deck at the given card index and returns created objects.  If no index provided cuts deck in half.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#cut'
           },
           {
@@ -2611,6 +2733,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getrotation'
           },
           {
+            snippet: 'getRotationValue()'
+            displayText: 'getRotationValue()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the rotation value for this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getrotationvalue'
+          },
+          {
             snippet: 'getRotationValues()'
             displayText: 'getRotationValues()'
             type: 'function'
@@ -2822,7 +2952,7 @@ module.exports =
             snippet: 'putObject(${1:Object|object})'
             displayText: 'putObject(Object object)'
             type: 'function'
-            leftLabel: 'bool'
+            leftLabel: 'Object'
             description: 'Add this object to the current object. Works for stacking chips, decks, and bags.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#putobject'
           },
@@ -3092,6 +3222,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#shufflestates'
           },
           {
+            snippet: 'split(${1:int|stacks})'
+            displayText: 'split(int stacks)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Splits a deck into the chosen number of stacks and returns created objects.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#split'
+          },
+          {
             snippet: 'takeObject(${1:Table|parameters})'
             displayText: 'takeObject(Table parameters)'
             type: 'function'
@@ -3102,18 +3240,17 @@ module.exports =
           {
             snippet:
               'takeObject({\n\t' +
-              'position       = ${1:-- Vector [container position, x+2]},\n\t' +
-              'rotation       = ${2:-- Vector [container rotation]},\n\t' +
-              'callback       = ${3:-- string},\n\t' +
-              'callback_owner = ${4:-- Object},\n\t' +
-              'params         = ${5:-- Table},\n\t' +
-              'smooth         = ${6:-- bool},\n\t' +
-              'flip           = ${7:-- bool},\n\t' +
-              'guid           = ${8:-- string},\n\t' +
-              'index          = ${9:-- int},\n\t' +
-              'top            = ${10:-- bool [true]},\n' +
+              'position          = ${1:-- Vector [container position, x+2]},\n\t' +
+              'rotation          = ${2:-- Vector [container rotation]},\n\t' +
+              'callback_function = ${3:-- function},\n\t' +
+              'params            = ${4:-- Table},\n\t' +
+              'smooth            = ${5:-- bool},\n\t' +
+              'flip              = ${6:-- bool},\n\t' +
+              'guid              = ${7:-- string},\n\t' +
+              'index             = ${8:-- int},\n\t' +
+              'top               = ${9:-- bool [true]},\n' +
               '})'
-            displayText: 'takeObject({Vector position, Vector rotation, string callback, Object callback_owner, Table params, bool smooth, bool flip, string guid, int index, bool top})'
+            displayText: 'takeObject({Vector position, Vector rotation, function callback_function, Table params, bool smooth, bool flip, string guid, int index, bool top})'
             type: 'function'
             leftLabel: 'Object'
             description: 'Takes an Object from this container.'
@@ -3188,11 +3325,25 @@ module.exports =
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ondrop'
             },
             {
+              snippet: 'onPeek(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onPeek(string player_color)'
+              type: 'function'
+              description: 'Automatically called when this Object is peeked.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onpeek'
+            },
+            {
               snippet: 'onPickUp(player_color)\n\t${0:-- body...}\nend'
               displayText: 'onPickUp(string player_color)'
               type: 'function'
               description: 'Automatically called when this Object is picked up.'
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onpickup'
+            },
+            {
+              snippet: 'onRandomize(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onRandomze(string player_color)'
+              type: 'function'
+              description: 'Automatically called when this Object is randomized.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onrandomze'
             },
             {
               snippet: 'onSearchStart(player_color)\n\t${0:-- body...}\nend'
@@ -3282,6 +3433,13 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectloopingeffect'
           },
           {
+            snippet: 'onObjectPeek(player_color, object, )\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPeek(string player_color, Object object)'
+            type: 'function'
+            description: 'Automatically called when an Object is peeked.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpeek'
+          },
+          {
             snippet: 'onObjectPickUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectPickUp(string player_color, Object picked_up_object)'
             type: 'function'
@@ -3289,22 +3447,22 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpickup'
           },
           {
-            snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectRandomize(Object object, string player_color)'
+            snippet: 'onObjectRandomize(player_color, object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectRandomize(string player_color, Object object)'
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectrandomize'
           },
           {
-            snippet: 'onObjectSearchStart(object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectSearchStart(Object object, string player_color)'
+            snippet: 'onObjectSearchStart(player_color, object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchStart(string player_color, Object object)'
             type: 'function'
             description: 'Automatically called when player_color starts searching asset object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchstart'
           },
           {
-            snippet: 'onObjectSearchEnd(object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectSearchEnd(Object object, string player_color)'
+            snippet: 'onObjectSearchEnd(player_color, object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchEnd(string player_color, Object object)'
             type: 'function'
             description: 'Automatically called when player_color stops searching asset object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchend'
@@ -3513,27 +3671,6 @@ module.exports =
           },
           # Global Management Functions
           {
-            snippet: 'addNotebookTab(${1:Table|parameters})'
-            displayText: 'addNotebookTab(Table parameters)'
-            type: 'function'
-            leftLabel: 'int'
-            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
-          },
-          {
-            snippet:
-              'addNotebookTab({\n\t' +
-              'title = ${1:-- string},\n\t' +
-              'body  = ${2:-- string (BBcode is allowed)},\n\t' +
-              'color = ${3:-- string [Grey]},\n' +
-              '})'
-            displayText: 'addNotebookTab({string title, string body, string color})'
-            type: 'function'
-            leftLabel: 'int'
-            description: 'Adds a new Tab to the Notebook and returns the index of the newly added Tab.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addnotebooktab'
-          },
-          {
             snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
             displayText: 'broadcastToAll(string message, Table text_color)'
             type: 'function'
@@ -3590,28 +3727,6 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#destroyobject'
           },
           {
-            snippet: 'editNotebookTab(${1:Table|parameters})'
-            displayText: 'editNotebookTab(Table parameters)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Edits an existing Tab on the Notebook.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
-          },
-          {
-            snippet:
-              'editNotebookTab({\n\t' +
-              'index = ${1:-- int},\n\t' +
-              'title = ${2:-- string},\n\t' +
-              'body  = ${3:-- string (BBcode is allowed)},\n\t' +
-              'color = ${4:-- string [Grey]},\n' +
-              '})'
-            displayText: 'editNotebookTab({int index, string title, string body, string color})'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Edits an existing Tab on the Notebook.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#editnotebooktab'
-          },
-          {
             snippet: 'flipTable()'
             displayText: 'flipTable()'
             type: 'function'
@@ -3626,30 +3741,6 @@ module.exports =
             leftLabel: 'Table'
             description: 'Returns a Table of all the spawned Objects in the game.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getallobjects'
-          },
-          {
-            snippet: 'getNotebookTabs()'
-            displayText: 'getNotebookTabs()'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
-          },
-          {
-            snippet: 'getNotebookTabs()$1\n\t-- getNotebookTabs returns:\n\t-- {{int index, string title, string body, string color}, ...}'
-            displayText: 'getNotebookTabs() -- returns {{int index, string title, string body, string color}, ...}'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns a Table of Tables of all of the Tabs in the Notebook.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotebooktabs'
-          },
-          {
-            snippet: 'getNotes()'
-            displayText: 'getNotes()'
-            type: 'function'
-            leftLabel: 'string'
-            description: 'Returns the current on-screen notes as a string.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#getnotes'
           },
           {
             snippet: 'getObjectFromGUID(${1:string|guid})'
@@ -3727,28 +3818,12 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#printtocolor'
           },
           {
-            snippet: 'removeNotebookTab(${1:int|index})'
-            displayText: 'removeNotebookTab(int index)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Removes a Tab from the Notebook at a given index.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#removenotebooktab'
-          },
-          {
             snippet: 'sendExternalMessage(${1:Table|table})'
             displayText: 'sendExternalMessage(Table table)'
             type: 'function'
             leftLabel: 'bool'
             description: 'Sends table to whatever is connected to the External Editor API.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/externaleditorapi/'
-          },
-          {
-            snippet: 'setNotes(${1:string|notes})'
-            displayText: 'setNotes(string notes)'
-            type: 'function'
-            leftLabel: 'bool'
-            description: 'Sets the current on-screen notes. BBCOde is allowed for styling.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#setnotes'
           },
           {
             snippet: 'spawnObject(${1:Table|paremeters})'
@@ -3761,17 +3836,16 @@ module.exports =
           {
             snippet:
               'spawnObject({\n\t' +
-              'type           = ${1:-- string},\n\t' +
-              'position       = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
-              'rotation       = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
-              'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
-              'callback       = ${5:-- string},\n\t' +
-              'callback_owner = ${6:-- Object},\n\t' +
-              'sound          = ${7:-- bool},\n\t' +
-              'params         = ${8:-- Table},\n\t' +
-              'snap_to_grid   = ${9:-- bool},\n' +
+              'type              = ${1:-- string},\n\t' +
+              'position          = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation          = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale             = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback_fucntion = ${5:-- function},\n\t' +
+              'sound             = ${6:-- bool},\n\t' +
+              'params            = ${7:-- Table},\n\t' +
+              'snap_to_grid      = ${8:-- bool},\n' +
               '})'
-            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, bool sound, Table params, bool snap_to_grid})'
+            displayText: 'spawnObject({string type, Vector position, Vector rotation, Vector scale, function callback_function, bool sound, Table params, bool snap_to_grid})'
             type: 'function'
             leftLabel: 'Object'
             description: 'Spawns an Object and returns a reference to it.'
@@ -3788,17 +3862,16 @@ module.exports =
           {
             snippet:
               'spawnObjectJSON({\n\t' +
-              'json           = ${1:-- string},\n\t' +
-              'position       = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
-              'rotation       = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
-              'scale          = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
-              'callback       = ${5:-- string},\n\t' +
-              'callback_owner = ${6:-- Object},\n\t' +
-              'sound          = ${7:-- bool},\n\t' +
-              'params         = ${8:-- Table},\n\t' +
-              'snap_to_grid   = ${9:-- bool},\n' +
+              'json              = ${1:-- string},\n\t' +
+              'position          = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
+              'rotation          = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
+              'scale             = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
+              'callback_function = ${5:-- string},\n\t' +
+              'sound             = ${6:-- bool},\n\t' +
+              'params            = ${7:-- Table},\n\t' +
+              'snap_to_grid      = ${8:-- bool},\n' +
               '})'
-            displayText: 'spawnObjectJSON({string json, Vector position, Vector rotation, Vector scale, string callback, Object callback_owner, bool sound, Table params, bool snap_to_grid})'
+            displayText: 'spawnObjectJSON({string json, Vector position, Vector rotation, Vector scale, function callback_function, bool sound, Table params, bool snap_to_grid})'
             type: 'function'
             leftLabel: 'Object'
             description: 'Spawns an Object using a JSON string and returns a reference to it.'
