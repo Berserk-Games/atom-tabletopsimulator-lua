@@ -3600,6 +3600,13 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.6'
           },
           {
+            snippet: 'Notes'
+            displayText: 'Notes'
+            type: 'constant'
+            description: 'The Notes class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/notes/'
+          },
+          {
             snippet: 'os'
             displayText: 'os'
             type: 'constant'
@@ -3661,6 +3668,13 @@ module.exports =
             type: 'constant'
             description: 'The UI class.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/'
+          },
+          {
+            snippet: 'Wait'
+            displayText: 'Wait'
+            type: 'constant'
+            description: 'The Wait class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/wait/'
           },
           {
             snippet: 'WebRequest'

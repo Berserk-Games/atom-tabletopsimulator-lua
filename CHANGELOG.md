@@ -1,3 +1,6 @@
+## 10.8.1
+* Added missing Notes and Wait autocomplete snippets.
+
 ## 10.8.0
 * Added autocomplete snippets for API changes in v10.8.
 
