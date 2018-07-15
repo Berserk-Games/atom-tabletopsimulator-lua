@@ -1,13 +1,13 @@
 import sys, subprocess, re
+
 version = sys.argv[1]
+if not re.match("[0-9]+\.[0-9]+\.[0-9]", version):
+    print "Version must be of the form: 10.8.1"
+    sys.exit(1)
 
 def confirm(msg):
     print msg, "(<Enter> to continue, <CTRL-BREAK> to exit)"
     raw_input()
-
-if not re.match("[0-9]+\.[0-9]+\.[0-9]"):
-    print "Version must be of the form: 10.8.1"
-    sys.exit(1)
 
 version = "v" + version
 print "Version:", version
@@ -25,5 +25,5 @@ output = subprocess.check_output(['git.exe', 'push', 'origin', version], stderr=
 print output
 
 confirm("Publish Atom package:")
-output = subprocess.check_output(['apm.exe', 'publish', '--tag', version], stderr=subprocess.STDOUT)
+output = subprocess.check_output(['apm', 'publish', '--tag', version], stderr=subprocess.STDOUT, shell=True)
 print output
