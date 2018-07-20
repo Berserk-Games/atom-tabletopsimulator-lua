@@ -6,4 +6,4 @@ The official plugin for the Atom text editor to make writing Lua scripts for Tab
 
 For instructions and information see [the documentation](https://github.com/Knils/atom-tabletopsimulator-lua/wiki)
 
-To learn more about scripting Tabletop Simulator see our [Official Knowledgebase](http://berserk-games.com/knowledgebase/)
+To learn more about scripting in Tabletop Simulator see our [API](https://api.tabletopsimulator.com/)
