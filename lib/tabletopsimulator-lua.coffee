@@ -13,6 +13,8 @@ StatusBarFunctionView = require './status-bar-function-view'
 FunctionListView = require './function-list-view'
 CheckboxList = require './checkbox-list-view'
 TTSPanelView = require './tts-panel-view'
+APIDescription = require './api-description'
+HoverTooltips = require './hover-tooltips.js'
 
 domain = 'localhost'
 clientport = 39999
@@ -818,6 +820,9 @@ module.exports = TabletopsimulatorLua =
         @cursorChangeEvent(event)
       @subscriptions.add editor.onDidSave (event) =>
         @onSave(event)
+
+    @HoverTooltip = HoverTooltips.HoverTooltips()
+    @HoverTooltip.activate()
 
     @verboseLogging()
 
