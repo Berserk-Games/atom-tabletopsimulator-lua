@@ -2116,12 +2116,28 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#held_by_color'
           },
           {
+            snippet: 'hide_when_face_down'
+            displayText: 'hide_when_face_down'
+            type: 'property'
+            leftLabel: 'bool'
+            description: "Hides the face of the object if it is face-down."
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#hide_when_face_down'
+          },
+          {
             snippet: 'interactable'
             displayText: 'interactable'
             type: 'property'
             leftLabel: 'bool'
             description: 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#interactable'
+          },
+          {
+            snippet: 'is_face_down'
+            displayText: 'is_face_down'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'True if the object is roughly face-down.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#is_face_down'
           },
           {
             snippet: 'loading_custom'
@@ -2252,6 +2268,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_hands'
           },
           {
+            snippet: 'use_rotation_value_flip'
+            displayText: 'use_rotation_value_flip'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'When true the object will flip between its rotation values on a flip action.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#use_rotation_value_flip'
+          },
+          {
             snippet: 'use_snap_points'
             displayText: 'use_snap_points'
             type: 'property'
@@ -2275,6 +2299,22 @@ module.exports =
             leftLabel: 'bool'
             description: 'Adds a torque vector to the Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#addtorque'
+          },
+          {
+            snippet: 'attachHider(${1:string|hider}, ${2:bool|enabled}, ${3:Table|players})'
+            displayText: 'attachHider(string hider, bool enabled, Table players)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Attaches a hider to the object (or removes it if enabled is false).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#attachhider'
+          },
+          {
+            snippet: 'attachInvisibleHider(${1:string|hider}, ${2:bool|enabled}, ${3:Table|players})'
+            displayText: 'attachHider(string hider, bool enabled, Table players)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Attaches an invisible hider to the object (or removes it if enabled is false).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#attachhider'
           },
           {
             snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
@@ -2417,6 +2457,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Destroys this Object. Mainly so you can call self.destruct().'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#destruct'
+          },
+          {
+            snippet: 'drop()'
+            displayText: 'drop()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'If held the object will be dropped.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#drop'
           },
           {
             snippet: 'editButton(${1:Table|parameters})'
@@ -2685,16 +2733,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
-            snippet: 'getObjects()$1\n\t-- Bag.getObjects() returns {{int index, string guid, string name}, ...}'
-            displayText: 'getObjects() -- Bag returns {{int index, string guid, string name}, ...}'
-            type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns all the Objects inside of this container.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
-          },
-          {
-            snippet: 'getObjects()$1\n\t-- Deck.getObjects() returns:\n\t-- {{int index, string nickname, string description, string guid, string lua_script}, ...}'
-            displayText: 'getObjects() -- Deck returns {{int index, string nickname, string description, string guid, string lua_script}, ...}'
+            snippet: 'getObjects()$1\n\t-- Bag or Deck returns {{string name, string description, string guid, int index, string lua_script, string lust_script_state}, ...}'
+            displayText: 'getObjects() -- Bag returns {{string name, string description, string guid, int index, string lua_script, string lust_script_state}, ...}'
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns all the Objects inside of this container.'
@@ -2797,6 +2837,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getstates'
           },
           {
+            snippet: 'getStates() -- returns:\n\t-- {{string name, string description, string guid, int id, string lua_script, string lua_script_state}, ...}'
+            displayText: 'getStates() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table with the keys “name”, “guid”, and “id”.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getstates'
+          },
+          {
             snippet: 'getTable(${1:string|table_name})'
             displayText: 'getTable(string table_name)'
             type: 'function'
@@ -2851,6 +2899,22 @@ module.exports =
             leftLabel: 'variable'
             description: 'Gets a Lua variable for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
+          },
+          {
+            snippet: 'getVectorLines()'
+            displayText: 'getVectorLines()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the vector lines on this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvectorlines'
+          },
+          {
+            snippet: 'getVectorLines() -- returns:\n\t-- {{Table points, Color color, float thickness, Vector rotation}, ...}'
+            displayText: 'getVectorLines() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the vector lines on this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvectorlines'
           },
           {
             snippet: 'getVelocity()'
@@ -2965,6 +3029,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#randomize'
           },
           {
+            snippet: 'randomize(${1:string|player})'
+            displayText: 'randomize(string player)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Same as pressing the ‘R’ key on an Object. Triggers onObjectRandomize as if specified player hit it.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#randomize'
+          },
+          {
             snippet: 'reload()'
             displayText: 'reload()'
             type: 'function'
@@ -3059,6 +3131,22 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets the description for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdescription'
+          },
+          {
+            snippet: 'setHiddenFrom(${1:Table|players})'
+            displayText: 'setHiddenFrom(Table players)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Hides the object from the specified players as if it were in a hand zone.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#sethiddenfrom'
+          },
+          {
+            snippet: 'setInvisibleTo(${1:Table|players})'
+            displayText: 'setInvisibleTo(Table players)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Makes the object invisible to the specified players.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#seinvisibleto'
           },
           {
             snippet: 'setLock(${1:bool|lock})'
@@ -3196,6 +3284,28 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets a Lua variable for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvar'
+          },
+          {
+            snippet: 'setVectorLines(${1:Table|vector_lines})'
+            displayText: 'setVectorLines(Table vector_lines)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the vector lines attached to this Object: {{Table points, Color color, float thickness, Vector rotation}, ...}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvectorlines'
+          },
+          {
+            snippet:
+              'setVectorLines({\n\t{\n\t\t' +
+              'points         = ${1:-- Table},\n\t\t' +
+              'color          = ${2:-- Color},\n\t\t' +
+              'thickness      = ${3:-- float},\n\t\t' +
+              'rotation       = ${4:-- Vector},\n\t' +
+              '},\n})'
+            displayText: 'setVectorLines({{Table points, Color color, float thickness, Vector rotation}, })'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the vector lines attached to this Object: {{Table points, Color color, float thickness, Vector rotation}, ...}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setvectorlines'
           },
           {
             snippet: 'setVelocity(${1:Table|vector})'
@@ -3403,6 +3513,13 @@ module.exports =
             type: 'function'
             description: 'Automatically called when an Object is dropped.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdrop'
+          },
+          {
+            snippet: 'onObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectEnterContainer(Object container, Object enter_object)'
+            type: 'function'
+            description: 'Automatically called when an Object enters any container(Deck, Bag, Chip Stack, etc).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectentercontainer'
           },
           {
             snippet: 'onObjectEnterScriptingZone(zone, enter_object)\n\t${0:-- body...}\nend'
