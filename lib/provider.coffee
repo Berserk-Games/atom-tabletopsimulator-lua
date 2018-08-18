@@ -201,6 +201,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
           },
           {
+            snippet: 'setHideFaceDown(${1:bool|hide})'
+            displayText: 'setHideFaceDown(bool hide)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets whether face-down objects (which have the relevant property set) will be hidden.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#sethidefacedown'
+          },
+          {
             snippet: 'setLookingForPlayers(${1:bool|looking_for_players})'
             displayText: 'setLookingForPlayers(bool looking_for_players)'
             type: 'function'

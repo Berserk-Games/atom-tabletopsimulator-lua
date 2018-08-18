@@ -821,8 +821,8 @@ module.exports = TabletopsimulatorLua =
       @subscriptions.add editor.onDidSave (event) =>
         @onSave(event)
 
-    @HoverTooltip = HoverTooltips.HoverTooltips()
-    @HoverTooltip.activate()
+    #@HoverTooltip = HoverTooltips.HoverTooltips()
+    #@HoverTooltip.activate()
 
     @verboseLogging()
 
