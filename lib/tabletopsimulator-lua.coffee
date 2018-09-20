@@ -132,9 +132,12 @@ log_seperator = (tag) ->
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
 insertFileSeperator = '|'
-insertFileMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
-insertFileRegexp = RegExp('^' + insertFileMarkerString)
-insertedFileRegexp = RegExp('^----' + insertFileMarkerString)
+insertLuaMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
+insertLuaFileRegexp = RegExp('^' + insertLuaMarkerString)
+insertedLuaFileRegexp = RegExp('^----' + insertLuaMarkerString)
+horizontalWhitespaceSet = '\\t\\v\\f\\r \u00a0\u2000-\u200b\u2028-\u2029\u3000'
+insertXmlFileRegexp = RegExp('(^|\\n)([' + horizontalWhitespaceSet + ']*)(.*)<Include\\s+src=(\'|")(.+)\\4\\s*/>', 'g')
+insertedXmlFileRegexp = RegExp('(<!--\\s+include\\s+([^\\s].*)\\s+-->)[\\s\\S]+?\\1', 'g')
 fileMap = {}
 appearsInFile = {}
 
@@ -147,10 +150,10 @@ else
   PATH_SEPERATOR = '/'
 
 
-completeFilepath = (fn, dir) ->
+completeFilepath = (fn, dir, ext='ttslua') ->
   filepath = fn
-  if not filepath.endsWith('.ttslua')
-    filepath += '.ttslua'
+  if not filepath.endsWith('.' + ext)
+    filepath += '.' + ext
   if filepath.match(/^![\\/]/) # ! = configured dir for TTSLua files
     filepath = path.join(getRootPath(), filepath[2..])
   else if filepath.match(/^~[\\/]/) # ~ = home dir
@@ -179,7 +182,7 @@ extractFileMap = (text, filepath) ->
   lines = text.split(/\n/)
   tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
   for line, row in lines
-    found = line.match(insertedFileRegexp)
+    found = line.match(insertedLuaFileRegexp)
     if found
       if tree.parent
         dir = path.dirname(tree.parent.label)
@@ -280,13 +283,12 @@ lengthInUtf8Bytes = (str) ->
   m = encodeURIComponent(str).match(/%[89ABab]/g)
   return str.length + (if m then m.length else 0)
 
-
-processIncludeFiles = (filepath, text) ->
+processLuaIncludeFiles = (filepath, text) ->
   lines = text.split(/\n/)
   tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
   output = []
   for line, row in lines
-    found = line.match(insertedFileRegexp)
+    found = line.match(insertedLuaFileRegexp)
     #console.log tree
     if found
       dir = null
@@ -308,6 +310,10 @@ processIncludeFiles = (filepath, text) ->
       output.push(line)
   return output.join('\n')
 
+processXmlIncludeFiles = (text) ->
+  return text.replace(insertedXmlFileRegexp, (matchedText, marker, insertPath) ->
+    return '<Include src="' + insertPath.replace('"', '\\"') + '"/>'
+  )
 
 class FileHandler
   constructor: (basename) ->
@@ -396,7 +402,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     filepath = @file.getPath()
     text = f.script
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-      text = processIncludeFiles(filepath, text)
+      text = processLuaIncludeFiles(filepath, text)
     @file.create(text)
     self.doCatalog(text, filepath, !isFromTTS(filepath))
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
@@ -413,7 +419,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
       @file = new FileHandler(basename)
       filepath = @file.getPath()
       if f.ui
-        @file.create(f.ui.trim())
+        @file.create(processXmlIncludeFiles(f.ui).trim())
         log LOG_FILE, "Wrote XML:"
       else
         @file.create("")
@@ -1206,7 +1212,7 @@ module.exports = TabletopsimulatorLua =
                 @luaObject.script = fs.readFileSync(fname, 'utf8')
                 # Insert included files
                 if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-                  @luaObject.script = @insertFiles(@luaObject.script)
+                  @luaObject.script = @insertLuaFiles(@luaObject.script)
                 if @luaObject.script != ''
                   count += 1
                 # TODO this section commented out because TTS now handles unicode correctly
@@ -1230,7 +1236,7 @@ module.exports = TabletopsimulatorLua =
 
           for @luaObject in @luaObjects.scriptStates
             if @luaObject.guid of uis
-              @luaObject.ui = uis[@luaObject.guid]
+              @luaObject.ui = @insertXmlFiles(uis[@luaObject.guid])
 
           #destroyTTSEditors()
           #deleteCachedFiles()
@@ -1251,10 +1257,10 @@ module.exports = TabletopsimulatorLua =
             console.log error
 
 
-  insertFiles: (text, dir = null, alreadyInserted = {}) ->
+  insertLuaFiles: (text, dir = null, alreadyInserted = {}) ->
     lines = text.split(/\n/)
     for line, i in lines
-      found = line.match(insertFileRegexp)
+      found = line.match(insertLuaFileRegexp)
       if found
         filepath = completeFilepath(found[2], dir)
         filetext = null
@@ -1274,12 +1280,40 @@ module.exports = TabletopsimulatorLua =
             #filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
-            lines[i] = marker + '\n' + @insertFiles(filetext, newDir, alreadyInserted) + '\n' + marker
+            lines[i] = marker + '\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\n' + marker
         else
           marker = '----' + found[1]
           lines[i] = marker + '\n' + marker
     return lines.join('\n')
 
+
+  insertXmlFiles: (text, dir = null, alreadyInserted = {}) ->
+    return text.replace(insertXmlFileRegexp, (matched, prefix, indentation, content, quote, insertPath) =>
+      filepath = completeFilepath(insertPath, dir, 'xml')
+      filetext = null
+      prefix = prefix + indentation + content
+      if fs.existsSync(filepath)
+        try
+          filetext = fs.readFileSync(filepath, 'utf8')
+        catch error
+          atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
+      else
+        atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
+      if filetext
+        if filepath of alreadyInserted
+          atom.notifications.addError("Cyclical " + atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword') + " detected.", {dismissable: true, icon: 'type-file', detail: filepath})
+          return prefix
+        else
+          recursiveInserted = Object.assign({}, alreadyInserted)
+          recursiveInserted[filepath] = true
+          marker = '<!-- include ' + insertPath + ' -->'
+          newDir = path.dirname(filepath)
+          insertText = indentation + @insertXmlFiles(filetext, newDir, recursiveInserted).replace('\n', '\n' + indentation)
+          return prefix + marker + '\n' + insertText + '\n' + indentation + marker
+      else
+        marker = '<!-- include ' + insertPath + ' -->'
+        return prefix + marker + '\n' + indentation + marker
+    )
 
   excludeChange: (newValue) ->
     provider.excludeLowerPriority = atom.config.get('tabletopsimulator-lua.autocomplete.excludeLowerPriority')
@@ -1366,12 +1400,12 @@ module.exports = TabletopsimulatorLua =
           dir = root
         else
           dir = path.dirname(stack[stack.length-1])
-        insert = line.match(insertFileRegexp)
+        insert = line.match(insertLuaFileRegexp)
         if insert
           label = completeFilepath(insert[2], dir)
           otherFiles[label] = true
         else
-          inserted = line.match(insertedFileRegexp)
+          inserted = line.match(insertedLuaFileRegexp)
           if inserted
             label = completeFilepath(inserted[2], dir)
             if closingTag.length > 0 and inserted[2] == closingTag[closingTag.length - 1]
