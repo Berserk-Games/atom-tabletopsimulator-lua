@@ -2070,7 +2070,7 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#stop'
           },
           {
-            snippet: 'time(${1:function|func}, ${2:float|time}, {3:int|repetitions})'
+            snippet: 'time(${1:function|func}, ${2:float|time}, ${3:int|repetitions})'
             displayText: 'time(function func, float time, int repetitions)'
             type: 'function'
             leftLabel: 'int'
