@@ -892,7 +892,7 @@ module.exports =
             displayText: "hide(string id)"
             type: 'function'
             leftLabel: 'bool'
-            description: 'Hides the given UI element. .'
+            description: 'Hides the given UI element.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#hide'
           },
           {
@@ -924,9 +924,57 @@ module.exports =
             displayText: "show(string id)"
             type: 'function'
             leftLabel: 'bool'
-            description: 'Shows the given UI element. .'
+            description: 'Shows the given UI element.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#show'
           },
+          {
+            snippet: 'setXml(${1:string|xml})'
+            displayText: "setXml(string xml)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Replaces the run-time UI with the XML string.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setxml'
+          },
+          {
+            snippet: 'setXmlTable(${1:table|xmlTable})'
+            displayText: "setXmlTable(table xmlTable)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Replaces the run-time UI with an XML string which is generated from a table of data.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setxmltable'
+          },
+          {
+            snippet: 'setCustomAssets(${1:table|assets})'
+            displayText: "setCustomAssets(table assets)"
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the UI ASSETS (like custom images) for global or an Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setcustomassets'
+          },
+          {
+            snippet: 'getXml()'
+            displayText: "getXml()"
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the run-time UI\'s XML in string format.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getxml'
+          },
+          {
+            snippet: 'getXmlTable()'
+            displayText: "getXmlTable()"
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns the run-time UI\'s XML formatted as a Lua table.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getxmltable'
+          },
+          {
+            snippet: 'getCustomAssets()'
+            displayText: "getCustomAssets()"
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns information on all custom assets uploaded to the UI ASSETS pane.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#getcustomassets'
+          }
         ]
       # Section: coroutine Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
@@ -2022,11 +2070,11 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#stop'
           },
           {
-            snippet: 'time(${1:function|func}, ${2:float|time})'
-            displayText: 'time(function func, float time)'
+            snippet: 'time(${1:function|func}, ${2:float|time}, ${3:int|repetitions})'
+            displayText: 'time(function func, float time, int repetitions)'
             type: 'function'
             leftLabel: 'int'
-            description: 'Activates a function after a set amount of time has passed.'
+            description: 'Activates a function after a set amount of time has passed, repeats given amount of times.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#time'
           },
         ]
