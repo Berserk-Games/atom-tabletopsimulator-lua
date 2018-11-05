@@ -1370,6 +1370,15 @@ module.exports =
       # Section: Physics
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_intact)
         suggestions = [
+          # Member Variables
+          {
+            snippet: 'play_area'
+            displayText: 'play_area'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The size of the play area (0.0 - 1.0).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/physics/#play_area'
+          },
           # Functions
           {
             snippet: 'cast(${1:Table|info})'
@@ -2180,6 +2189,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#hide_when_face_down'
           },
           {
+            snippet: 'ignore_fog_of_war'
+            displayText: 'ignore_fog_of_war'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'If true then the object is always visible inside fog-of-war.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#ignore_fog_of_war'
+          },
+          {
             snippet: 'interactable'
             displayText: 'interactable'
             type: 'property'
@@ -2691,6 +2708,22 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdescription'
           },
           {
+            snippet: 'getFogOfWarReveal()'
+            displayText: 'getFogOfWarReveal()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the fog-of-war reveal settings for this Object: {bool reveal, Player color, float range}.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getfogofwarreveal'
+          },
+          {
+            snippet: 'getFogOfWarReveal()$1\n\t-- getFogOfWarReveal returns:\n\t-- {bool reveal, Player color, float range}'
+            displayText: 'getFogOfWarReveal() -- returns {bool reveal, Player color, float range}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the fog-of-war reveal settings for this Object: {bool reveal, Player color, float range}.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getfogofwarreveal'
+          },
+          {
             snippet: 'getGUID()'
             displayText: 'getGUID()'
             type: 'function'
@@ -3187,6 +3220,27 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets the description for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdescription'
+          },
+          {
+            snippet: 'setFogOfWarReveal(${1:Table|fog_setting})'
+            displayText: 'setFogOfWarReveal(Table fog_setting)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets whether the object reveals fog-of-war: {bool reveal, Player color, float range}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setfogofwarreveal'
+          },
+          {
+            snippet:
+              'setFogOfWarReveal({\n\t' +
+              'reveal   = ${1:-- bool},\n\t' +
+              'color    = ${2:-- Player},\n\t' +
+              'range    = ${3:-- float},\n' +
+              '})'
+            displayText: 'setFogOfWarReveal({bool reveal, Player color, float range})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets whether the object reveals fog-of-war: {bool reveal, Player color, float range}'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setfogofwarreveal'
           },
           {
             snippet: 'setHiddenFrom(${1:Table|players})'

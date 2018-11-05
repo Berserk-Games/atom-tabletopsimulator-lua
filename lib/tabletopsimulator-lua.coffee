@@ -555,7 +555,7 @@ module.exports = TabletopsimulatorLua =
           default: true
         includeOtherFiles:
           title: 'Insert other files specified in source code'
-          description: 'Convert lines containing ``#include <FILE>`` with text from the file specified'
+          description: '''Convert lua lines containing ``#include <FILE>``, and xml lines containing ``<Include src="filename.xml">``, into the specified file's contents'''
           order: 3
           type: 'boolean'
           default: true
@@ -1234,9 +1234,10 @@ module.exports = TabletopsimulatorLua =
                 if ui != ''
                   count += 1
 
-          for @luaObject in @luaObjects.scriptStates
-            if @luaObject.guid of uis
-              @luaObject.ui = @insertXmlFiles(uis[@luaObject.guid])
+          if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+            for @luaObject in @luaObjects.scriptStates
+              if @luaObject.guid of uis
+                @luaObject.ui = @insertXmlFiles(uis[@luaObject.guid])
 
           #destroyTTSEditors()
           #deleteCachedFiles()
