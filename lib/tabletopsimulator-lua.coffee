@@ -555,7 +555,7 @@ module.exports = TabletopsimulatorLua =
           default: true
         includeOtherFiles:
           title: 'Insert other files specified in source code'
-          description: '''Convert lua lines containing ``#include <FILE>``, and xml lines containing ``<Include src="filename.xml">``, into the specified file's contents'''
+          description: '''Convert lua lines containing ``#include <FILE>``, and xml lines containing ``<Include src="filename.xml" />``, into the specified file's contents'''
           order: 3
           type: 'boolean'
           default: true
