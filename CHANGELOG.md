@@ -1,3 +1,7 @@
+## 11.0.1
+* `#include` code blocks now surrounded by `do`...`end` to isolate locals they define
+* Fixed `<Include...` setting description.
+
 ## 11.0.0
 * Added <Include> functionality for xml files (matches functionality already present for lua files)
 * Added autocomplete snippets for API changes in v11.0.0
