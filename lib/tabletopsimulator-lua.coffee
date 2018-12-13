@@ -1281,7 +1281,7 @@ module.exports = TabletopsimulatorLua =
             #filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
-            lines[i] = marker + '\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\n' + marker
+            lines[i] = marker + '\ndo\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\nend\n' + marker
         else
           marker = '----' + found[1]
           lines[i] = marker + '\n' + marker
