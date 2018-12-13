@@ -3618,8 +3618,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdestroy'
           },
           {
-            snippet: 'onObjectDrop(player_color, dropped_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDrop(string player_color, Object dropped_object)'
+            snippet: 'onObjectDrop(dropped_object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDrop(Object dropped_object, string player_color)'
             type: 'function'
             description: 'Automatically called when an Object is dropped.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdrop'
@@ -3660,36 +3660,36 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectloopingeffect'
           },
           {
-            snippet: 'onObjectPeek(player_color, object, )\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPeek(string player_color, Object object)'
+            snippet: 'onObjectPeek(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPeek(Object object, string player_color)'
             type: 'function'
             description: 'Automatically called when an Object is peeked.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpeek'
           },
           {
-            snippet: 'onObjectPickUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPickUp(string player_color, Object picked_up_object)'
+            snippet: 'onObjectPickUp(picked_up_object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickUp(Object picked_up_object, string player_color)'
             type: 'function'
             description: 'Automatically called when an Object is picked up.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpickup'
           },
           {
-            snippet: 'onObjectRandomize(player_color, object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectRandomize(string player_color, Object object)'
+            snippet: 'onObjectRandomize(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectRandomize(Object object, string player_color)'
             type: 'function'
             description: 'Automatically called when an asset Object is randomized by player_color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectrandomize'
           },
           {
-            snippet: 'onObjectSearchStart(player_color, object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectSearchStart(string player_color, Object object)'
+            snippet: 'onObjectSearchStart(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchStart(Object object, string player_color)'
             type: 'function'
             description: 'Automatically called when player_color starts searching asset object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchstart'
           },
           {
-            snippet: 'onObjectSearchEnd(player_color, object)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectSearchEnd(string player_color, Object object)'
+            snippet: 'onObjectSearchEnd(object, player_color)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectSearchEnd(Object object, string player_color)'
             type: 'function'
             description: 'Automatically called when player_color stops searching asset object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectsearchend'
