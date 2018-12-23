@@ -1,3 +1,8 @@
+## 11.0.2
+* `#include` base functionality restored to before previous version.
+* You may now wrap your `#include`d file in `<` and `>` to make it be enclosed in a `do`...`end` block.
+* Some autocomplete snippet fixes
+
 ## 11.0.1
 * `#include` code blocks now surrounded by `do`...`end` to isolate locals they define
 * Fixed `<Include...` setting description.

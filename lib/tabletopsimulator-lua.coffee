@@ -152,6 +152,8 @@ else
 
 completeFilepath = (fn, dir, ext='ttslua') ->
   filepath = fn
+  if filepath.startsWith('<') and filepath.endsWith('>')
+    filepath = filepath.slice(1, -1)
   if not filepath.endsWith('.' + ext)
     filepath += '.' + ext
   if filepath.match(/^![\\/]/) # ! = configured dir for TTSLua files
@@ -162,11 +164,16 @@ completeFilepath = (fn, dir, ext='ttslua') ->
     fullPathPattern = /\:/
   else
     fullPathPattern = /^\//
+  console.log filepath
   if filepath.match(fullPathPattern)
     return filepath
   if not dir
     dir = getRootPath()
   return path.join(dir, filepath)
+
+
+includeShouldBeEnclosed = (filepath) ->
+  return filepath.startsWith('<') and filepath.endsWith('>')
 
 
 getRootPath = () ->
@@ -1264,6 +1271,7 @@ module.exports = TabletopsimulatorLua =
       found = line.match(insertLuaFileRegexp)
       if found
         filepath = completeFilepath(found[2], dir)
+        enclose = includeShouldBeEnclosed(found[2])
         filetext = null
         if fs.existsSync(filepath)
           try
@@ -1281,7 +1289,10 @@ module.exports = TabletopsimulatorLua =
             #filetext = filetext.replace(/[\s\n\r]*$/gm, '')
             marker = '----' + found[1]
             newDir = path.dirname(filepath)
-            lines[i] = marker + '\ndo\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\nend\n' + marker
+            if enclose
+              lines[i] = marker + '\ndo\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\nend\n' + marker
+            else
+              lines[i] = marker + '\n' + @insertLuaFiles(filetext, newDir, alreadyInserted) + '\n' + marker
         else
           marker = '----' + found[1]
           lines[i] = marker + '\n' + marker
