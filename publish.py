@@ -27,7 +27,7 @@ print
 print "Version:\033[1;33m", version, "\033[0;0m"
 print
 
-confirm('git.exe pull origin master')
-confirm('git.exe tag -a %s -m "%s"' % (version, version))
-confirm('git.exe push origin %s' % version)
+confirm('git pull origin master')
+confirm('git tag -a %s -m "%s"' % (version, version))
+confirm('git push origin %s' % version)
 confirm("apm publish --tag %s" % version, True)
