@@ -2,13 +2,15 @@
 
 import sys, subprocess, re
 
+msg = "Version must be of the form: 10.8.1"
+
 if len(sys.argv) < 2:
-    print "Specify new version! (v#.#.#)"
+    print msg
     sys.exit(1)
 
 version = sys.argv[1]
 if not re.match("[0-9]+\.[0-9]+\.[0-9]", version):
-    print "Version must be of the form: 10.8.1"
+    print msg
     sys.exit(1)
 
 def confirm(command, shell=False):
