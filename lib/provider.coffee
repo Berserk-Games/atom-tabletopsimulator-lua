@@ -177,12 +177,57 @@ module.exports =
           },
           # Functions
           {
+            snippet: 'addDecal(${1:Table|parameters})'
+            displayText: 'addDecal(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a Decal onto the game world.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#adddecal'
+          },
+          {
+            snippet:
+              'addDecal({\n\t' +
+              'name             = ${1:-- string},\n\t' +
+              'url              = ${2:-- string},\n\t' +
+              'position         = ${3:-- Vector},\n\t' +
+              'rotation         = ${4:-- Vector},\n\t' +
+              'scale            = ${5:-- float},\n' +
+              '})'
+            displayText: 'addDecal({string name, string url, Vector position, Vector rotation, float scale})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a Decal onto the game world.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#adddecal'
+          },
+          {
             snippet: 'call(${1:string|function_name}, ${2:Table|parameters})'
             displayText: 'call(string function_name, Table parameters)'
             type: 'function'
             leftLabel: 'variable'
             description: 'Calls a Lua function owned by the Global Script and passes an optional Table as parameters to the function.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#call'
+          },
+          {
+            snippet: 'getDecals()'
+            displayText: 'getDecals()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a table of sub-tables, each sub-table representing one decal.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdecals'
+          },
+          {
+            snippet:
+              'getDecals() -- returns table of tables:\n\t' +
+                '-- name                   string  (Name of decal)\n\t' +
+                '-- url                    string  (Filepath or URL of image)\n\t' +
+                '-- position               Vector  (Position in world)\n\t' +
+                '-- rotation               Vector  (Rotation in world)\n\t' +
+                '-- scale                  float   (1 is normal scale)'
+            displayText: 'getDecals() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a table of sub-tables, each sub-table representing one decal.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdecals'
           },
           {
             snippet: 'getTable(${1:string|table_name})'
@@ -199,6 +244,29 @@ module.exports =
             leftLabel: 'variable'
             description: 'Gets a Lua variable for this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvar'
+          },
+          {
+            snippet: 'setDecals(${1:Table|parameters})'
+            displayText: 'setDecals(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets which decals are on an object. This removes other decals already present; use an empty table to remove all decals.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdecals'
+          },
+          {
+            snippet:
+              'setDecals({\n\t{\n\t\t' +
+              'name             = ${1:-- string},\n\t\t' +
+              'url              = ${2:-- string},\n\t\t' +
+              'position         = ${3:-- Vector},\n\t\t' +
+              'rotation         = ${4:-- Vector},\n\t\t' +
+              'scale            = ${5:-- float},\n\t' +
+              '}\n})'
+            displayText: 'setDecals({{string name, string url, Vector position, Vector rotation, float scale}})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets which decals are on an object. This removes other decals already present; use an empty table to remove all decals.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdecals'
           },
           {
             snippet: 'setHideFaceDown(${1:bool|hide})'
@@ -1797,6 +1865,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#mute'
           },
           {
+            snippet: 'pingTable(${1:Vector|position]})'
+            displayText: 'pingTable(Vector position)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Emulates the player using the ping tool at the given position.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#pingtable'
+          },
+          {
             snippet: 'print(${1:string|message})'
             displayText: 'print(string message)'
             type: 'function'
@@ -1873,6 +1949,52 @@ module.exports =
             leftLabel: 'string'
             description: 'Encodes a Lua string, number, or Table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/json/#encode_pretty'
+          },
+        ]
+
+      # Section: Time
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Time") || line.endsWith("Time.") || (previous_token == "Time" && this_token_intact)
+        suggestions = [
+          # Member Variables
+          {
+            snippet: 'time'
+            displayText: 'time'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The current game time in seconds.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#time'
+          },
+          {
+            snippet: 'delta_time'
+            displayText: 'delta_time'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'Time in seconds since the last frame.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#deltatime'
+          },
+          {
+            snippet: 'fixed_time'
+            displayText: 'fixed_time'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'The game time of the last fixedUpdate.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#fixedtime'
+          },
+          {
+            snippet: 'fixed_delta_time'
+            displayText: 'time'
+            type: 'property'
+            leftLabel: 'float'
+            description: 'Duration of fixed update in seconds.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#fixeddeltatime'
+          },
+          {
+            snippet: 'frame_count'
+            displayText: 'frame_count'
+            type: 'property'
+            leftLabel: 'int'
+            description: 'Total number of frames since the scene began.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#framecount'
           },
         ]
 
@@ -2358,6 +2480,29 @@ module.exports =
           },
           # Functions
           {
+            snippet: 'addDecal(${1:Table|parameters})'
+            displayText: 'addDecal(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a Decal onto the object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#adddecal'
+          },
+          {
+            snippet:
+              'addDecal({\n\t' +
+              'name             = ${1:-- string},\n\t' +
+              'url              = ${2:-- string},\n\t' +
+              'position         = ${3:-- Vector},\n\t' +
+              'rotation         = ${4:-- Vector},\n\t' +
+              'scale            = ${5:-- float},\n' +
+              '})'
+            displayText: 'addDecal({string name, string url, Vector position, Vector rotation, float scale})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a Decal onto the object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#adddecal'
+          },
+          {
             snippet: 'addForce(${1:Table|force_vector}, ${2:int|force_type})'
             displayText: 'addForce(Table force_vector, int force_type)'
             type: 'function'
@@ -2664,6 +2809,15 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcolortint'
           },
           {
+            snippet: 'getComponentVar(${1:string|component_name}, ${2:string|variable_name})'
+            displayText: 'getComponentVar(string component_name, string variable_name)'
+            type: 'function'
+            leftLabel: 'var'
+            description: 'Get the current value of a component of an object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcomponentvar'
+          },
+
+          {
             snippet: 'getCustomObject()'
             displayText: 'getCustomObject()'
             type: 'function'
@@ -2693,11 +2847,33 @@ module.exports =
                 '-- cast_shadows           bool    (Does this Custom Mesh cast shadows?)\n\t' +
                 '-- assetbundle            string  (AssetBundle URL for this Custom AssetBundle.)\n\t' +
                 '-- assetbundle_secondary  string  (Secondary AssetBundle URL for this Custom AssetBundle.)'
-            displayText: 'getCustomObject() -- returns {{...'
+            displayText: 'getCustomObject() -- returns {...'
             type: 'function'
             leftLabel: 'Table'
             description: 'Returns the custom parameters on a Custom Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcustomobject'
+          },
+          {
+            snippet: 'getDecals()'
+            displayText: 'getDecals()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a table of sub-tables, each sub-table representing one decal.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdecals'
+          },
+          {
+            snippet:
+              'getDecals() -- returns table of tables:\n\t' +
+                '-- name                   string  (Name of decal)\n\t' +
+                '-- url                    string  (Filepath or URL of image)\n\t' +
+                '-- position               Vector  (Position on Object)\n\t' +
+                '-- rotation               Vector  (Rotation relative to Object)\n\t' +
+                '-- scale                  float   (1 is normal scale)'
+            displayText: 'getDecals() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a table of sub-tables, each sub-table representing one decal.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getdecals'
           },
           {
             snippet: 'getDescription()'
@@ -2722,6 +2898,38 @@ module.exports =
             leftLabel: 'Table'
             description: 'Returns the fog-of-war reveal settings for this Object: {bool reveal, Player color, float range}.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getfogofwarreveal'
+          },
+          {
+            snippet: 'getJoints()'
+            displayText: 'getJoints()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns information on any joints attached from this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getjoints'
+          },
+          {
+            snippet:
+              'getJoints() -- returns table of tables:\n\t' +
+                '-- type                   string  (One of: "Fixed", "Hinge" [H], "Spring" [S])\n\t' +
+                '-- joint_object_guid      string  (GUID of attached object)\n\t' +
+                '-- collision              bool    (Is collision enabled?)\n\t' +
+                '-- break_force            float   (Force required to break joint)\n\t' +
+                '-- break_torque           float   (Torque required to break joint)\n\t' +
+                '-- axis                   Vector  ([H] Axis of rotation)\n\t' +
+                '-- anchor                 Vector  ([H] Position of anchor)\n\t' +
+                '-- connector_anchor       Vector  ([H] Position on connected Object)\n\t' +
+                '-- motor_force            float   ([H] Option A: Force of rotation)\n\t' +
+                '-- motor_velocity         float   ([H] Option B: Velocity of rotaton)\n\t' +
+                '-- motor_free_spin        bool    (If enabled the motor will only accelerate but never slow down)\n\t' +
+                '-- spring                 float   (Force used to keep objects together)\n\t' +
+                '-- damper                 float   (Force used to dampen spring)\n\t' +
+                '-- max_distance           float   (Maximum distance objects may be apart)\n\t' +
+                '-- min_distance           float   (Minimum distance objects may be apart)'
+            displayText: 'getJoints() -- returns {{...'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns information on any joints attached from this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getjoints'
           },
           {
             snippet: 'getGUID()'
@@ -3206,12 +3414,43 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setcolortint'
           },
           {
+            snippet: 'setComponentVar(${1:string|component_name}, ${2:string|variable_name}, ${3:value})'
+            displayText: 'setComponentVar(string component_name, string variable_name, var value)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Set the current value of a component of an object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setcomponentvar'
+          },
+          {
             snippet: 'setCustomObject(${1:Table|parameters})'
             displayText: 'setCustomObject(Table parameters)'
             type: 'function'
             leftLabel: 'bool'
             description: 'Used to create a Custom Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setcustomobject'
+          },
+          {
+            snippet: 'setDecals(${1:Table|parameters})'
+            displayText: 'setDecals(Table parameters)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets which decals are on an object. This removes other decals already present; use an empty table to remove all decals.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdecals'
+          },
+          {
+            snippet:
+              'setDecals({\n\t{\n\t\t' +
+              'name             = ${1:-- string},\n\t\t' +
+              'url              = ${2:-- string},\n\t\t' +
+              'position         = ${3:-- Vector},\n\t\t' +
+              'rotation         = ${4:-- Vector},\n\t\t' +
+              'scale            = ${5:-- float},\n\t' +
+              '}\n})'
+            displayText: 'setDecals({{string name, string url, Vector position, Vector rotation, float scale}})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets which decals are on an object. This removes other decals already present; use an empty table to remove all decals.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setdecals'
           },
           {
             snippet: 'setDescription(${1:string|description})'
@@ -3876,11 +4115,11 @@ module.exports =
             descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#6.5'
           },
           {
-            snippet: 'Timer'
-            displayText: 'Timer'
+            snippet: 'Time'
+            displayText: 'Time'
             type: 'constant'
-            description: 'The Timer class.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/timer/'
+            description: 'The Time class.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/time/'
           },
           {
             snippet: 'Turns'
@@ -4016,12 +4255,20 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#logstyle'
           },
           {
+            snippet: 'group(${1:Table|objects})'
+            displayText: 'group(Table objects)'
+            type: 'function'
+            leftLabel: 'Object'
+            description: 'Groups objects together into returned Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#group'
+          },
+          {
             snippet: 'paste(${1:Table|parameters})'
             displayText: 'paste(Table parameters)'
             type: 'function'
             leftLabel: 'Table'
             description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#copy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#paste'
           },
           {
             snippet:
@@ -4033,7 +4280,7 @@ module.exports =
             type: 'function'
             leftLabel: 'Table'
             description: 'Pastes copied Objects and returns a Table of references to the new Objects.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#copy'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#paste'
           },
           {
             snippet: 'print(${1:string|message})'
