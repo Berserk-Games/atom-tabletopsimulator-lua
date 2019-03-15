@@ -1,3 +1,6 @@
+## 11.1.0
+* Added autocomplete snippets for API changes in v11.1.0
+
 ## 11.0.2
 * `#include` base functionality restored to before previous version.
 * You may now wrap your `#include`d file in `<` and `>` to make it be enclosed in a `do`...`end` block.
