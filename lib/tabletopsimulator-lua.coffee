@@ -402,7 +402,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
   createXML = atom.config.get('tabletopsimulator-lua.loadSave.createXML')
   for f, i in files
-    f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+    f.name = f.name.replace(/([":<>/\\|?*\r\n])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     # write ttslua script
     @file = new FileHandler(basename)
