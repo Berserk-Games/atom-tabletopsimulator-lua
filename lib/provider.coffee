@@ -996,16 +996,16 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#show'
           },
           {
-            snippet: 'setXml(${1:string|xml})'
-            displayText: "setXml(string xml)"
+            snippet: 'setXml(${1:string|xml}, ${2:table|assets})'
+            displayText: "setXml(string xml, table assets)"
             type: 'function'
             leftLabel: 'bool'
             description: 'Replaces the run-time UI with the XML string.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#setxml'
           },
           {
-            snippet: 'setXmlTable(${1:table|xmlTable})'
-            displayText: "setXmlTable(table xmlTable)"
+            snippet: 'setXmlTable(${1:table|xmlTable}, ${2:table|assets})'
+            displayText: "setXmlTable(table xmlTable, table assets)"
             type: 'function'
             leftLabel: 'bool'
             description: 'Replaces the run-time UI with an XML string which is generated from a table of data.'
@@ -1096,42 +1096,127 @@ module.exports =
           },
         ]
 
-      # Section: os Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || (previous_token == "os" && this_token_intact)
+      # Section: Color Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Color") || line.endsWith("Color.") || (previous_token == "Color" && this_token_intact)
         suggestions = [
           {
-            snippet: 'clock()'
-            displayText: 'clock()'
+            snippet: 'new(${1:float|r}, ${2:float|g}, ${3:float|b}, ${3:float|a})'
+            displayText: 'new(float r, float g, float b, float a)'
             type: 'function'
-            leftLabel: 'int'
-            description: 'Returns an approximation of the amount in seconds of CPU time used by the program.'
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock'
+            leftLabel: 'Color'
+            description: 'Returns a new Color.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/#new'
           },
           {
-            snippet: 'date()'
-            displayText: 'date([format [, time]])'
+            snippet: 'fromString(${1:string|player_color})'
+            displayText: 'fromString(string player_color)'
             type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns a string or a table containing date and time.'
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date'
+            leftLabel: 'Color'
+            description: 'Returns a new Color from a given player color string ("Red", "White", etc.).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/#fromstring'
           },
           {
-            snippet: 'difftime(${1:time|t2}, ${2:time|t1})'
-            displayText: 'difftime(t2, t1)'
+            snippet: 'fromHex(${1:string|hex})'
+            displayText: 'fromHex(string hex)'
             type: 'function'
-            leftLabel: 'int'
-            description: 'Returns the number of seconds from time t1 to time t2.'
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime'
+            leftLabel: 'Color'
+            description: 'Returns a new Color from a given hex string (#RRGGBBAA).  "#" and "AA" are optional.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/#fromhex'
           },
           {
-            snippet: 'time()'
-            displayText: 'time([table])'
+            snippet: 'add(${1:string|name}, ${2:Color|color})'
+            displayText: 'add(string name, Color color)'
             type: 'function'
-            leftLabel: 'Table'
-            description: 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.'
-            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time'
+            leftLabel: 'bool'
+            description: 'Add a color to the table of all named colors.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/#add'
           },
-        ]
+          {
+            snippet: 'list'
+            displayText: 'list'
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Table of all named colors.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/#list'
+          },
+          {
+            snippet: 'Black'
+            displayText: 'Black'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Black player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Blue'
+            displayText: 'Blue'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Blue player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Brown'
+            displayText: 'Brown'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Brown player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Green'
+            displayText: 'Green'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Green player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Orange'
+            displayText: 'Orange'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Orange player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Pink'
+            displayText: 'Pink'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Pink player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Purple'
+            displayText: 'Purple'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Purple player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Red'
+            displayText: 'Red'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Red player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Teal'
+            displayText: 'Teal'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Teal player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'White'
+            displayText: 'White'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the White player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+          {
+            snippet: 'Yellow'
+            displayText: 'Yellow'
+            type: 'property'
+            leftLabel: 'Color'
+            description: 'The Color of the Yellow player.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/color/'},
+      ]
 
       # Section: Clock Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || line.endsWith("Clock.") || (previous_token == "Clock" && this_token_intact)
@@ -1345,6 +1430,156 @@ module.exports =
           },
         ]
 
+      # Section: Music Player Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "MusicPlayer") || line.endsWith("MusicPlayer.") || (previous_token == "MusicPlayer" && this_token_intact)
+        suggestions = [
+          # Member Variables
+          {
+            snippet: 'repeat_track'
+            displayText: 'repeat_track'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'If the current audio clip should be repeated.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#repeattrack'
+          },
+          {
+            snippet: 'shuffle'
+            displayText: 'shuffle'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'If the playlist should be shuffled.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#shuffle'
+          },
+          {
+            snippet: 'playlistIndex'
+            displayText: 'playlistIndex'
+            type: 'property'
+            leftLabel: 'int'
+            description: 'Current index of the playlist, or -1 if nothing is playing.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#playlistindex'
+          },
+          {
+            snippet: 'loaded'
+            displayText: 'loaded'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'If the all the players have loaded the current audio clip.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#loaded'
+          },
+          {
+            snippet: 'player_status'
+            displayText: 'player_status'
+            type: 'property'
+            leftLabel: 'string'
+            description: 'Status of the music player, one of: "Stop", "Play", "Loading", "Ready".'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#playerstatus'
+          },
+          # Functions
+          {
+            snippet: 'play()'
+            displayText: 'play()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Plays currently loaded audioclip. Returns true if the music player is playing, otherwise returns false.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#play'
+          },
+          {
+            snippet: 'pause()'
+            displayText: 'pause()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Pauses currently playing audioclip. Returns true if the music player is paused, otherwise returns false.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#pause'
+          },
+          {
+            snippet: 'skipForward()'
+            displayText: 'skipForward()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Skips to the next audioclip in playlist if possible. Returns true if skip was successful, otherwise returns false.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#skipforward'
+          },
+          {
+            snippet: 'skipBackward()'
+            displayText: 'skipBackward()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Skips to the previous audioclip in playlist if possible. Returns true if skip was successful, otherwise returns false.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#skipbackward'
+          },
+          {
+            snippet: 'getCurrentAudioClip()'
+            displayText: 'getCurrentAudioClip()'
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns the currently loaded audio clip.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#getcurrentaudioclip'
+          },
+          {
+            snippet: 'getCurrentAudioClip()$1\n\t-- getCurrentAudioClip returns:\n\t-- {string url, string title}'
+            displayText: 'getCurrentAudioClip() -- returns {string url, string title}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of URL and Title for the currently loaded audio clip.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#getcurrentaudioclip'
+          },
+          {
+            snippet: 'setCurrentAudioClip(${1:Table|clip})'
+            displayText: 'setCurrentAudioClip(Table clip)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the audio clip to load.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#setcurrentaudioclip'
+          },
+          {
+            snippet:
+              'setCurrentAudioClip({\n\t' +
+              'url   = ${1:-- string},\n\t' +
+              'title = ${2:-- string},\n' +
+              '})'
+            displayText: 'setCurrentAudioClip({string url, string title})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the audio clip to load.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#setcurrentaudioclip'
+          },
+          {
+            snippet: 'getPlaylist()'
+            displayText: 'getPlaylist()'
+            type: 'function'
+            leftLabel: 'table'
+            description: 'Returns the current playlist.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#getplaylist'
+          },
+          {
+            snippet: 'getPlaylist()$1\n\t-- getCurrentAudioClip returns:\n\t-- {{string url, string title}, ...}'
+            displayText: 'getPlaylist() -- returns {{string url, string title}, ...}'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a Table of Tables (URL and Title) for the current playlist.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#getplaylist'
+          },
+          {
+            snippet: 'setPlaylist(${1:Table|playlist})'
+            displayText: 'setCurrentAudioClip(Table playlist)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current playlist.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#setplaylist'
+          },
+          {
+            snippet:
+              'setPlaylist({\n\t{\n\t\t' +
+              'url   = ${1:-- string},\n\t' +
+              'title = ${2:-- string},\n\t' +
+              '}\n})'
+            displayText: 'setPlaylist({Vector position, Vector rotation, Vector scale, Vector forward, Vector right, Vector up})'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the current playlist.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/musicplayer/#setplaylist'
+          },
+      ]
 
       # Section: Notes
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Notes") || line.endsWith("Notes.") || (previous_token == "Notes" && this_token_intact)
@@ -1434,6 +1669,45 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#setnotes'
           },
         ]
+
+
+      # Section: os Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || (previous_token == "os" && this_token_intact)
+        suggestions = [
+          {
+            snippet: 'clock()'
+            displayText: 'clock()'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns an approximation of the amount in seconds of CPU time used by the program.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock'
+          },
+          {
+            snippet: 'date()'
+            displayText: 'date([format [, time]])'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns a string or a table containing date and time.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date'
+          },
+          {
+            snippet: 'difftime(${1:time|t2}, ${2:time|t1})'
+            displayText: 'difftime(t2, t1)'
+            type: 'function'
+            leftLabel: 'int'
+            description: 'Returns the number of seconds from time t1 to time t2.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime'
+          },
+          {
+            snippet: 'time()'
+            displayText: 'time([table])'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.'
+            descriptionMoreURL: 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time'
+          },
+        ]
+
 
       # Section: Physics
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_intact)
@@ -1920,6 +2194,22 @@ module.exports =
             description: 'Sets the Transform of the player’s hand.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#sethandtransform'
           },
+          {
+            snippet: 'setUITheme(${1:string|theme})'
+            displayText: 'setUITheme(string theme)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the player’s UI theme (use "Export" in theme editor to get string).'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#setuitheme'
+          },
+          {
+            snippet: 'showHotkeyConfig()'
+            displayText: 'showHotkeyConfig()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Displays the hotkey assignment UI.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/player/#showhotkeyconfig'
+          },
         ]
 
       # Section: JSON Class
@@ -1995,6 +2285,43 @@ module.exports =
             leftLabel: 'int'
             description: 'Total number of frames since the scene began.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/time/#framecount'
+          },
+        ]
+
+      # Section: Vector Class
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Vector") || line.endsWith("Vector.") || (previous_token == "Vector" && this_token_intact)
+        suggestions = [
+          {
+            snippet: 'new(${1:float|x}, ${2:float|y}, ${3:float|z})'
+            displayText: 'new(float x, float y, float z)'
+            type: 'function'
+            leftLabel: 'Vector'
+            description: 'Returns a new Vector.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/vector/#new'
+          },
+          {
+            snippet: 'max(${1:Vector|v1}, ${2:Vector|v2})'
+            displayText: 'max(Vector v1, Vector v2)'
+            type: 'function'
+            leftLabel: 'Vector'
+            description: 'Returns a new Vector with the max component of each parameter.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/vector/#max'
+          },
+          {
+            snippet: 'min(${1:Vector|v1}, ${2:Vector|v2})'
+            displayText: 'min(Vector v1, Vector v2)'
+            type: 'function'
+            leftLabel: 'Vector'
+            description: 'Returns a new Vector with the min component of each parameter.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/vector/#min'
+          },
+          {
+            snippet: 'between(${1:Vector|v1}, ${2:Vector|v2})'
+            displayText: 'between(Vector v1, Vector v2)'
+            type: 'function'
+            leftLabel: 'Vector'
+            description: 'Returns a new Vector pointing from v1 to v2.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/vector/#between'
           },
         ]
 
@@ -2359,6 +2686,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#name'
           },
           {
+            snippet: 'remainder'
+            displayText: 'remainder'
+            type: 'property'
+            leftLabel: 'Object'
+            description: 'If takeObject has left only one item in this container, this will refer to that item.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#remainder'
+          },
+          {
             snippet: 'resting'
             displayText: 'resting'
             type: 'property'
@@ -2480,6 +2815,14 @@ module.exports =
           },
           # Functions
           {
+            snippet: 'addContextMenuItem(${1:string|label, ${2:function|f, ${3:boolean|keep_open})'
+            displayText: 'addContextMenuItem(string label, function f, boolean keep_open)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a context menu item onto the object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#addcontextmenuitem'
+          },
+          {
             snippet: 'addDecal(${1:Table|parameters})'
             displayText: 'addDecal(Table parameters)'
             type: 'function'
@@ -2549,6 +2892,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Clears all 3D UI buttons on this Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clearbuttons'
+          },
+          {
+            snippet: 'clearContextMenu()'
+            displayText: 'clearContextMenu()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears all added context menu items on this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#clearcontextmenu'
           },
           {
             snippet: 'clearInputs()'
@@ -2816,7 +3167,6 @@ module.exports =
             description: 'Get the current value of a component of an object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getcomponentvar'
           },
-
           {
             snippet: 'getCustomObject()'
             displayText: 'getCustomObject()'
@@ -2898,6 +3248,14 @@ module.exports =
             leftLabel: 'Table'
             description: 'Returns the fog-of-war reveal settings for this Object: {bool reveal, Player color, float range}.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getfogofwarreveal'
+          },
+          {
+            snippet: 'getGMNotes()'
+            displayText: 'getGMNotes()'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the GM notes attached to this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getgmnotes'
           },
           {
             snippet: 'getJoints()'
@@ -3334,6 +3692,14 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#randomize'
           },
           {
+            snippet: 'registerCollisions(${1:boolean|include_stay_events})'
+            displayText: 'registerCollisions(boolean include_stay_events)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Registers object to be checked for collisions: required for onObjectCollisionEnter etc.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#registercollisions'
+          },
+          {
             snippet: 'reload()'
             displayText: 'reload()'
             type: 'function'
@@ -3480,6 +3846,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Sets whether the object reveals fog-of-war: {bool reveal, Player color, float range}'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setfogofwarreveal'
+          },
+          {
+            snippet: 'setGMnotes(${1:string|notes})'
+            displayText: 'setGMnotes(string notes)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the GM notes attached to this Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setgmnotes'
           },
           {
             snippet: 'setHiddenFrom(${1:Table|players})'
@@ -3723,13 +4097,36 @@ module.exports =
             description: 'Smoothly moves this Object from its current position to a given offset.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#translate'
           },
+          {
+            snippet: 'unregisterCollisions()'
+            displayText: 'unregisterCollisions()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Unregisters object to be checked for collisions: onObjectCollisionEnter etc. will no longer work.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#unregistercollisions'
+          },
         ]
+
 
       # Section: Default Events
       else if (line.startsWith('function') && not line.includes("("))
         suggestions = []
         if not global_script
           suggestions = suggestions.concat [
+            {
+              snippet: 'filterObjectEnter(enter_object)\n\t${0:-- body...}\nend'
+              displayText: 'filterObjectEnter(Object enter_object)'
+              type: 'function'
+              description: 'Automatically called when an Object attempts to enter this container.  If this function returns false the object will not be allowed in.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectenter'
+            },
+            {
+              snippet: 'filterObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
+              displayText: 'filterObjectEnterContainer(Object container, Object enter_object)'
+              type: 'function'
+              description: 'Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectentercontainer'
+            },
             {
               snippet:
                 'onCollisionEnter(collision_info)\n\t' +
@@ -3784,6 +4181,20 @@ module.exports =
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ondrop'
             },
             {
+              snippet: 'onHover(player_color)\n\t${0:-- body...}\nend'
+              displayText: 'onHover(string player_color)'
+              type: 'function'
+              description: 'Called when a player hovers their pointer over this object.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onhover'
+            },
+            {
+              snippet: 'onNumberTyped(player_color, number_typed)\n\t${0:-- body...}\nend'
+              displayText: 'onNumberTyped(string player_color, int number_typed)'
+              type: 'function'
+              description: 'Called when a player hovers their pointer over this object and types a number.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onnumbertyped'
+            },
+            {
               snippet: 'onPeek(player_color)\n\t${0:-- body...}\nend'
               displayText: 'onPeek(string player_color)'
               type: 'function'
@@ -3818,6 +4229,13 @@ module.exports =
               description: 'Automatically called when player_color stops searching this object.'
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onsearchend'
             },
+            {
+              snippet: 'onStateChange(old_guid)\n\t${0:-- body...}\nend'
+              displayText: 'onStateChange(string old_guid)'
+              type: 'function'
+              description: 'Called when this object appears because of a state change.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onstatechanged'
+            },
           ]
         suggestions = suggestions.concat [
           {
@@ -3850,6 +4268,45 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onload'
           },
           {
+            snippet:
+              'onObjectCollisionEnter(hit_object, collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
+            displayText: 'onObjectCollisionEnter(Object hit_object, Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when an Object collides with another Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectcollisionenter'
+          },
+          {
+            snippet:
+              'onObjectCollisionStay(hit_object, collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
+            displayText: 'onObjectCollisionStay(Object hit_object, Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when an Object is touching another Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectcollisionstay'
+          },
+          {
+            snippet:
+              'onObjectCollisionExit(hit_object, collision_info)\n\t' +
+              '-- collision_info table:\n\t' +
+              '--   collision_object    Object\n\t' +
+              '--   contact_points      Table     {Vector, ...}\n\t' +
+              '--   relative_velocity   Vector\n\t' +
+              '$1\nend'
+            displayText: 'onObjectCollisionExit(Object hit_object, Table collision_info)'
+            type: 'function'
+            description: 'Automatically called when an Object stops touching another Object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectcollisionexit'
+          },
+          {
             snippet: 'onObjectDestroy(dying_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectDestroy(Object dying_object)'
             type: 'function'
@@ -3878,6 +4335,13 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectenterscriptingzone'
           },
           {
+            snippet: 'onObjectHover(player_color, hover_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectHover(string player_color, Object hover_object)'
+            type: 'function'
+            description: 'Called when a player hovers their pointer over an object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjecthover'
+          },
+          {
             snippet: 'onObjectLeaveContainer(container, leave_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectLeaveContainer(Object container, Object leave_object)'
             type: 'function'
@@ -3897,6 +4361,13 @@ module.exports =
             type: 'function'
             description: "Automatically called when an asset Object's loop is started."
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectloopingeffect'
+          },
+          {
+            snippet: 'onObjectNumberTyped(number_object, player_color, number_typed)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectNumberTyped(Object number_object, string player_color, int number_typed)'
+            type: 'function'
+            description: 'Called when a player hovers their pointer over an object and types a number.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectnumbertyped'
           },
           {
             snippet: 'onObjectPeek(object, player_color)\n\t${0:-- body...}\nend'
@@ -3941,6 +4412,13 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectspawn'
           },
           {
+            snippet: 'onObjectStateChange(changed_object, old_guid)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectStateChange(Object changed_object, string old_guid)'
+            type: 'function'
+            description: 'Called when an object changes state.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectstatechanged'
+          },
+          {
             snippet: 'onObjectTriggerEffect(object, index)\n\t${0:-- body...}\nend'
             displayText: 'onObjectTriggerEffect(Object object, int index)'
             type: 'function'
@@ -3953,6 +4431,13 @@ module.exports =
             type: 'function'
             description: 'Automatically called when a Player changes color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerchangecolor'
+          },
+          {
+            snippet: 'onPlayerChangeTeam(player_color, team)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerChangeTeam(string player_color, string team)'
+            type: 'function'
+            description: 'Automatically called when a Player changes team.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerchangeteam'
           },
           {
             snippet: 'onPlayerConnect(player_id)\n\t${0:-- body...}\nend'
@@ -4151,6 +4636,22 @@ module.exports =
           },
           # Global Management Functions
           {
+            snippet: 'addContextMenuItem(${1:string|label, ${2:function|f, ${3:boolean|keep_open}, ${4:boolean|require_table})'
+            displayText: 'addContextMenuItem(string label, function f, boolean keep_open, boolean require_table)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a global context menu item.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addcontextmenuitem'
+          },
+          {
+            snippet: 'addHotkey(${1:string|label, ${2:function|f, ${3:boolean|trigger_on_key_up})'
+            displayText: 'addHotkey(string label, function f, boolean trigger_on_key_up)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Add a user-assignable hotkey.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addhotkey'
+          },
+          {
             snippet: 'broadcastToAll(${1:string|message}, ${2:Table|text_color})'
             displayText: 'broadcastToAll(string message, Table text_color)'
             type: 'function'
@@ -4165,6 +4666,22 @@ module.exports =
             leftLabel: 'bool'
             description: 'Prints a private message to the screen and chat window to the player matching the player color.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#broadcasttocolor'
+          },
+          {
+            snippet: 'clearContextMenu()'
+            displayText: 'clearContextMenu()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears add global context menu items.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#clearcontextmenu'
+          },
+          {
+            snippet: 'clearHotkeys()'
+            displayText: 'clearHotkeys()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Clears user assignable hotkeys.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#clearhotkeys'
           },
           {
             snippet: 'clearPixelPaint()'
@@ -4245,6 +4762,14 @@ module.exports =
             leftLabel: 'bool'
             description: 'Outputs a message to the system console. Specify a tag to identify it by class or subject, and label to prefix the value.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#log'
+          },
+          {
+            snippet: 'logString(${1:Var|message}, ${2:string|tag}, ${3:string|label})'
+            displayText: 'logString(Var message, string tag = "", string label = "")'
+            type: 'function'
+            leftLabel: 'string'
+            description: 'Returns the string which "log" would output.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#logstring'
           },
           {
             snippet: 'logStyle(${1:string|tag}, ${2:Color|color}, ${3:string|prefix}, ${4:string|postfix})'
