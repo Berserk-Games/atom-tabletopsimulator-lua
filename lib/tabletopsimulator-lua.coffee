@@ -1181,6 +1181,10 @@ module.exports = TabletopsimulatorLua =
     editors = []
     ttsEditors = {}
     for editor,i in atom.workspace.getTextEditors()
+      # We don't want to save editors that aren't backed by files, because the save operation will fail
+      if editor.getTitle() == "untitled"
+        continue
+
       openFiles += 1
       # Store cursor positions
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
@@ -1192,6 +1196,9 @@ module.exports = TabletopsimulatorLua =
     log LOG_MSG, "Starting to save..."
 
     for editor, i in atom.workspace.getTextEditors()
+      if editor.getTitle() == "untitled"
+        continue
+
       @blocking_save(editor).then (buffer) =>
         log LOG_MSG, buffer.getPath()
         savedFiles += 1
