@@ -131,7 +131,6 @@ log_seperator = (tag) ->
 
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
-insertFileSeperator = '|'
 insertLuaMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
 insertLuaFileRegexp = RegExp('^' + insertLuaMarkerString)
 insertedLuaFileRegexp = RegExp('^----' + insertLuaMarkerString)
@@ -183,30 +182,6 @@ getRootPath = () ->
   if rootpath.match(/^~[\\/]/) # home dir selector ~
     rootpath = path.join(os.homedir(), rootpath[2..])
   return rootpath
-
-
-extractFileMap = (text, filepath) ->
-  lines = text.split(/\n/)
-  tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
-  for line, row in lines
-    found = line.match(insertedLuaFileRegexp)
-    if found
-      if tree.parent
-        dir = path.dirname(tree.parent.label)
-      else # root node
-        dir = path.dirname(filepath)
-      label = completeFilepath(found[2], dir)
-      if tree.parent and tree.parent.label == label #closing include
-        tree.endRow = row
-        tree = tree.parent
-        if tree.parent == null
-          output.push(found[1])
-      else #opening include
-        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
-        tree = tree.children[tree.children.length-1]
-        if not (label of appearsInFile)
-          appearsInFile[label] = {}
-        appearsInFile[label][filepath] = tree.depth
 
 
 isFromTTS = (fn) ->
