@@ -1327,8 +1327,10 @@ module.exports = TabletopsimulatorLua =
     options = {
       expressionHandler: (module, expression) =>
         start = expression.loc.start
-        detail = "Non-literal require found in '" + module + "' at " + start.line + ":" + start.column
+        display_name = if module.name == bundleRootModule then filename else module.name
+        detail = "Non-literal require found in '" + display_name + "' at " + start.line + ":" + start.column
         atom.notifications.addWarning("Failed to create bundle: " + filename, {dismissable: true, detail: detail})
+        return null
       identifiers:
         require: bundleRequire
       isolate: true
