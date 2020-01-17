@@ -1285,7 +1285,7 @@ module.exports = TabletopsimulatorLua =
         catch error
           atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
       else
-        atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
+        atom.notifications.addError("Could not catalog <Include /> - file not found:", {icon: 'type-file', detail: filepath})
       if filetext
         if filepath of alreadyInserted
           atom.notifications.addError("Cyclical " + atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword') + " detected.", {dismissable: true, icon: 'type-file', detail: filepath})
