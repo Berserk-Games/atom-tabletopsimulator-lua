@@ -591,7 +591,7 @@ module.exports = TabletopsimulatorLua =
         bundleSearchPath:
           title: 'Bundle file patterns'
           description: '''Bundle file patterns, semi-colon (;) separated. Patterns are relative to the #include base path and required file paths will be substituted for question mark (?) characters.'''
-          order: 5
+          order: 6
           type: 'string'
           default: defaultBundleSearchPath()
         delayLinter:
