@@ -7,7 +7,7 @@ os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
 luabundle = require 'luabundle'
-luaparse = require 'luaparse'
+luaparse = require 'moonsharp-luaparse'
 shell = require 'shell'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
@@ -414,7 +414,7 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
   createXML = atom.config.get('tabletopsimulator-lua.loadSave.createXML')
   for f, i in files
-    f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+    f.name = f.name.replace(/([":<>/\\|?*\r\n])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     # write ttslua script
     @file = new FileHandler(basename)
@@ -1202,6 +1202,10 @@ module.exports = TabletopsimulatorLua =
     editors = []
     ttsEditors = {}
     for editor,i in atom.workspace.getTextEditors()
+      # We don't want to save editors that aren't backed by files, because the save operation will fail
+      if editor.getTitle() == "untitled"
+        continue
+
       openFiles += 1
       # Store cursor positions
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
@@ -1213,6 +1217,9 @@ module.exports = TabletopsimulatorLua =
     log LOG_MSG, "Starting to save..."
 
     for editor, i in atom.workspace.getTextEditors()
+      if editor.getTitle() == "untitled"
+        continue
+
       @blocking_save(editor).then (buffer) =>
         log LOG_MSG, buffer.getPath()
         savedFiles += 1
