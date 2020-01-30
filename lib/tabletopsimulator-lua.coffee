@@ -139,16 +139,7 @@ horizontalWhitespaceSet = '\\t\\v\\f\\r \u00a0\u2000-\u200b\u2028-\u2029\u3000'
 insertXmlFileRegexp = RegExp('(^|\\n)([' + horizontalWhitespaceSet + ']*)(.*)<Include\\s+src=(\'|")(.+)\\4\\s*/>', 'g')
 insertedXmlFileRegexp = RegExp('(<!--\\s+include\\s+([^\\s].*)\\s+-->)[\\s\\S]+?\\1', 'g')
 
-# bundling
-bundleVersion = 1
 bundleRootModule = '__root'
-bundleRequire = '__bundle_require'
-bundleHeaderKeyword = '#tts-bundle'
-bundleHeaderRegexp = RegExp('^\s*--- ' + bundleHeaderKeyword + ' \\(version: ([0-9]+)\\)')
-bundleFooterKeyword = '#tts-end-bundle'
-bundleFooterRegexp = RegExp('^\s*--- ' + bundleFooterKeyword)
-bundleModuleKeyword = '#tts-module'
-bundleRootModuleRegexp = RegExp('^--- (' + bundleModuleKeyword + ' \\"(.+)\")')
 
 fileMap = {}
 appearsInFile = {}
@@ -177,7 +168,6 @@ completeFilepath = (fn, dir, ext='ttslua') ->
     dir = getRootPath()
   return path.join(dir, filepath)
 
-
 includeShouldBeEnclosed = (filepath) ->
   return filepath.startsWith('<') and filepath.endsWith('>')
 
@@ -195,12 +185,6 @@ getBundleSearchPaths = () ->
   rootpath = getRootPath()
   bundleSearchPath = atom.config.get('tabletopsimulator-lua.loadSave.bundleSearchPath') || defaultBundleSearchPath()
   return bundleSearchPath.split(';').map((p) => path.join(rootpath, p))
-
-generateBundleMarker = (header) ->
-  if header
-    return '--- ' + bundleHeaderKeyword + ' (version: ' + bundleVersion + ')\n'
-  else
-    return '\n--- ' + bundleFooterKeyword + '\n'
 
 isFromTTS = (fn) ->
   return fn and path.dirname(fn) == ttsLuaDir
@@ -239,7 +223,7 @@ findFileRow = (filepath, row) ->
           else if r >= child.startRow
             return walkFileMap(r, child)
         # not in any children, so is only in this file
-      return [node.label, r - (node.startRow + offset)]
+      return [node.path, r - (node.startRow + offset)]
     [fp, row] = walkFileMap(row, fileMap[filepath])
     if fp
       filepath = fp
@@ -282,49 +266,43 @@ lengthInUtf8Bytes = (str) ->
   m = encodeURIComponent(str).match(/%[89ABab]/g)
   return str.length + (if m then m.length else 0)
 
-processLua = (filepath, text) ->
-  includeFiles = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-  bundleFiles = atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
-  fileIsBundle = bundleFiles && text.substring(0, text.indexOf('\n')).match(bundleHeaderRegexp)
-
-  if !includeFiles && !fileIsBundle
-    return text
-
+processLuaIncludeFiles = (filepath, text, fileSourceMap) ->
   lines = text.split(/\n/)
-  bundleDepth = 0 # We track "bundle depth" in case a user pasted a bundle into their script.
-  tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
+  if not fileSourceMap
+    fileSourceMap = fileMap[filepath] = {
+      path: null,
+      children: [],
+      startRow: 0,
+      endRow: lines.length-1,
+    }
+  state = {
+    parent: null,
+    closeTag: null,
+    sourceMap: fileSourceMap
+  }
   output = []
 
   for line, row in lines
-    if fileIsBundle
-      if line.match(bundleHeaderRegexp)
-        bundleDepth += 1
-      else if line.match(bundleFooterRegexp)
-        bundleDepth -= 1
-      else if bundleDepth == 1 # We only restore "require()" in the root bundle, so as to avoid breaking nested bundles.
-        line = line.replace bundleRequire, 'require'
-
-    includeFound = includeFiles && (!fileIsBundle || tree.parent) && line.match(insertedLuaFileRegexp)
-    bundleModuleFound = bundleDepth == 1 && line.match(bundleRootModuleRegexp)
-    found = includeFound || bundleModuleFound
-
+    found = line.match(insertedLuaFileRegexp)
+    #console.log tree
     if found
       dir = null
-      if tree.label
-        dir = path.dirname(tree.label)
-      label = if bundleModuleFound then found[2] else completeFilepath(found[2], dir)
-      if found[2] == tree.closeTag #closing include
-        tree.endRow = row
-        tree = tree.parent
-        if includeFound && !tree.parent
+      if state.sourceMap.path
+        dir = path.dirname(state.sourceMap.path)
+      includedPath = completeFilepath(found[2], dir)
+      if found[2] == state.closeTag #closing include
+        state.sourceMap.endRow = fileSourceMap.startRow + row
+        state = state.parent
+        if state.parent == null
           output.push(found[1])
       else #opening include
-        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1, closeTag: found[2]})
-        tree = tree.children[tree.children.length-1]
-        if not (label of appearsInFile)
-          appearsInFile[label] = {}
-        appearsInFile[label][filepath] = tree.depth
-    else if (!fileIsBundle && !tree.parent) || tree.label == bundleRootModule
+        childSourceMap = {path: includedPath, children: [], startRow: fileSourceMap.startRow + row + 1, endRow: null}
+        state.sourceMap.children.push(childSourceMap)
+        state = {parent: state, closeTag: found[2], sourceMap: childSourceMap}
+        if not (includedPath of appearsInFile)
+          appearsInFile[includedPath] = {}
+        appearsInFile[includedPath][filepath] = true
+    else if state.parent == null
       output.push(line)
 
   return output.join('\n')
@@ -333,6 +311,61 @@ processXmlIncludeFiles = (text) ->
   return text.replace(insertedXmlFileRegexp, (matchedText, marker, insertPath) ->
     return '<Include src="' + insertPath.replace('"', '\\"') + '"/>'
   )
+
+bundle = (filename, text) ->
+  try
+    options = {
+      expressionHandler: (module, expression) =>
+        start = expression.loc.start
+        display_name = if module.name == bundleRootModule then filename else module.name
+        detail = "Non-literal require found in '" + display_name + "' at " + start.line + ":" + start.column
+        atom.notifications.addWarning("Possible issue with bundle: " + filename, {dismissable: true, detail: detail})
+        return null
+      isolate: true
+      paths: getBundleSearchPaths()
+      rootModuleName: bundleRootModule
+    }
+    return luabundle.bundleString(text, options)
+  catch error
+    atom.notifications.addError("Failed to create bundle: " + filename, {dismissable: true, detail: error.message})
+    return text
+
+resolveBundleModule = (name, searchPaths) ->
+  for searchPath in searchPaths
+    modulePath = searchPath.replace(/\?/g, name)
+    if fs.existsSync(modulePath)
+      return modulePath
+  return null
+
+unbundle = (filepath, text) ->
+  sourceMap = fileMap[filepath] = {
+    path: null,
+    children: [],
+    startRow: 0,
+    endRow: (text.match(/\n/g) || []).length
+  }
+  try
+    data = luabundle.unbundleString(text)
+    searchPaths = getBundleSearchPaths()
+    rootModuleSourceMap = sourceMap
+
+    for _, module of data.modules
+      if module.name == bundleRootModule
+        rootModuleSourceMap =  {path: null, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1}
+        sourceMap.children.push(rootModuleSourceMap)
+      else
+        modulePath = resolveBundleModule(module.name, searchPaths)
+        if modulePath
+            sourceMap.children.push({path: modulePath, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1})
+            if not (modulePath of appearsInFile)
+              appearsInFile[modulePath] = {}
+            appearsInFile[modulePath][filepath] = true
+
+    return [data.modules[bundleRootModule].content, rootModuleSourceMap]
+  catch error
+    if error.message.indexOf('No metadata found') < 0 # If there's no metadata, then it's not a bundle.
+      atom.notifications.addError("Failed to unbundle: " + filepath, {dismissable: true, detail: error.message})
+    return [text, sourceMap]
 
 class FileHandler
   constructor: (basename) ->
@@ -395,6 +428,10 @@ class FileHandler
 
 
 readFilesFromTTS = (self, files, onlyOpen = false) ->
+  # Clear source/file maps
+  fileMap = {}
+  appearsInFile = {}
+
   toOpen = []
   sent_from_tts = {}
 
@@ -419,7 +456,12 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
     # write ttslua script
     @file = new FileHandler(basename)
     filepath = @file.getPath()
-    text = processLua(filepath, f.script)
+    text = f.script
+    sourceMap = null
+    if atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
+      [text, sourceMap] = unbundle(filepath, text)
+    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+      text = processLuaIncludeFiles(filepath, text, sourceMap)
     @file.create(text)
     self.doCatalog(text, filepath, !isFromTTS(filepath))
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
@@ -1249,7 +1291,7 @@ module.exports = TabletopsimulatorLua =
                 if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                   @luaObject.script = @insertLuaFiles(@luaObject.script)
                 if atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
-                  @luaObject.script = @bundle(luafile, @luaObject.script)
+                  @luaObject.script = bundle(luafile, @luaObject.script)
                 if @luaObject.script != ''
                   count += 1
                 # TODO this section commented out because TTS now handles unicode correctly
@@ -1326,33 +1368,7 @@ module.exports = TabletopsimulatorLua =
         else
           marker = '----' + found[1]
           lines[i] = marker + '\n' + marker
-      else if line.match(bundleHeaderRegexp) || line.match(bundleRootModuleRegexp)
-        lines[i] = '' # If a user happens to copy a bundle from TTS' internal script editor, it'll have spurious bundle comments; remove them.
     return lines.join('\n')
-
-  bundle: (filename, text) ->
-    options = {
-      expressionHandler: (module, expression) =>
-        start = expression.loc.start
-        display_name = if module.name == bundleRootModule then filename else module.name
-        detail = "Non-literal require found in '" + display_name + "' at " + start.line + ":" + start.column
-        atom.notifications.addWarning("Failed to create bundle: " + filename, {dismissable: true, detail: detail})
-        return null
-      identifiers:
-        require: bundleRequire
-      isolate: true
-      paths: getBundleSearchPaths()
-      postprocess: (module) =>
-        markerComment = '--- ' + bundleModuleKeyword + ' "' + module.name + '"\n'
-        return markerComment + module.content + '\n' + markerComment
-      rootModuleName: bundleRootModule
-    }
-    try
-      content = luabundle.bundleString(text, options)
-      return generateBundleMarker(true) + content + generateBundleMarker(false)
-    catch error
-      atom.notifications.addError("Failed to create bundle: " + filename, {dismissable: true, detail: error.message})
-      return text
 
   insertXmlFiles: (text, dir = null, alreadyInserted = {}) ->
     return text.replace(insertXmlFileRegexp, (matched, prefix, indentation, content, quote, insertPath) =>
@@ -1420,7 +1436,7 @@ module.exports = TabletopsimulatorLua =
     filepath = editor.getPath()
     details = path.basename(filepath) + " line " + (row + 1)
     walkFileMap = (filepath, node) ->
-      if node.label == filepath
+      if node.path == filepath
         return [true, node.startRow]
       else
         for child in node.children
@@ -1461,10 +1477,7 @@ module.exports = TabletopsimulatorLua =
     closingTag = []
     if not isFromTTS(filepath) and root == null
       root = path.dirname(filepath)
-    includeFiles = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-    bundleFiles = atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
-    fileIsBundle = bundleFiles && lines.length > 0 && lines[0].match(bundleHeaderRegexp)
-    if includeFiles || bundleFiles
+    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
       for line, row in lines
         if stack.length == 0
           dir = root
@@ -1475,7 +1488,7 @@ module.exports = TabletopsimulatorLua =
           label = completeFilepath(insert[2], dir)
           otherFiles[label] = true
         else
-          inserted = (includeFiles && line.match(insertedLuaFileRegexp)) || (fileIsBundle && line.match(bundleRootModuleRegexp))
+          inserted = line.match(insertedLuaFileRegexp)
           if inserted
             label = completeFilepath(inserted[2], dir)
             if closingTag.length > 0 and inserted[2] == closingTag[closingTag.length - 1]
