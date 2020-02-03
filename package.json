@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "atom-space-pen-views": "^2.0.0",
-    "luabundle": "^1.2.1",
-    "moonsharp-luaparse": "^0.2.1",
+    "luabundle": "^1.4.0",
     "mkdirp": "~0.5.1",
+    "moonsharp-luaparse": "^0.2.3",
     "q": "^1.5.1",
     "space-pen": "^5.1.1"
   }
