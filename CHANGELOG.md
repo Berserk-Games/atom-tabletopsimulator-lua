@@ -1,3 +1,9 @@
+## 12.3.0
+* Added `require` functionality.
+* Fixed exceptions caused by names having `\n` in them.
+* Fixed non-TTS files also open in Atom causing problems.
+* Fixed some autocomplete suggestions.
+
 ## 12.2.0
 * Added autocomplete snippets for API changes up to v12.2.0
 

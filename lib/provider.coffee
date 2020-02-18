@@ -3848,8 +3848,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#setfogofwarreveal'
           },
           {
-            snippet: 'setGMnotes(${1:string|notes})'
-            displayText: 'setGMnotes(string notes)'
+            snippet: 'setGMNotes(${1:string|notes})'
+            displayText: 'setGMNotes(string notes)'
             type: 'function'
             leftLabel: 'bool'
             description: 'Sets the GM notes attached to this Object.'
