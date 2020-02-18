@@ -6,7 +6,8 @@ fs = require 'fs'
 os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
-luaparse = require 'luaparse'
+luabundle = require 'luabundle'
+luaparse = require 'moonsharp-luaparse'
 shell = require 'shell'
 provider = require './provider'
 StatusBarFunctionView = require './status-bar-function-view'
@@ -131,24 +132,20 @@ log_seperator = (tag) ->
 
 # #include system for inserting one file into another
 insertFileKeyword = '#include'
-insertFileSeperator = '|'
 insertLuaMarkerString = '(\\s*' + insertFileKeyword + '\\s+([^\\s].*))'
 insertLuaFileRegexp = RegExp('^' + insertLuaMarkerString)
 insertedLuaFileRegexp = RegExp('^----' + insertLuaMarkerString)
 horizontalWhitespaceSet = '\\t\\v\\f\\r \u00a0\u2000-\u200b\u2028-\u2029\u3000'
 insertXmlFileRegexp = RegExp('(^|\\n)([' + horizontalWhitespaceSet + ']*)(.*)<Include\\s+src=(\'|")(.+)\\4\\s*/>', 'g')
 insertedXmlFileRegexp = RegExp('(<!--\\s+include\\s+([^\\s].*)\\s+-->)[\\s\\S]+?\\1', 'g')
+
+bundleRootModule = '__root'
+
 fileMap = {}
 appearsInFile = {}
 
 # record last error message
 lastError = {message: "", guid: ""}
-
-if os.platform() == 'win32'
-  PATH_SEPERATOR = '\\'
-else
-  PATH_SEPERATOR = '/'
-
 
 completeFilepath = (fn, dir, ext='ttslua') ->
   filepath = fn
@@ -171,47 +168,26 @@ completeFilepath = (fn, dir, ext='ttslua') ->
     dir = getRootPath()
   return path.join(dir, filepath)
 
-
 includeShouldBeEnclosed = (filepath) ->
   return filepath.startsWith('<') and filepath.endsWith('>')
 
+defaultIncludeOtherFilesPath = () ->
+  return path.join('~', 'Documents', 'Tabletop Simulator')
 
 getRootPath = () ->
-  rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath')
-  if rootpath == ''
-    rootpath = '~/Documents/Tabletop Simulator'
-  if rootpath.match(/^~[\\/]/) # home dir selector ~
-    rootpath = path.join(os.homedir(), rootpath[2..])
-  return rootpath
+  rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath') || defaultIncludeOtherFilesPath()
+  return rootpath.replace(/^~/, os.homedir())
 
+defaultBundleSearchPath = () ->
+  return '?.ttslua;?.lua;'
 
-extractFileMap = (text, filepath) ->
-  lines = text.split(/\n/)
-  tree = {label: filepath, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0}
-  for line, row in lines
-    found = line.match(insertedLuaFileRegexp)
-    if found
-      if tree.parent
-        dir = path.dirname(tree.parent.label)
-      else # root node
-        dir = path.dirname(filepath)
-      label = completeFilepath(found[2], dir)
-      if tree.parent and tree.parent.label == label #closing include
-        tree.endRow = row
-        tree = tree.parent
-        if tree.parent == null
-          output.push(found[1])
-      else #opening include
-        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1})
-        tree = tree.children[tree.children.length-1]
-        if not (label of appearsInFile)
-          appearsInFile[label] = {}
-        appearsInFile[label][filepath] = tree.depth
-
+getBundleSearchPaths = () ->
+  rootpath = getRootPath()
+  bundleSearchPath = atom.config.get('tabletopsimulator-lua.loadSave.bundleSearchPath') || defaultBundleSearchPath()
+  return bundleSearchPath.split(';').map((p) => path.join(rootpath, p))
 
 isFromTTS = (fn) ->
   return fn and path.dirname(fn) == ttsLuaDir
-
 
 isGlobalScript = (fn) ->
   return fn and path.basename(fn) == 'Global.-1.ttslua'
@@ -247,7 +223,7 @@ findFileRow = (filepath, row) ->
           else if r >= child.startRow
             return walkFileMap(r, child)
         # not in any children, so is only in this file
-      return [node.label, r - (node.startRow + offset)]
+      return [node.path, r - (node.startRow + offset)]
     [fp, row] = walkFileMap(row, fileMap[filepath])
     if fp
       filepath = fp
@@ -290,37 +266,106 @@ lengthInUtf8Bytes = (str) ->
   m = encodeURIComponent(str).match(/%[89ABab]/g)
   return str.length + (if m then m.length else 0)
 
-processLuaIncludeFiles = (filepath, text) ->
+processLuaIncludeFiles = (filepath, text, fileSourceMap) ->
   lines = text.split(/\n/)
-  tree = fileMap[filepath] = {label: null, children: [], parent: null, startRow: 0, endRow: lines.length-1, depth: 0, closeTag: ''}
+  if not fileSourceMap
+    fileSourceMap = fileMap[filepath] = {
+      path: null,
+      children: [],
+      startRow: 0,
+      endRow: lines.length-1,
+    }
+  state = {
+    parent: null,
+    closeTag: null,
+    sourceMap: fileSourceMap
+  }
   output = []
+
   for line, row in lines
     found = line.match(insertedLuaFileRegexp)
     #console.log tree
     if found
       dir = null
-      if tree.label
-        dir = path.dirname(tree.label)
-      label = completeFilepath(found[2], dir)
-      if found[2] == tree.closeTag #closing include
-        tree.endRow = row
-        tree = tree.parent
-        if tree.parent == null
+      if state.sourceMap.path
+        dir = path.dirname(state.sourceMap.path)
+      includedPath = completeFilepath(found[2], dir)
+      if found[2] == state.closeTag #closing include
+        state.sourceMap.endRow = fileSourceMap.startRow + row
+        state = state.parent
+        if state.parent == null
           output.push(found[1])
       else #opening include
-        tree.children.push({label: label, children: [], parent: tree, startRow: row + 1, endRow: null, depth: tree.depth + 1, closeTag: found[2]})
-        tree = tree.children[tree.children.length-1]
-        if not (label of appearsInFile)
-          appearsInFile[label] = {}
-        appearsInFile[label][filepath] = tree.depth
-    else if tree.parent == null
+        childSourceMap = {path: includedPath, children: [], startRow: fileSourceMap.startRow + row + 1, endRow: null}
+        state.sourceMap.children.push(childSourceMap)
+        state = {parent: state, closeTag: found[2], sourceMap: childSourceMap}
+        if not (includedPath of appearsInFile)
+          appearsInFile[includedPath] = {}
+        appearsInFile[includedPath][filepath] = true
+    else if state.parent == null
       output.push(line)
+
   return output.join('\n')
 
 processXmlIncludeFiles = (text) ->
   return text.replace(insertedXmlFileRegexp, (matchedText, marker, insertPath) ->
     return '<Include src="' + insertPath.replace('"', '\\"') + '"/>'
   )
+
+bundle = (filename, text) ->
+  try
+    options = {
+      expressionHandler: (module, expression) =>
+        start = expression.loc.start
+        display_name = if module.name == bundleRootModule then filename else module.name
+        detail = "Non-literal require found in '" + display_name + "' at " + start.line + ":" + start.column
+        atom.notifications.addWarning("Possible issue with bundle: " + filename, {dismissable: true, detail: detail})
+        return null
+      isolate: true
+      paths: getBundleSearchPaths()
+      rootModuleName: bundleRootModule
+    }
+    return luabundle.bundleString(text, options)
+  catch error
+    atom.notifications.addError("Failed to create bundle: " + filename, {dismissable: true, detail: error.message})
+    return text
+
+resolveBundleModule = (name, searchPaths) ->
+  for searchPath in searchPaths
+    modulePath = searchPath.replace(/\?/g, name)
+    if fs.existsSync(modulePath)
+      return modulePath
+  return null
+
+unbundle = (filepath, text) ->
+  sourceMap = fileMap[filepath] = {
+    path: null,
+    children: [],
+    startRow: 0,
+    endRow: (text.match(/\n/g) || []).length
+  }
+  try
+    data = luabundle.unbundleString(text)
+    searchPaths = getBundleSearchPaths()
+    rootModuleSourceMap = sourceMap
+
+    for _, module of data.modules
+      if module.name == bundleRootModule
+        rootModuleSourceMap =  {path: null, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1}
+        sourceMap.children.push(rootModuleSourceMap)
+      else
+        modulePath = resolveBundleModule(module.name, searchPaths)
+        if modulePath
+            sourceMap.children.push({path: modulePath, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1})
+            if not (modulePath of appearsInFile)
+              appearsInFile[modulePath] = {}
+            appearsInFile[modulePath][filepath] = true
+
+    return [data.modules[bundleRootModule].content, rootModuleSourceMap]
+  catch error
+    if error.message.indexOf('No metadata found') < 0 # If there's no metadata, then it's not a bundle.
+      atom.notifications.addError("Failed to unbundle: " + filepath, {dismissable: true, detail: error.message})
+    return [text, sourceMap]
 
 class FileHandler
   constructor: (basename) ->
@@ -383,6 +428,10 @@ class FileHandler
 
 
 readFilesFromTTS = (self, files, onlyOpen = false) ->
+  # Clear source/file maps
+  fileMap = {}
+  appearsInFile = {}
+
   toOpen = []
   sent_from_tts = {}
 
@@ -402,14 +451,17 @@ readFilesFromTTS = (self, files, onlyOpen = false) ->
   mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
   createXML = atom.config.get('tabletopsimulator-lua.loadSave.createXML')
   for f, i in files
-    f.name = f.name.replace(/([":<>/\\|?*])/g, "")
+    f.name = f.name.replace(/([":<>/\\|?*\r\n])/g, "")
     basename = f.name + "." + f.guid + ".ttslua"
     # write ttslua script
     @file = new FileHandler(basename)
     filepath = @file.getPath()
     text = f.script
+    sourceMap = null
+    if atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
+      [text, sourceMap] = unbundle(filepath, text)
     if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-      text = processLuaIncludeFiles(filepath, text)
+      text = processLuaIncludeFiles(filepath, text, sourceMap)
     @file.create(text)
     self.doCatalog(text, filepath, !isFromTTS(filepath))
     mode = atom.config.get('tabletopsimulator-lua.loadSave.communicationMode')
@@ -560,22 +612,34 @@ module.exports = TabletopsimulatorLua =
           order: 2
           type: 'boolean'
           default: true
-        includeOtherFiles:
-          title: 'Insert other files specified in source code'
-          description: '''Convert lua lines containing ``#include <FILE>``, and xml lines containing ``<Include src="filename.xml" />``, into the specified file's contents'''
+        includeOtherFilesPath:
+          title: 'Base path for files you wish to bundle or #include'
+          description: 'Root directory for Lua scripts you want to include in your mods. You may refer to this path explicitly in your code by starting your #include path with ``!' + path.sep + '``'
           order: 3
+          type: 'string'
+          default: defaultIncludeOtherFilesPath()
+        includeOtherFiles:
+          title: '#include other files'
+          description: '''Replace Lua ``#include <FILE>`` lines, and XML ``<Include src="filename.xml" />`` lines, with the contents of the referenced file (path).'''
+          order: 4
           type: 'boolean'
           default: true
-        includeOtherFilesPath:
-          title: 'Base path for files you wish to #include'
-          description: 'Start with ``~`` to represent your user folder.  If left blank will default to ``~' + PATH_SEPERATOR + 'Documents' + PATH_SEPERATOR + 'Tabletop Simulator' + PATH_SEPERATOR + '``' + '.  You may refer to this path explicitly in your code by starting your #include path with ``!' + PATH_SEPERATOR + '``'
-          order: 4
+        bundleFiles:
+          title: 'require() other files'
+          description: '''Support for bundling up several files into a Tabletop Simulator script using standard require() syntax.'''
+          order: 5
+          type: 'boolean'
+          default: true
+        bundleSearchPath:
+          title: 'Bundle file patterns'
+          description: '''Bundle file patterns, semi-colon (;) separated. Patterns are relative to the #include base path and required file paths will be substituted for question mark (?) characters.'''
+          order: 6
           type: 'string'
-          default: ''
+          default: defaultBundleSearchPath()
         delayLinter:
           title: 'Delay Linter When Loading'
           description: 'Delay in ``ms`` before linting a newly loaded file.'
-          order: 5
+          order: 7
           type: 'integer'
           default: 0
           minimum: 0
@@ -891,7 +955,7 @@ module.exports = TabletopsimulatorLua =
 
   doCatalog: (text, filepath, includeSiblings = false) ->
     otherFiles = @catalogFunctions(text, filepath)
-    if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
+    if otherFiles.length > 0
       if includeSiblings
         files = fs.readdirSync(path.dirname(filepath))
         for filename in files
@@ -901,10 +965,9 @@ module.exports = TabletopsimulatorLua =
       for otherFile of otherFiles
         if fs.existsSync(otherFile)
           if not (otherFile of @functionPaths)
-            a = 0
             @catalogFileFunctions(otherFile)
         else
-          atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
+          atom.notifications.addError("Could not catalog external file - file not found:", {icon: 'type-file', detail: otherFile, dismissable: true})
 
 
   cursorChangeEvent: (event) ->
@@ -1181,6 +1244,10 @@ module.exports = TabletopsimulatorLua =
     editors = []
     ttsEditors = {}
     for editor,i in atom.workspace.getTextEditors()
+      # We don't want to save editors that aren't backed by files, because the save operation will fail
+      if editor.getTitle() == "untitled"
+        continue
+
       openFiles += 1
       # Store cursor positions
       cursors[editor.getPath()] = editor.getCursorBufferPosition()
@@ -1192,6 +1259,9 @@ module.exports = TabletopsimulatorLua =
     log LOG_MSG, "Starting to save..."
 
     for editor, i in atom.workspace.getTextEditors()
+      if editor.getTitle() == "untitled"
+        continue
+
       @blocking_save(editor).then (buffer) =>
         log LOG_MSG, buffer.getPath()
         savedFiles += 1
@@ -1220,6 +1290,8 @@ module.exports = TabletopsimulatorLua =
                 # Insert included files
                 if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                   @luaObject.script = @insertLuaFiles(@luaObject.script)
+                if atom.config.get('tabletopsimulator-lua.loadSave.bundleFiles')
+                  @luaObject.script = bundle(luafile, @luaObject.script)
                 if @luaObject.script != ''
                   count += 1
                 # TODO this section commented out because TTS now handles unicode correctly
@@ -1298,7 +1370,6 @@ module.exports = TabletopsimulatorLua =
           lines[i] = marker + '\n' + marker
     return lines.join('\n')
 
-
   insertXmlFiles: (text, dir = null, alreadyInserted = {}) ->
     return text.replace(insertXmlFileRegexp, (matched, prefix, indentation, content, quote, insertPath) =>
       filepath = completeFilepath(insertPath, dir, 'xml')
@@ -1310,7 +1381,7 @@ module.exports = TabletopsimulatorLua =
         catch error
           atom.notifications.addError(error.message, {dismissable: true, icon: 'type-file', detail: filepath})
       else
-        atom.notifications.addError("Could not catalog #include - file not found:", {icon: 'type-file', detail: filepath})
+        atom.notifications.addError("Could not catalog <Include /> - file not found:", {icon: 'type-file', detail: filepath})
       if filetext
         if filepath of alreadyInserted
           atom.notifications.addError("Cyclical " + atom.config.get('tabletopsimulator-lua.loadSave.includeKeyword') + " detected.", {dismissable: true, icon: 'type-file', detail: filepath})
@@ -1365,7 +1436,7 @@ module.exports = TabletopsimulatorLua =
     filepath = editor.getPath()
     details = path.basename(filepath) + " line " + (row + 1)
     walkFileMap = (filepath, node) ->
-      if node.label == filepath
+      if node.path == filepath
         return [true, node.startRow]
       else
         for child in node.children
