@@ -17,7 +17,7 @@ if not re.match(r'[0-9]+\.[0-9]+\.[0-9]', version):
 
 
 def confirm(command, shell=False):
-    print(command + ' [<Enter> to continue, <CTRL-BREAK> to exit]')
+    print(command + ' \033[1;34m[\033[1;35m<Enter>\033[1;34m to continue, \033[1;35m<CTRL-BREAK>\033[1;34m to exit]\033[0;0m')
     try:
         raw_input()
     except NameError:
