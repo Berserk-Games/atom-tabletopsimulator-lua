@@ -18,7 +18,10 @@ if not re.match(r'[0-9]+\.[0-9]+\.[0-9]', version):
 
 def confirm(command, shell=False):
     print(command + ' [<Enter> to continue, <CTRL-BREAK> to exit]')
-    input()
+    try:
+        raw_input()
+    except NameError:
+        input()
     output = subprocess.check_output(command.split(), stderr=subprocess.STDOUT, shell=shell)
     if output.replace('\n', '').strip() == "":
         print('\033[1;32mOK\033[0;0m')
