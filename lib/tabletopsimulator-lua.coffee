@@ -7,6 +7,7 @@ os = require 'os'
 path = require 'path'
 mkdirp = require 'mkdirp'
 luabundle = require 'luabundle'
+{ModuleBundlingError, NoBundleMetadataError} = require 'luabundle/errors'
 luaparse = require 'moonsharp-luaparse'
 shell = require 'shell'
 provider = require './provider'
@@ -230,16 +231,17 @@ findFileRow = (filepath, row) ->
   return [filepath, row]
 
 
-gotoFileRow = (filepath, row) ->
+gotoFilePosition = (filepath, row, column) ->
+  column = column or 0
   [filepath, row] = findFileRow(filepath, row)
   editor = atom.workspace.getActiveTextEditor()
   if filepath and (!editor or filepath != editor.getPath())
     log LOG_ERR, "Opening file in Go-To-File-Row" + filepath
     atom.workspace.open(filepath, {initialLine: row, initialColumn: 0}).then (editor) ->
-      editor.setCursorBufferPosition([row, 0])
+      editor.setCursorBufferPosition([row, column])
       editor.scrollToCursorPosition()
   else
-    editor.setCursorBufferPosition([row, 0])
+    editor.setCursorBufferPosition([row, column])
     editor.scrollToCursorPosition()
 
 
@@ -259,7 +261,7 @@ gotoError = (message, guid) ->
       fname = path.join(ttsLuaDir, luafile)
       break
   if fname != ""
-    gotoFileRow(fname, row)
+    gotoFilePosition(fname, row)
 
 
 lengthInUtf8Bytes = (str) ->
@@ -313,6 +315,7 @@ processXmlIncludeFiles = (text) ->
   )
 
 bundle = (filename, text) ->
+  searchPaths = getBundleSearchPaths()
   try
     options = {
       expressionHandler: (module, expression) =>
@@ -322,12 +325,29 @@ bundle = (filename, text) ->
         atom.notifications.addWarning("Possible issue with bundle: " + filename, {dismissable: true, detail: detail})
         return null
       isolate: true
-      paths: getBundleSearchPaths()
+      paths: searchPaths
       rootModuleName: bundleRootModule
     }
     return luabundle.bundleString(text, options)
   catch error
-    atom.notifications.addError("Failed to create bundle: " + filename, {dismissable: true, detail: error.message})
+    if error instanceof ModuleBundlingError
+      sourceName = "module \"#{error.moduleName}\""
+      sourcePath = resolveBundleModule(error.moduleName, searchPaths) or error.moduleName
+      cause = error.cause
+    else
+      sourceName = filename
+      sourcePath = path.join(ttsLuaDir, filename)
+      cause = error
+
+    title = "Failed to bundle " + filename
+    detail = "Unable to process " + sourceName + "\n" + cause.message
+
+    if cause instanceof SyntaxError and cause.line # luaparse incorrectly uses JS' SyntaxError for its own error reporting
+      btns = [{onDidClick: (-> gotoFilePosition(sourcePath, cause.line - 1, cause.column)), text: "<- Jump to Error"}]
+      atom.notifications.addError(title, {icon: 'puzzle', dismissable: true, detail: detail, buttons: btns})
+    else
+      atom.notifications.addError(title, {dismissable: true, detail: detail})
+
     return text
 
 resolveBundleModule = (name, searchPaths) ->
@@ -363,7 +383,7 @@ unbundle = (filepath, text) ->
 
     return [data.modules[bundleRootModule].content, rootModuleSourceMap]
   catch error
-    if error.message.indexOf('No metadata found') < 0 # If there's no metadata, then it's not a bundle.
+    if error not instanceof NoBundleMetadataError # If there's no metadata, then it's not a bundle.
       atom.notifications.addError("Failed to unbundle: " + filepath, {dismissable: true, detail: error.message})
     return [text, sourceMap]
 
