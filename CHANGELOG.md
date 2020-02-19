@@ -1,3 +1,7 @@
+## 12.3.1
+* Fixed parser not understanding `!=` syntax.
+* Added better error messages.
+
 ## 12.3.0
 * Added `require` functionality.
 * Fixed exceptions caused by names having `\n` in them.

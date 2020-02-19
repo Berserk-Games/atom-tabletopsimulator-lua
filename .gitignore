@@ -2,3 +2,5 @@
 npm-debug.log
 node_modules
 sync_upstream.bat
+.ropeproject
+package-lock.json
