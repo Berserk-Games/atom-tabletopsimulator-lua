@@ -4636,7 +4636,7 @@ module.exports =
           },
           # Global Management Functions
           {
-            snippet: 'addContextMenuItem(${1:string|label, ${2:function|f, ${3:boolean|keep_open}, ${4:boolean|require_table})'
+            snippet: 'addContextMenuItem(${1:string|label}, ${2:function|f}, ${3:boolean|keep_open}, ${4:boolean|require_table})'
             displayText: 'addContextMenuItem(string label, function f, boolean keep_open, boolean require_table)'
             type: 'function'
             leftLabel: 'bool'
@@ -4644,7 +4644,7 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/base/#addcontextmenuitem'
           },
           {
-            snippet: 'addHotkey(${1:string|label, ${2:function|f, ${3:boolean|trigger_on_key_up})'
+            snippet: 'addHotkey(${1:string|label}, ${2:function|f}, ${3:boolean|trigger_on_key_up})'
             displayText: 'addHotkey(string label, function f, boolean trigger_on_key_up)'
             type: 'function'
             leftLabel: 'bool'
