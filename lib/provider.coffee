@@ -2815,7 +2815,7 @@ module.exports =
           },
           # Functions
           {
-            snippet: 'addContextMenuItem(${1:string|label, ${2:function|f, ${3:boolean|keep_open})'
+            snippet: 'addContextMenuItem(${1:string|label}, ${2:function|f}, ${3:boolean|keep_open})'
             displayText: 'addContextMenuItem(string label, function f, boolean keep_open)'
             type: 'function'
             leftLabel: 'bool'
@@ -4121,13 +4121,6 @@ module.exports =
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectenter'
             },
             {
-              snippet: 'filterObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
-              displayText: 'filterObjectEnterContainer(Object container, Object enter_object)'
-              type: 'function'
-              description: 'Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in.'
-              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectentercontainer'
-            },
-            {
               snippet:
                 'onCollisionEnter(collision_info)\n\t' +
                 '-- collision_info table:\n\t' +
@@ -4238,6 +4231,13 @@ module.exports =
             },
           ]
         suggestions = suggestions.concat [
+          {
+            snippet: 'filterObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
+            displayText: 'filterObjectEnterContainer(Object container, Object enter_object)'
+            type: 'function'
+            description: 'Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectentercontainer'
+          },
           {
             snippet: 'onChat(message, player)\n\t${0:-- body...}\nend'
             displayText: 'onChat(string message, Player player)'
