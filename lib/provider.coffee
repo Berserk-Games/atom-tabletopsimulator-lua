@@ -4853,7 +4853,7 @@ module.exports =
               'position          = ${2:-- Vector [x=0, y=3, z=0]},\n\t' +
               'rotation          = ${3:-- Vector [x=0, y=0, z=0]},\n\t' +
               'scale             = ${4:-- Vector [x=1, y=1, z=1]},\n\t' +
-              'callback_fucntion = ${5:-- function},\n\t' +
+              'callback_function = ${5:-- function},\n\t' +
               'sound             = ${6:-- bool},\n\t' +
               'params            = ${7:-- Table},\n\t' +
               'snap_to_grid      = ${8:-- bool},\n' +
