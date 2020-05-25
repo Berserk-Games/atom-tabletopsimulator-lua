@@ -314,6 +314,11 @@ processXmlIncludeFiles = (text) ->
     return '<Include src="' + insertPath.replace('"', '\\"') + '"/>'
   )
 
+getErrorModuleName = (error) ->
+  while error.cause instanceof ModuleBundlingError
+    error = error.cause
+  return error.moduleName
+
 bundle = (filename, text) ->
   searchPaths = getBundleSearchPaths()
   try
@@ -332,18 +337,24 @@ bundle = (filename, text) ->
   catch error
     if error instanceof ModuleBundlingError
       sourceName = "module \"#{error.moduleName}\""
-      sourcePath = resolveBundleModule(error.moduleName, searchPaths) or error.moduleName
-      cause = error.cause
+      cause = error
     else
       sourceName = filename
-      sourcePath = path.join(ttsLuaDir, filename)
       cause = error
+
+    while cause.cause
+      cause = cause.cause
 
     title = "Failed to bundle " + filename
     detail = "Unable to process " + sourceName + "\n" + cause.message
 
-    if cause instanceof SyntaxError and cause.line # luaparse incorrectly uses JS' SyntaxError for its own error reporting
-      btns = [{onDidClick: (-> gotoFilePosition(sourcePath, cause.line - 1, cause.column)), text: "<- Jump to Error"}]
+    if cause.line
+      moduleName = getErrorModuleName(error)
+      errorPath = if moduleName
+          resolveBundleModule(moduleName, searchPaths) or moduleName
+        else
+          path.join(ttsLuaDir, filename)
+      btns = [{onDidClick: (-> gotoFilePosition(errorPath, cause.line - 1, cause.column or 0)), text: "<- Jump to Error"}]
       atom.notifications.addError(title, {icon: 'puzzle', dismissable: true, detail: detail, buttons: btns})
     else
       atom.notifications.addError(title, {dismissable: true, detail: detail})
