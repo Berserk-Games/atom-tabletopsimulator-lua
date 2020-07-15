@@ -362,8 +362,9 @@ bundle = (filename, text) ->
     return text
 
 resolveBundleModule = (name, searchPaths) ->
+  platformName = name.replace(/\./g, path.sep)
   for searchPath in searchPaths
-    modulePath = searchPath.replace(/\?/g, name)
+    modulePath = searchPath.replace(/\?/g, platformName)
     if fs.existsSync(modulePath)
       return modulePath
   return null
