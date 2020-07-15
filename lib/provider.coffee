@@ -4314,8 +4314,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdestroy'
           },
           {
-            snippet: 'onObjectDrop(dropped_object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectDrop(Object dropped_object, string player_color)'
+            snippet: 'onObjectDrop(player_color, dropped_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectDrop(string player_color, Object dropped_object)'
             type: 'function'
             description: 'Automatically called when an Object is dropped.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectdrop'
@@ -4377,8 +4377,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpeek'
           },
           {
-            snippet: 'onObjectPickUp(picked_up_object, player_color)\n\t${0:-- body...}\nend'
-            displayText: 'onObjectPickUp(Object picked_up_object, string player_color)'
+            snippet: 'onObjectPickUp(player_color, picked_up_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectPickUp(string player_color, Object picked_up_object)'
             type: 'function'
             description: 'Automatically called when an Object is picked up.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectpickup'

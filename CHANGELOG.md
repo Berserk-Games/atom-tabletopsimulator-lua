@@ -1,3 +1,10 @@
+## 12.4.0
+* Fixed goto line number not working with included files.
+* Fixed snippet parameter order for onObjectDrop and onObjectPickUp.
+* Fixed `require` not using `.` as a path separator.
+* Fixed `require` bundling error reporting.
+* Fixed a bunch of autocomplete suggestions.
+
 ## 12.3.1
 * Fixed parser not understanding `!=` syntax.
 * Added better error messages.

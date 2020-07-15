@@ -78,7 +78,7 @@ class FunctionListView extends SelectListView
                 else if r >= child.startRow
                   return walkFileMap(r, child)
               # not in any children, so is only in this file
-            return [node.label, r - (node.startRow + offset)]
+            return [node.path, r - (node.startRow + offset)]
           [filepath, row] = walkFileMap(row, @fileMap)
         if filepath and filepath != @editor.getPath()
           console.log "Opening file in Go To Function", filepath
