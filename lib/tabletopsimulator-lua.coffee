@@ -173,7 +173,7 @@ includeShouldBeEnclosed = (filepath) ->
   return filepath.startsWith('<') and filepath.endsWith('>')
 
 defaultIncludeOtherFilesPath = () ->
-  return path.join('~', 'Documents', 'Tabletop Simulator')
+  return path.join('~', 'Documents', 'My Games', 'Tabletop Simulator')
 
 getRootPath = () ->
   rootpath = atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFilesPath') || defaultIncludeOtherFilesPath()
