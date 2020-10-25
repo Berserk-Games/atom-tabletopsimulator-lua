@@ -1214,13 +1214,13 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     # Confirm just in case they misclicked Save & Play
-    remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+    promise = remote.dialog.showMessageBox(remote.getCurrentWindow(), {
       type: 'info',
       normalizeAccessKeys: true,
       message: 'Get Lua Scripts from game?'
       detailedMessage: 'This will erase any changes that you have made in Atom since the last Save & Play.'
       buttons: ['Get Scripts', 'Cancel']
-    }).then((event) ->
+    }).then (event) =>
       if event.response == 0
         #destroyTTSEditors()
         #deleteCachedFiles()
@@ -1228,8 +1228,9 @@ module.exports = TabletopsimulatorLua =
         log LOG_MSG, "Get Lua Scripts: Sending request to TTS..."
         #if not TabletopsimulatorLua.if_connected
         TabletopsimulatorLua.startConnection()
-        TabletopsimulatorLua.connection.wri
-    )
+        TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
+        log LOG_MSG, "Sent."
+
 
   # hack needed because atom 1.19 makes save() async
   blocking_save: (editor) =>
@@ -1298,11 +1299,8 @@ module.exports = TabletopsimulatorLua =
       @blocking_save(editor).then (buffer) =>
         log LOG_MSG, buffer.getPath()
         savedFiles += 1
-        if savedFiles == openFiles
+        if savedFiles == openFiles # Only process the files once we've saved them all.
           log LOG_MSG, "All done!"
-          # This is a horrible hack I feel - we see how many editors are open, then
-          # run this block after each save, but only do the below code if the
-          # number of files we have saved is the number of files open.  Urgh.
 
           # Read all files into JSON object
           @luaObjects = {}
