@@ -1,6 +1,9 @@
-## 12.4.2
+## 12.4.3
 * Fixed confirm dialogs broken by Atom update.
 * If you get an error when you try to Get Lua Scripts you need to update Atom.
+
+## 12.4.2
+* Internal
 
 ## 12.4.1
 * Fixed goto line number not working with included files.
