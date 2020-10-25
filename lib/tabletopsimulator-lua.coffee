@@ -1,5 +1,6 @@
 {CompositeDisposable} = require 'atom'
 {BufferedProcess} = require 'atom'
+{remote} = require 'electron'
 
 net = require 'net'
 fs = require 'fs'
@@ -1213,21 +1214,22 @@ module.exports = TabletopsimulatorLua =
     if atom.config.get('tabletopsimulator-lua.loadSave.communicationMode') == 'disable'
       return
     # Confirm just in case they misclicked Save & Play
-    atom.confirm
+    remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+      type: 'info',
+      normalizeAccessKeys: true,
       message: 'Get Lua Scripts from game?'
       detailedMessage: 'This will erase any changes that you have made in Atom since the last Save & Play.'
-      buttons:
-        'Get Scripts': ->
-          #destroyTTSEditors()
-          #deleteCachedFiles()
-          log_seperator(LOG_MSG)
-          log LOG_MSG, "Get Lua Scripts: Sending request to TTS..."
-          #if not TabletopsimulatorLua.if_connected
-          TabletopsimulatorLua.startConnection()
-          TabletopsimulatorLua.connection.write '{ messageID: ' + ATOM_MSG_GET_SCRIPTS + ' }'
-          log LOG_MSG, "Sent."
-        Cancel: -> return
-
+      buttons: ['Get Scripts', 'Cancel']
+    }).then((event) ->
+      if event.response == 0
+        #destroyTTSEditors()
+        #deleteCachedFiles()
+        log_seperator(LOG_MSG)
+        log LOG_MSG, "Get Lua Scripts: Sending request to TTS..."
+        #if not TabletopsimulatorLua.if_connected
+        TabletopsimulatorLua.startConnection()
+        TabletopsimulatorLua.connection.wri
+    )
 
   # hack needed because atom 1.19 makes save() async
   blocking_save: (editor) =>
@@ -1253,14 +1255,13 @@ module.exports = TabletopsimulatorLua =
     # If TTS Save has been overwritten then confirm
     if @objectsAddedToGame()
       getObjects = @getObjects
-      exit = true
-      atom.confirm
+      return if remote.dialog.showMessageBoxSync(remote.getCurrentWindow(), {
+        type: 'info',
+        normalizeAccessKeys: true,
         message: 'Overwrite Tabletop Simulator save?'
         detailedMessage: 'Components have been added in Tabletop Simulator but have not been saved.  If you continue any such components may be lost.'
-        buttons:
-          Overwrite: -> exit = false
-          Cancel: ->
-      return if exit
+        buttons: ['Overwrite', 'Cancel']
+      }) != 0
 
     mutex.doingSaveAndPlay = true
     log_seperator(LOG_MSG)
