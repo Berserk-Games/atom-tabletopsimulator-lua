@@ -1344,10 +1344,12 @@ module.exports = TabletopsimulatorLua =
                 if ui != ''
                   count += 1
 
-          if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
-            for @luaObject in @luaObjects.scriptStates
-              if @luaObject.guid of uis
+          for @luaObject in @luaObjects.scriptStates
+            if @luaObject.guid of uis
+              if atom.config.get('tabletopsimulator-lua.loadSave.includeOtherFiles')
                 @luaObject.ui = @insertXmlFiles(uis[@luaObject.guid])
+              else
+                @luaObject.ui = uis[@luaObject.guid]
 
           #destroyTTSEditors()
           #deleteCachedFiles()
