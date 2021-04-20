@@ -930,6 +930,15 @@ module.exports =
       # Section: ui Class
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "UI") || line.endsWith("UI.") || (previous_token == "UI" && this_token_intact)
         suggestions = [
+          # Member Variables
+          {
+            snippet: 'loading'
+            displayText: 'loading'
+            type: 'property'
+            leftLabel: 'bool'
+            description: 'Is true if the UI is still loading on this object.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/ui/#member-variables'
+          },
           # Functions
           {
             snippet: 'getAttribute(${1:string|id}, ${2:string|attribute})'
@@ -2537,9 +2546,153 @@ module.exports =
           },
         ]
 
+      # Section: LayoutZone Behaviour
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "LayoutZone") || line.endsWith("LayoutZone.") || (previous_token == "LayoutZone" && this_token_intact)
+        suggestions = [
+          {
+            snippet: 'getOptions()'
+            displayText: 'getOptions()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#getoptions'
+          },
+          {
+            snippet: 'layout()'
+            displayText: 'layout()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Lays out the zone.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#layout'
+          },
+          {
+            snippet: 'setOptions(${1:Table|parameters})'
+            displayText: 'setOptions(Table parameters)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Sets the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#setoptions'
+          },
+          {
+            snippet:
+              'setOptions({\n\t{\n\t\t' +
+              'direction                 = ${1:-- int},\n\t\t' +
+              'meld_direction            = ${2:-- int},\n\t\t' +
+              'new_object_facing         = ${3:-- int},\n\t\t' +
+              'trigger_for_face_up       = ${4:-- bool},\n\t\t' +
+              'trigger_for_face_down     = ${5:-- bool},\n\t\t' +
+              'trigger_for_non_cards     = ${6:-- bool},\n\t\t' +
+              'allow_swapping            = ${7:-- bool},\n\t\t' +
+              'max_objects_per_new_group = ${8:-- int},\n\t\t' +
+              'max_objects_per_group     = ${9:-- int},\n\t\t' +
+              'meld_sort                 = ${10:-- int},\n\t\t' +
+              'meld_reverse_sort         = ${11:-- bool},\n\t\t' +
+              'meld_sort_existing        = ${12:-- bool},\n\t\t' +
+              'sticky_cards              = ${13:-- bool},\n\t\t' +
+              'horizontal_spread         = ${14:-- float},\n\t\t' +
+              'vertical_spread           = ${15:-- float},\n\t\t' +
+              'horizontal_group_padding  = ${16:-- float},\n\t\t' +
+              'vertical_group_padding    = ${17:-- float},\n\t\t' +
+              'split_added_decks         = ${18:-- bool},\n\t\t' +
+              'combine_into_decks        = ${19:-- bool},\n\t\t' +
+              'cards_per_deck            = ${20:-- int},\n\t\t' +
+              'alternate_directions      = ${21:-- bool},\n\t\t' +
+              'randomize                 = ${22:-- bool},\n\t\t' +
+              'instant_refill            = ${23:-- bool},\n\t\t' +
+              'manual_only               = ${24:-- bool},\n\t' +
+              '}\n})'
+            displayText: 'setOptions(...)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#setoptions'
+          },
+
+        ]
+
+      # Section: Zone Behaviour (has all Zone members)
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Zone") || line.endsWith("Zone.") || (previous_token == "Zone" && this_token_intact)
+        suggestions = [
+          {
+            snippet: 'getOptions()'
+            displayText: 'getOptions()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#getoptions'
+          },
+          {
+            snippet: 'layout()'
+            displayText: 'layout()'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Lays out the zone.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#layout'
+          },
+          {
+            snippet: 'setOptions(${1:Table|parameters})'
+            displayText: 'setOptions(Table parameters)'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Sets the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#setoptions'
+          },
+          {
+            snippet:
+              'setOptions({\n\t{\n\t\t' +
+              'direction                 = ${1:-- int},\n\t\t' +
+              'meld_direction            = ${2:-- int},\n\t\t' +
+              'new_object_facing         = ${3:-- int},\n\t\t' +
+              'trigger_for_face_up       = ${4:-- bool},\n\t\t' +
+              'trigger_for_face_down     = ${5:-- bool},\n\t\t' +
+              'trigger_for_non_cards     = ${6:-- bool},\n\t\t' +
+              'allow_swapping            = ${7:-- bool},\n\t\t' +
+              'max_objects_per_new_group = ${8:-- int},\n\t\t' +
+              'max_objects_per_group     = ${9:-- int},\n\t\t' +
+              'meld_sort                 = ${10:-- int},\n\t\t' +
+              'meld_reverse_sort         = ${11:-- bool},\n\t\t' +
+              'meld_sort_existing        = ${12:-- bool},\n\t\t' +
+              'sticky_cards              = ${13:-- bool},\n\t\t' +
+              'horizontal_spread         = ${14:-- float},\n\t\t' +
+              'vertical_spread           = ${15:-- float},\n\t\t' +
+              'horizontal_group_padding  = ${16:-- float},\n\t\t' +
+              'vertical_group_padding    = ${17:-- float},\n\t\t' +
+              'split_added_decks         = ${18:-- bool},\n\t\t' +
+              'combine_into_decks        = ${19:-- bool},\n\t\t' +
+              'cards_per_deck            = ${20:-- int},\n\t\t' +
+              'alternate_directions      = ${21:-- bool},\n\t\t' +
+              'randomize                 = ${22:-- bool},\n\t\t' +
+              'instant_refill            = ${23:-- bool},\n\t\t' +
+              'manual_only               = ${24:-- bool},\n\t' +
+              '}\n})'
+            displayText: 'setOptions(...)'
+            type: 'function'
+            leftLabel: 'bool'
+            description: 'Sets the LayoutZone options.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/#setoptions'
+          },
+        ]
+
       # Section: Object
       else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_intact)))
         suggestions = [
+          # Behaviours
+          {
+            snippet: 'LayoutZone'
+            displayText: 'LayoutZone'
+            type: 'property'
+            leftLabel: 'LayoutZone'
+            description: "Access the object's LayoutZone behaviour if it has one."
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/layoutzone/'
+          },
+          {
+            snippet: 'Zone'
+            displayText: 'Zone'
+            type: 'property'
+            leftLabel: 'Zone'
+            description: "Access the object's Zone behaviour if it has one."
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/behavior/zone/'
+          },
           # Member Variables
           {
             snippet: 'angular_drag'
@@ -3332,8 +3485,8 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getinputs'
           },
           {
-            snippet: 'getJSON()'
-            displayText: 'getJSON()'
+            snippet: 'getJSON(${1:bool|indented})'
+            displayText: 'getJSON(bool indented)'
             type: 'function'
             leftLabel: 'string'
             description: 'Returns a serialization of the JSON string which represents this item.'
@@ -3400,7 +3553,7 @@ module.exports =
             displayText: 'getObjects() -- Zone returns {Object, ...}'
             type: 'function'
             leftLabel: 'Table'
-            description: 'Returns all the Objects inside of this container.'
+            description: 'Returns all the Objects inside of this zone.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getobjects'
           },
           {
@@ -3578,6 +3731,14 @@ module.exports =
             leftLabel: 'Table'
             description: 'Returns the current velocity vector of the Object.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getvelocity'
+          },
+          {
+            snippet: 'getZones()'
+            displayText: 'getZones()'
+            type: 'function'
+            leftLabel: 'Table'
+            description: 'Returns all the Zones which the object is currently inside.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/object/#getzones'
           },
           {
             snippet: 'highlightOff()'
@@ -4114,11 +4275,25 @@ module.exports =
         if not global_script
           suggestions = suggestions.concat [
             {
-              snippet: 'filterObjectEnter(enter_object)\n\t${0:-- body...}\nend'
-              displayText: 'filterObjectEnter(Object enter_object)'
+              snippet: 'tryObjectEnter(enter_object)\n\t${0:-- body...}\nend'
+              displayText: 'tryObjectEnter(Object enter_object)'
               type: 'function'
               description: 'Automatically called when an Object attempts to enter this container.  If this function returns false the object will not be allowed in.'
-              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectenter'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#tryobjectenter'
+            },
+            {
+              snippet: 'tryObjectRotate(object, spin, flip, player_color, old_spin, old_flip)\n\t${0:-- body...}\nend'
+              displayText: 'tryObjectRotate(Object object, float spin, float flip, string player_color, float old_spin, float old_flip)'
+              type: 'function'
+              description: 'Automatically called when a player attempts to rotate an object.  If this function returns false the rotation will be cancelled.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#tryobjectrotate'
+            },
+            {
+              snippet: 'onObjectRotate(object, spin, flip, player_color, old_spin, old_flip)\n\t${0:-- body...}\nend'
+              displayText: 'onObjectRotate(Object object, float spin, float flip, string player_color, float old_spin, float old_flip)'
+              type: 'function'
+              description: 'Automatically called after a player rotates an object.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectrotate'
             },
             {
               snippet:
@@ -4174,6 +4349,13 @@ module.exports =
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ondrop'
             },
             {
+              snippet: 'onGroupSort(group, reversed)\n\t${0:-- body...}\nend'
+              displayText: 'onGroupSort(table group, bool reversed)'
+              type: 'function'
+              description: "Called when a group is sorted in this LayoutZone.  Return the table sorted how you want, or false to use the zone's default sort."
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#ongroupsort'
+            },
+            {
               snippet: 'onHover(player_color)\n\t${0:-- body...}\nend'
               displayText: 'onHover(string player_color)'
               type: 'function'
@@ -4209,6 +4391,20 @@ module.exports =
               descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onrandomze'
             },
             {
+              snippet: 'tryRotate(spin, flip, player_color, old_spin, old_flip)\n\t${0:-- body...}\nend'
+              displayText: 'tryRotate(float spin, float flip, string player_color, float old_spin, float old_flip)'
+              type: 'function'
+              description: 'Automatically called when a player attempts to rotate this object.  If this function returns false the rotation will be cancelled.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#tryrotate'
+            },
+            {
+              snippet: 'onRotate(spin, flip, player_color, old_spin, old_flip)\n\t${0:-- body...}\nend'
+              displayText: 'onRotate(float spin, float flip, string player_color, float old_spin, float old_flip)'
+              type: 'function'
+              description: 'Automatically called after a player rotates this object.'
+              descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onrotate'
+            },
+            {
               snippet: 'onSearchStart(player_color)\n\t${0:-- body...}\nend'
               displayText: 'onSearchStart(string player_color)'
               type: 'function'
@@ -4232,11 +4428,11 @@ module.exports =
           ]
         suggestions = suggestions.concat [
           {
-            snippet: 'filterObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
-            displayText: 'filterObjectEnterContainer(Object container, Object enter_object)'
+            snippet: 'tryObjectEnterContainer(container, enter_object)\n\t${0:-- body...}\nend'
+            displayText: 'tryObjectEnterContainer(Object container, Object enter_object)'
             type: 'function'
             description: 'Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in.'
-            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#filterobjectentercontainer'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#tryobjectentercontainer'
           },
           {
             snippet: 'onChat(message, player)\n\t${0:-- body...}\nend'
@@ -4335,6 +4531,13 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectenterscriptingzone'
           },
           {
+            snippet: 'onObjectEnterZone(zone, enter_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectEnterZone(Object zone, Object enter_object)'
+            type: 'function'
+            description: 'Automatically called when an Object enters any Zone.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectenterzone'
+          },
+          {
             snippet: 'onObjectHover(player_color, hover_object)\n\t${0:-- body...}\nend'
             displayText: 'onObjectHover(string player_color, Object hover_object)'
             type: 'function'
@@ -4354,6 +4557,13 @@ module.exports =
             type: 'function'
             description: 'Automatically called when an Object leaves a Scripting Zone.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectleavescriptingzone'
+          },
+          {
+            snippet: 'onObjectLeaveZone(zone, leave_object)\n\t${0:-- body...}\nend'
+            displayText: 'onObjectLeaveZone(Object zone, Object leave_object)'
+            type: 'function'
+            description: 'Automatically called when an Object leaves any Zone.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onobjectleavezone'
           },
           {
             snippet: 'onObjectLoopingEffect(object, index)\n\t${0:-- body...}\nend'
@@ -4454,6 +4664,13 @@ module.exports =
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerdisconnect'
           },
           {
+            snippet: 'onPlayerPing(player, position)\n\t${0:-- body...}\nend'
+            displayText: 'onPlayerPing(string player, vector position)'
+            type: 'function'
+            description: 'Automatically called when a player pings the table.'
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onplayerping'
+          },
+          {
             snippet: 'onPlayerTurnEnd(player_color_end, player_color_next)\n\t${0:-- body...}\nend'
             displayText: 'onPlayerTurnEnd(string player_color_end, string player_color_next)'
             type: 'function'
@@ -4495,6 +4712,14 @@ module.exports =
             description: 'Automatically called once every frame.'
             descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onupdate'
           },
+          {
+            snippet: 'onZoneGroupSort(zone, group, reversed)\n\t${0:-- body...}\nend'
+            displayText: 'onGroupSort(Object zone, table group, bool reversed)'
+            type: 'function'
+            description: "Called when a group is sorted in LayoutZone zone.  Return the table sorted how you want, or false to use the zone's default sort."
+            descriptionMoreURL: 'https://api.tabletopsimulator.com/event/#onzonegroupsort'
+          },
+
         ]
 
       # Section: Globally accessible constants & functions
