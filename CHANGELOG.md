@@ -1,4 +1,4 @@
-## 13.1.0
+## 13.1.1
 * Added autocomplete snippets for API changes up to v13.1
 
 ## 12.4.3
