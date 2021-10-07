@@ -380,11 +380,12 @@ unbundle = (filepath, text) ->
   try
     data = luabundle.unbundleString(text)
     searchPaths = getBundleSearchPaths()
+    rootModuleName = data.metadata.rootModuleName
     rootModuleSourceMap = sourceMap
 
     for _, module of data.modules
-      if module.name == bundleRootModule
-        rootModuleSourceMap =  {path: null, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1}
+      if module.name == rootModuleName
+        rootModuleSourceMap = {path: null, children: [], startRow: module.start.line - 1, endRow: module.end.line - 1}
         sourceMap.children.push(rootModuleSourceMap)
       else
         modulePath = resolveBundleModule(module.name, searchPaths)
@@ -394,7 +395,7 @@ unbundle = (filepath, text) ->
               appearsInFile[modulePath] = {}
             appearsInFile[modulePath][filepath] = true
 
-    return [data.modules[bundleRootModule].content, rootModuleSourceMap]
+    return [data.modules[rootModuleName].content, rootModuleSourceMap]
   catch error
     if error not instanceof NoBundleMetadataError # If there's no metadata, then it's not a bundle.
       atom.notifications.addError("Failed to unbundle: " + filepath, {dismissable: true, detail: error.message})
