@@ -2,7 +2,7 @@
 #   This will create `provider.coffee` and `api.json`.
 
 header:
-  version: 13.2.1.0
+  version: 13.2.1.1
   behaviors:
     - AssetBundle
     - Book
@@ -949,7 +949,7 @@ Object:
           - [lua_script_state, string]
     - [getTags, table, Returns the tags attached to the Object., /object/#gettags]
     - [getBounds, table, Returns the world space axis aligned Bounds of the Object., /object/#getbounds]
-    - [getBoundsNormalized, table, Returns the world space axis aligned Bounds of the Object at zero rotation., /object/#getboundsnormalized]
+    - [getBoundsNormalized, table, Returns the world space axis aligned Bounds of the Object's colliders at zero rotation., /object/#getboundsnormalized]
     - [getButtons, table, Gets a list of all the 3D UI buttons on this Object., /object/#getbuttons]:
       - return:
         - items:
@@ -1131,6 +1131,7 @@ Object:
           - [thickness, float]
           - [rotation, Vector]
     - [getVelocity, table, Returns the current velocity vector of the Object., /object/#getvelocity]
+    - [getVisualBoundsNormalized, table, Returns the world space axis aligned Bounds of the Object's renderers at zero rotation., /object/#getvisualboundsnormalized]
     - [getZones, table, Returns all the Zones which the object is currently inside., /object/#getzones]
     - [hasAnyTag, bool, Returns whether the Object has any tag attached to it., /object/#hasanytag]
     - [hasMatchingTag, bool, Returns whether the Object and the specified other Object share at least one tag., /object/#hasmatchingtag]:
