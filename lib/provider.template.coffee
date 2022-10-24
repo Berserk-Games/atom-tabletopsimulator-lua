@@ -107,6 +107,13 @@ module.exports =
         resolve([])
         return
 
+      match_exact = (name) ->
+        return ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == name) || line.endsWith(name + ".") || (previous_token == name && this_token_intact)
+
+      match_ending = (name) ->
+        return ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token.endsWith(name)) || line.endsWith(name + ".") || (previous_token.endsWith(name) && this_token_intact)
+
+
       # Section: Control blocks
       if (line.endsWith(" do"))
         suggestions = [
@@ -148,177 +155,256 @@ module.exports =
           },
         ]
 
-      # Section: Global object
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Global") || line.endsWith("Global.") || (previous_token == "Global" && this_token_intact)
+      else if match_exact("Action")
         suggestions = [
-          #insert Global
+          #insert Action
         ]
 
-      # Section: dynamic Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "dynamic") || line.endsWith("dynamic.") || (previous_token == "dynamic" && this_token_intact)
+      else if match_exact("AssetBundle")
         suggestions = [
-          #insert dynamic
+          #insert AssetBundle
         ]
 
-      # Section: bit32 Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "bit32") || line.endsWith("bit32.") || (previous_token == "bit32" && this_token_intact)
+      else if match_exact("Backgrounds")
+        suggestions = [
+          #insert Backgrounds
+        ]
+
+      else if match_exact("bit32")
         suggestions = [
           #insert bit32
         ]
 
-      # Section: math Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "math") || line.endsWith("math.") || (previous_token == "math" && this_token_intact)
+      else if match_exact("Book")
         suggestions = [
-          #insert math
+          #insert Book
         ]
 
-      # Section: string Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "string") || line.endsWith("string.") || (previous_token == "string" && this_token_intact)
+      else if match_exact("Browser")
         suggestions = [
-          #insert string
+          #insert Browser
         ]
 
-      # Section: table Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "table") || line.endsWith("table.") || (previous_token == "table" && this_token_intact)
-        suggestions = [
-          #insert table
-        ]
-
-      # Section: turns Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Turns") || line.endsWith("Turns.") || (previous_token == "Turns" && this_token_intact)
-        suggestions = [
-          #insert Turns
-        ]
-
-      # Section: ui Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "UI") || line.endsWith("UI.") || (previous_token == "UI" && this_token_intact)
-        suggestions = [
-          #insert UI
-        ]
-
-      # Section: coroutine Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "coroutine") || line.endsWith("coroutine.") || (previous_token == "coroutine" && this_token_intact)
-        suggestions = [
-          #insert coroutine
-        ]
-
-      # Section: Color Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Color") || line.endsWith("Color.") || (previous_token == "Color" && this_token_intact)
-        suggestions = [
-          #insert Color
-        ]
-
-      # Section: Clock Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Clock") || line.endsWith("Clock.") || (previous_token == "Clock" && this_token_intact)
+      else if match_exact("Clock")
         suggestions = [
           #insert Clock
         ]
 
-      # Section: Counter Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Counter") || line.endsWith("Counter.") || (previous_token == "Counter" && this_token_intact)
+      else if match_exact("Color")
+        suggestions = [
+          #insert Color
+        ]
+
+      else if match_exact("Container")
+        suggestions = [
+          #insert Container
+        ]
+
+      else if match_exact("coroutine")
+        suggestions = [
+          #insert coroutine
+        ]
+
+      else if match_exact("Counter")
         suggestions = [
           #insert Counter
         ]
 
-      # Section: Lighting
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Lighting") || line.endsWith("Lighting.") || (previous_token == "Lighting" && this_token_intact)
+      else if match_exact("dynamic")
         suggestions = [
-          #insert Lighting
+          #insert dynamic
         ]
 
-      # Section: Music Player Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "MusicPlayer") || line.endsWith("MusicPlayer.") || (previous_token == "MusicPlayer" && this_token_intact)
+      else if match_exact("Global")
         suggestions = [
-          #insert MusicPlayer
+          #insert Global
         ]
 
-      # Section: Notes
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Notes") || line.endsWith("Notes.") || (previous_token == "Notes" && this_token_intact)
+      else if match_exact("Grid")
         suggestions = [
-          #insert Notes
+          #insert Grid
         ]
 
-      # Section: os Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "os") || line.endsWith("os.") || (previous_token == "os" && this_token_intact)
+      else if match_exact("Hands")
         suggestions = [
-          #insert os
+          #insert Hands
         ]
 
-      # Section: Physics
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Physics") || line.endsWith("Physics.") || (previous_token == "Physics" && this_token_intact)
+      else if match_exact("Info")
         suggestions = [
-          #insert Physics
+          #insert Info
         ]
 
-      # Section: Player Colors
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Player") || line.endsWith("Player.") || (previous_token == "Player" && this_token_intact)
-        suggestions = [
-          #insert PlayerColors
-        ]
-
-      # Section: Player Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token_2 == "Player") ||  previous_token.substring(0, 7) == "Player["
-        suggestions = [
-          #insert Player
-        ]
-
-      # Section: JSON Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "JSON") || line.endsWith("JSON.") || (previous_token == "JSON" && this_token_intact)
+      else if match_exact("JSON")
         suggestions = [
           #insert JSON
         ]
 
-      # Section: Time
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Time") || line.endsWith("Time.") || (previous_token == "Time" && this_token_intact)
-        suggestions = [
-          #insert Time
-        ]
-
-      # Section: Vector Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Vector") || line.endsWith("Vector.") || (previous_token == "Vector" && this_token_intact)
-        suggestions = [
-          #insert Vector
-        ]
-
-      # Section: WebRequest Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "WebRequest") || line.endsWith("WebRequest.") || (previous_token == "WebRequest" && this_token_intact)
-        suggestions = [
-          #insert WebRequest
-        ]
-
-      # Section: RPGFigurine Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "RPGFigurine") || line.endsWith("RPGFigurine.") || (previous_token == "RPGFigurine" && this_token_intact)
-        suggestions = [
-          #insert RPGFigurine
-        ]
-
-      # Section: TextTool Class
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "TextTool") || line.endsWith("TextTool.") || (previous_token == "TextTool" && this_token_intact)
-        suggestions = [
-          #insert TextTool
-        ]
-
-      # Section: Wait
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Wait") || line.endsWith("Wait.") || (previous_token == "Wait" && this_token_intact)
-        suggestions = [
-          #insert Wait
-        ]
-
-      # Section: LayoutZone Behaviour
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "LayoutZone") || line.endsWith("LayoutZone.") || (previous_token == "LayoutZone" && this_token_intact)
+      else if match_exact("LayoutZone")
         suggestions = [
           #insert LayoutZone
         ]
 
-      # Section: Zone Behaviour (has all Zone members)
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "Zone") || line.endsWith("Zone.") || (previous_token == "Zone" && this_token_intact)
+      else if match_exact("Lighting")
+        suggestions = [
+          #insert Lighting
+        ]
+
+      else if match_exact("math")
+        suggestions = [
+          #insert math
+        ]
+
+      else if match_exact("MusicPlayer")
+        suggestions = [
+          #insert MusicPlayer
+        ]
+
+      else if match_exact("Notes")
+        suggestions = [
+          #insert Notes
+        ]
+
+      else if match_exact("os")
+        suggestions = [
+          #insert os
+        ]
+
+      else if match_exact("Player")
+        suggestions = [
+          #insert PlayerManager
+        ]
+
+      else if match_exact("Physics")
+        suggestions = [
+          #insert Physics
+        ]
+
+      else if match_exact("RPGFigurine")
+        suggestions = [
+          #insert RPGFigurine
+        ]
+
+      else if match_exact("string")
+        suggestions = [
+          #insert string
+        ]
+
+      else if match_exact("table")
+        suggestions = [
+          #insert table
+        ]
+
+      else if match_exact("Tables")
+        suggestions = [
+          #insert Tables
+        ]
+
+      else if match_exact("TextTool")
+        suggestions = [
+          #insert TextTool
+        ]
+
+      else if match_exact("Time")
+        suggestions = [
+          #insert Time
+        ]
+
+      else if match_exact("Turns")
+        suggestions = [
+          #insert Turns
+        ]
+
+      else if match_exact("UI")
+        suggestions = [
+          #insert UI
+        ]
+
+      else if match_exact("Vector")
+        suggestions = [
+          #insert Vector
+        ]
+
+      else if match_exact("Wait")
+        suggestions = [
+          #insert Wait
+        ]
+
+      else if match_exact("WebRequest")
+        suggestions = [
+          #insert WebRequest
+        ]
+
+      else if match_exact("Zone") # Zone Behaviour (has all Zone members)
         suggestions = [
           #insert Zone
         ]
 
-      # Section: Object
-      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_intact)))
+      # PlayerInstance
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token_2 == "Player") ||  previous_token.substring(0, 7) == "Player["
         suggestions = [
+          #insert PlayerInstance
+        ]
+
+      # Component
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua") && previous_token == "getComponent") || match_ending("component")
+        suggestions = [
+          #insert Component
+        ]
+
+      # GameObject
+      else if match_ending("game_object")
+        suggestions = [
+          #insert GameObject
+        ]
+
+      # Material
+      else if match_ending("material")
+        suggestions = [
+          #insert Material
+        ]
+
+      # Object
+      else if ((prefix == "." || scopeDescriptor.scopes[1] == "variable.other.lua" || (tokens.length > 1 && this_token_intact)))
+        # Prefix with behaviour if variable looks likely
+        if match_ending("bundle")
+          suggestions = [
+            #insert AssetBundle
+          ]
+        else if match_ending("book")
+          suggestions = [
+            #insert Book
+          ]
+        else if match_ending("browser")
+          suggestions = [
+            #insert Browser
+          ]
+        else if match_ending("clock")
+          suggestions = [
+            #insert Clock
+          ]
+        else if match_ending("counter")
+          suggestions = [
+            #insert Counter
+          ]
+        else if match_ending("figurine")
+          suggestions = [
+            #insert RPGFigurine
+          ]
+        else if match_ending("layout_zone")
+          suggestions = [
+            #insert LayoutZone
+          ]
+        else if match_ending("text_tool")
+          suggestions = [
+            #insert TextTool
+          ]
+        else if match_ending("zone")
+          suggestions = [
+            #insert Zone
+          ]
+
+        suggestions = suggestions.concat [
           #insert Object
         ]
 
@@ -339,7 +425,6 @@ module.exports =
           #insert /
         ]
 
-        # End of sections!
 
       # Add smart getObjectFromGUID after static getObjectFromGUID if appropriate
       if this_token.includes('=')
@@ -398,7 +483,6 @@ module.exports =
       for suggestion in suggestions
           suggestion.snippet = suggestion.snippet.replace(match_pattern, replace_pattern)
 
-      # Done!
       resolve(suggestions)
 
 

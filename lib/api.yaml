@@ -1,8 +1,378 @@
-version: 13.1.0.0
+# After editting this file you must run `generate_from_api.py`:
+#   This will create `provider.coffee` and `api.json`.
+
+header:
+  version: 13.2.1.0
+  behaviors:
+    - AssetBundle
+    - Book
+    - Browser
+    - Clock
+    - Counter
+    - LayoutZone
+    - RPGFigurine
+    - TextTool
+    - Zone
+
+/:
+  constants:
+    - [Backgrounds, class, The Backgrounds class., /backgrounds/]
+    - [bit32, class, The bit32 class., 'https://www.lua.org/manual/5.2/manual.html#6.7']
+    - [coroutine, class, The coroutine class., 'https://www.lua.org/manual/5.2/manual.html#6.2']
+    - [dynamic, class, The dynamic class., 'http://www.moonsharp.org/additions.html']
+    - [Global, class, A reference to the Global Script., /object/]
+    - [Info, class, The Info class., info]
+    - [JSON, class, The JSON class., /json/]
+    - [Lighting, class, The Lighting class., /lighting/]
+    - [math, class, The math class., 'https://www.lua.org/manual/5.2/manual.html#6.6']
+    - [Notes, class, The Notes class., /notes/]
+    - [os, class, The os class., 'https://www.lua.org/manual/5.2/manual.html#6.9']
+    - [Physics, class, The Physics class., /physics/]
+    - [Player, class, The Player class., /player/manager/]
+    - [self, class, A reference to this Object., /object/]
+    - [string, class, The string class., 'https://www.lua.org/manual/5.2/manual.html#6.4']
+    - [table, class, The table class., 'https://www.lua.org/manual/5.2/manual.html#6.5']
+    - [Tables, class, The Tables class., /tables/]
+    - [Time, class, The Time class., /time/]
+    - [Turns, class, The Turns class., /turns/]
+    - [UI, class, The UI class., /ui/]
+    - [Wait, class, The Wait class., /wait/]
+    - [WebRequest, class, The WebRequest class., /webrequest/manager/]
+
+  functions:
+    - [addContextMenuItem, bool, Add a global context menu item., /base/#addcontextmenuitem]:
+      - [label, string]
+      - [f, function]
+      - [keep_open, bool]
+      - [require_table, bool]
+    - [addHotkey, bool, 'Add a user-assignable hotkey.', /base/#addhotkey]:
+      - [label, string]
+      - [f, function]
+      - [trigger_on_key_up, bool]
+    - [broadcastToAll, bool, Prints a message to the screen and chat window on all connected clients., /base/#broadcasttoall]:
+      - [message, string]
+      - [text_color, Color]
+    - [broadcastToColor, bool, Prints a private message to the screen and chat window to the player matching the player color., /base/#broadcasttocolor]:
+      - [message, string]
+      - [player_color, string]
+      - [text_color, Color]
+    - [clearContextMenu, bool, Clears add global context menu items., /base/#clearcontextmenu]
+    - [clearHotkeys, bool, Clears user assignable hotkeys., /base/#clearhotkeys]
+    - [clearPixelPaint, bool, Clears all pixel paint., /base/#clearpixelpaint]
+    - [clearVectorPaint, bool, Clears all vector paint., /base/#clearvectorpaint]
+    - [color, Color, 'Creates a Color table from rgb[a] values (alpha is optional).', /object/#color]:
+      - [red, float]
+      - [green, float]
+      - [blue, float]
+      - [alpha, float]
+    - [copy, bool, Copies a list of Objects., /base/#copy]:
+      - [objects, table]
+    - [destroyObject, bool, Destroys an Object., /base/#destroyobject]:
+      - [obj, Object]
+    - [flipTable, bool, Flip the table in a fit of rage., /base/#fliptable]
+    - [getObjects, table, Returns a table of all the spawned Objects in the game., /base/#getobjects]
+    - [getObjectFromGUID, Object, 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn''t exist.', /base/#getobjectfromguid]:
+      - [guid, string]
+    - [getObjectsWithAllTags, table, Returns Table of all Objects which have all of the specified tags attached., /base/#getobjectswithalltags]:
+      - [tags, table]:
+        - [tag, string]
+    - [getObjectsWithAnyTags, table, Returns Table of all Objects which have at least one of the specified tags attached., /base/#getobjectswithanytags]:
+      - [tags, table]:
+        - [tag, string]
+    - [getObjectsWithTag, table, Returns Table of all Objects which have the specified tag attached., /base/#getobjectswithtag]:
+      - [tag, string]
+    - [getSeatedPlayers, table, Returns an indexed Lua table of all the seated Player colors., /base/#getseatedplayers]
+    - [log, bool, 'Outputs a message to the system console. Specify a tag to identify it by class or subject, and label to prefix the value.', /base/#log]:
+      - [message, any]
+      - [tag, string]
+      - [label, string]
+    - [logString, string, 'Returns the string which "log" would output.', /base/#logstring]:
+      - [message, any]
+      - [tag, string]
+      - [label, string]
+    - [logStyle, bool, 'Sets the style options for the specified tag: the color it is displayed in and any prefix or postfix text.', /base/#logstyle]:
+      - [tag, string]
+      - [color, Color]
+      - [prefix, string]
+      - [postfix, string]
+    - [group, Object, Groups objects together into returned Object., /base/#group]:
+      - [objects, table]
+    - [paste, table, Pastes copied Objects and returns a table of references to the new Objects., /base/#paste]:
+      - [parameters, table]:
+        - [position, Vector, '[x=0, y=3, z=0]']
+        - [snap_to_grid, bool, '[false]']
+    - [print, void, Prints a message to the chat window only on the host., /base/#print]:
+      - [message, string]
+    - [printToAll, bool, Prints a message to the chat window on all connected clients., /base/#printtoall]:
+      - [message, string]
+      - [text_color, Color]
+    - [printToColor, bool, Prints a message to the chat window of a specific Player., /base/#printtocolor]:
+      - [message, string]
+      - [player_color, string]
+      - [text_color, Color]
+    - [sendExternalMessage, bool, Sends table to whatever is connected to the External Editor API., /externaleditorapi/]:
+      - [table, table]
+    - [spawnObject, Object, Spawns an Object and returns a reference to it., /base/#spawnobject]:
+      - [parameters, table]:
+        - [type, string]
+        - [position, Vector, '[x=0, y=3, z=0]']
+        - [rotation, Vector, '[x=0, y=0, z=0]']
+        - [scale, Vector, '[x=1, y=1, z=1]']
+        - [callback_function, function]
+        - [sound, bool]
+        - [params, table]
+        - [snap_to_grid, bool]
+    - [spawnObjectData, Object, Spawns an Object using an Object Data Table and returns a reference to it., /base/#spawnobjectdata]:
+      - [parameters, table]:
+        - [data, table]
+        - [position, Vector]
+        - [rotation, Vector]
+        - [scale, Vector]
+        - [callback_function, function]
+    - [spawnObjectJSON, Object, Spawns an Object using a JSON string and returns a reference to it., /base/#spawnobjectjson]:
+      - [parameters, table]:
+        - [json, string]
+        - [position, Vector, '[x=0, y=3, z=0]']
+        - [rotation, Vector, '[x=0, y=0, z=0]']
+        - [scale, Vector, '[x=1, y=1, z=1]']
+        - [callback_function, string]
+        - [sound, bool]
+        - [params, table]
+        - [snap_to_grid, bool]
+    - [startLuaCoroutine, bool, Starts a Lua function as a coroutine., /base/#startluacoroutine]:
+      - [func_owner, Object]
+      - [func_name, string]
+    - [stringColorToRGB, table, Converts a color string (player colors) to its RGB values., /base/#stringcolortorgb]:
+      - [player_color, string]
+    - [tonumber, number, 'When called with no base, tonumber tries to convert its argument to a number.', 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber']:
+      - [s, string]
+    - [tostring, number, Receives a value of any type and converts it to a string in a reasonable format., 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring']:
+      - [x, any]
+    - [vector, Vector, 'Creates a Vector table from x, y, z values.', /object/#vector]:
+      - [x, float]
+      - [y, float]
+      - [z, float]
+
+Action:
+  constants:
+    - [Copy, Action, 'Copy (or commence cloning) the targets.', /events/#onplayeraction-actions]
+    - [Cut, Action, 'Cut (copy and delete) the targets.', /events/#onplayeraction-actions]
+    - [Delete, Action, 'Delete the targets.', /events/#onplayeraction-actions]
+    - [FlipIncrementalLeft, Action, 'Incrementally rotate the targets counter-clockwise around their flip axes, typically the scene''s Z-axis.', /events/#onplayeraction-actions]
+    - [FlipIncrementalRight, Action, 'Incrementally rotate the targets clockwise around their flip axes, typically the scene''s Z-axis.', /events/#onplayeraction-actions]
+    - [FlipOver, Action, 'Rotate the targets 180 degrees around their flip axes, typically the scene''s Z-axis i.e. toggle the targets between face up and face down.', /events/#onplayeraction-actions]
+    - [Group, Action, 'Group the targets.', /events/#onplayeraction-actions]
+    - [Paste, Action, 'Paste (spawn) the targets.', /events/#onplayeraction-actions]
+    - [PickUp, Action, 'Pick up the targets.', /events/#onplayeraction-actions]
+    - [Randomize, Action, 'Randomize the targets.', /events/#onplayeraction-actions]
+    - [RotateIncrementalLeft, Action, 'Rotate the targets incrementally, typically counter-clockwise around the scene''s Y-axis. Instead of being rotated exclusively around the Y-axis, dice will be rotated to the previous rotation value.', /events/#onplayeraction-actions]
+    - [RotateIncrementalRight, Action, 'Rotate the targets incrementally, typically clockwise around the scene''s Y-axis. Instead of being rotated exclusively around the Y-axis, dice will be rotated to the next rotation value.', /events/#onplayeraction-actions]
+    - [RotateOver, Action, 'Rotate the targets 180 degrees around the scene''s Y-axis.', /events/#onplayeraction-actions]
+    - [Select, Action, 'Add the targets to the player''s selection.', /events/#onplayeraction-actions]
+    - [Under, Action, 'Move the targets underneath objects below them on table.', /events/#onplayeraction-actions]
+
+AssetBundle:
+  functions:
+    - [getLoopingEffectIndex, int, 'Index of the currently looping effect. Indexes starts at 0.', /behavior/assetbundle/#getloopingeffectindex]
+    - [getLoopingEffects, table, 'Returns a Table with the keys "index" and "name" for each looping effect.', /behavior/assetbundle/#getloopingeffects]:
+      - return:
+        - items:
+          - [index, int]
+          - [name, string]
+    - [getTriggerEffects, table, 'Returns a Table with the keys "index" and "name" for each trigger effect.', /behavior/assetbundle/#gettriggereffects]:
+      - return:
+        - items:
+          - [index, int]
+          - [name, string]
+    - [playLoopingEffect, bool, 'Starts playing a looping effect. Indexes starts at 0.', /behavior/assetbundle/#playloopingeffect]:
+        - [index, int]
+    - [playTriggerEffect, bool, 'Starts playing a trigger effect. Indexes starts at 0.', /behavior/assetbundle/#playtriggereffect]:
+        - [index, int]
+
+Backgrounds:
+  functions:
+    - [getBackground, string, 'Returns the current background name.', /backgrounds/#getbackground]
+    - [getCustomURL, string, 'Returns the image URL of the current custom background, or nil if the current background is not custom.', /backgrounds/#getcustomurl]
+    - [setBackground, bool, 'Replaces the current background with the background matching the specified name.', /backgrounds/#setbackground]:
+      - [name, string]
+    - [setCustomURL, bool, 'Replaces the current background with a custom background loaded from the specified url.', /backgrounds/#setcustomurl]:
+      - [url, string]
+
+bit32:
+  functions:
+    - [arshift, int, Returns the number x shifted disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.arshift']:
+      - [x, int]
+      - [disp, int]
+    - [band, int, Returns the bitwise and of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.band']:
+      - [..., any]
+    - [bnot, int, Returns the bitwise not of x., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bnot']:
+      - [x, int]
+    - [bor, int, Returns the bitwise or of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bor']:
+      - [..., any]
+    - [btest, bool, Returns a bool signaling whether the bitwise and of its operands is different from zero., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.btest']:
+      - [..., any]
+    - [bxor, int, Returns the bitwise xor of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bxor']:
+      - [..., any]
+    - [extract, int, 'Returns the unsigned number formed by the bits field to field + width - 1 from n.', 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.extract']:
+      - [n, int]
+      - [field, int]
+      - [width, int]
+    - [lrotate, int, Returns the number x rotated disp bits to the left., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lrotate']:
+      - [x, int]
+      - [disp, int]
+    - [lshift, int, Returns the number x shifted disp bits to the left., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lshift']:
+      - [x, int]
+      - [disp, int]
+    - [replace, int, 'Returns a copy of n with the bits field to field + width - 1 replaced by the value v.', 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.replace']:
+      - [n, int]
+      - [v, int]
+      - [field, int]
+      - [width, int]
+    - [rrotate, int, Returns the number x rotated disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rrotate']:
+      - [x, int]
+      - [disp, int]
+    - [rshift, int, Returns the number x shifted disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rshift']:
+      - [x, int]
+      - [disp, int]
+
+Book:
+  properties:
+    - [page_offset, int, The page numbers displayed in the Custom PDF UI are offset by this amount., /behavior/book/]
+
+  functions:
+    - [clearHighlight, bool, Clears the current highlight., /behavior/book/#clearhighlight]
+    - [getPage, int, Gets the current page of the PDF., /behavior/book/#getpage]:
+      - [use_page_offset, bool]
+    - [setHighlight, bool, Set highlight box on current page., /behavior/book/#sethighlight]:
+      - [x1, float]
+      - [y1, float]
+      - [x2, float]
+      - [y2, float]
+    - [setPage, bool, Set current page., /behavior/book/#setpage]:
+      - [page, int]
+      - [use_page_offset, bool]
+
+Browser:
+  properties:
+    - [url, string, 'URL which currently wants to display.', /behavior/browser/#url]
+    - [pixel_width, int, 'The pixel width the browser is virtually rendering to.', /behavior/browser/#pixel_width]
+
+Clock:
+  properties:
+    - [paused, bool, 'If the Clock''s timer is paused. Setting this value will pause or resume the timer.', /behavior/clock/#paused]
+
+  functions:
+    - [getValue, int, Returns the current value in stopwatch or timer mode as the number of seconds., /behavior/clock/#getvalue]
+    - [pauseStart, bool, Toggle function for pausing and resuming a stopwatch or timer on the Clock., /behavior/clock/#pausestart]
+    - [setValue, bool, Switches the clock to timer mode and sets the timer to the given value in seconds., /behavior/clock/#setvalue]:
+      - [seconds, int]
+    - [startStopwatch, bool, Switches the Clock to stopwatch mode and begins the stopwatch from 0., /behavior/clock/#startstopwatch]
+    - [showCurrentTime, bool, Switches the Clock back to displaying the current time., /behavior/clock/#showcurrenttime]
+
+Container:
+  functions:
+    - [search, void, 'Activate search window for player, optionally limited to top N cards', /behavior/container/#search]:
+      - [player, Player]
+      - [max_cards, int]
+
+Color:
+  constants:
+    - [Black, Color, The Color of the Black player., /color/]
+    - [Blue, Color, The Color of the Blue player., /color/]
+    - [Brown, Color, The Color of the Brown player., /color/]
+    - [Green, Color, The Color of the Green player., /color/]
+    - [Orange, Color, The Color of the Orange player., /color/]
+    - [Pink, Color, The Color of the Pink player., /color/]
+    - [Purple, Color, The Color of the Purple player., /color/]
+    - [Red, Color, The Color of the Red player., /color/]
+    - [Teal, Color, The Color of the Teal player., /color/]
+    - [White, Color, The Color of the White player., /color/]
+    - [Yellow, Color, The Color of the Yellow player., /color/]
+
+  properties:
+    - [list, table, table of all named colors., /color/#list]
+
+  functions:
+    - [add, bool, Add a color to the table of all named colors., /color/#add]:
+      - [name, string]
+      - [color, Color]
+    - [fromHex, Color, 'Returns a new Color from a given hex string (#RRGGBBAA).  "#" and "AA" are optional.', /color/#fromhex]:
+      - [hex, string]
+    - [fromString, Color, 'Returns a new Color from a given player color string ("Red", "White", etc.).', /color/#fromstring]:
+      - [player_color, string]
+    - [new, Color, Returns a new Color., /color/#new]:
+      - [r, float]
+      - [g, float]
+      - [b, float]
+      - [a, float]
+
+Component:
+  properties:
+    - [game_object, GameObject, The GameObject the Component is attached to., /components/component/#game_object]
+    - [name, string, The name of the GameObject., /components/component/#name]
+
+  functions:
+    - [get, any, Obtains the value of a given Variable on a Component., /object/component/#get]:
+      - [name, string]
+    - [getVars, table, Returns a table mapping Var names to their type., /object/component/#getVars]
+    - [set, bool, Sets the Var of the specified `name` to the provided `value`., /object/component/#set]:
+      - [name, string]
+      - [value, any]
+
+coroutine:
+  functions:
+    - [create, thread, 'Creates a new coroutine, with body f.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.create']:
+      - [f, function]
+    - [resume, table, Starts or continues the execution of coroutine co., 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.resume']:
+      - [co, coroutine]
+    - [running, table, 'Returns the running coroutine plus a bool, true when the running coroutine is the main one.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.running']
+    - [status, string, 'Returns the status of coroutine co, as a string.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.status']:
+      - [co, coroutine]
+    - [wrap, table, 'Creates a new coroutine, with body f.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.wrap']:
+      - [f, function]
+    - [yield, void, Suspends the execution of the calling coroutine., 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.yield']:
+      - [value, int]
+
+Counter:
+  functions:
+    - [clear, bool, Resets the Counter value back to 0., /behavior/counter/#clear]
+    - [decrement, bool, 'Decrements the Counter''s value by 1.', /behavior/counter/#decrement]
+    - [getValue, int, Returns the current value of the Counter., /behavior/counter/#getvalue]
+    - [increment, bool, 'Increments the Counter''s value by 1.', /behavior/counter/#increment]
+    - [setValue, bool, Sets the current value of the Counter., /behavior/counter/#setvalue]:
+      - [seconds, int]
+
+dynamic:
+  functions:
+    - [eval, any, Returns the evaluation of s., 'http://www.moonsharp.org/additions.html']:
+      - [s, string]
+    - [prepare, any, Returns a prepared expression object which can be passed to dynamic.eval for faster execution., 'http://www.moonsharp.org/additions.html']:
+      - [s, string]
+
+GameObject:
+  properties:
+    - [name, string, The name of the GameObject., /components/gameobject/#name]
+
+  functions:
+    - [getChild, GameObject, Returns a child GameObject matching the specified name., /components/gameobject/#getchild]:
+      - [name, string]
+    - [getChildren, table, Returns a table of all child GameObjects., /components/gameobject/#getchildren]
+    - [getComponent, Component, Get the named component of an object., /components/gameobject/#getcomponent]:
+      - [name, string]
+    - [getComponentInChildren, Component, Get the named component of an object or its children., /components/gameobject/#getcomponentinchildren]:
+      - [name, string]
+    - [getComponents, table, Get all components of an object. `name` is optional., /components/gameobject/#getcomponents]:
+      - [name, string]
+    - [getComponentsInChildren, table, Get all components of an object or its children. `name` is optional., /components/gameobject/#getcomponentsinchildren]:
+      - [name, string]
+    - [getMaterials, table, Get all materials of an object., /components/gameobject/#getmaterials]
+    - [getMaterialsInChildren, table, Get all materials of an object or its children., /components/gameobject/#getcomponentsinchildren]
+
 Global:
   properties:
     - [script_code, string, Returns the Global Lua script., /object/#script_code]
     - [script_state, string, Returns the Global saved Lua script state., /object/#script_state]
+
   functions:
     - [addDecal, bool, Add a Decal onto the game world., /object/#adddecal]:
       - [decal, table]:
@@ -44,52 +414,231 @@ Global:
     - [setVar, bool, Sets a Lua variable for this Object., /object/#setvar]:
       - [variable_name, string]
       - [value, any]
-dynamic:
+
+GlobalEvents:
+  events:
+    - [tryObjectEnterContainer, bool, Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in., /events/#tryobjectentercontainer]:
+      - [container, Object]
+      - [object, Object]
+    - [onBlindfold, void, Called when a player puts on or takes off their blindfold., /events/#onblindfold]:
+      - [player, Player]
+      - [blindfolded, bool]
+    - [onChat, void, This function is called every time a player sends a chat message.  Return false to cancel that message., /events/#onchat]:
+      - [message, string]
+      - [player, Player]
+    - [onExternalMessage, bool, This function called when a message is received from the External Editor API., /externaleditorapi/]:
+      - [message, table]
+    - [onFixedUpdate, void, 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.', /events/#onfixedupdate]
+    - [onLoad, void, Automatically called when a game save is finished loading every Object., /events/#onload]:
+      - [save_state, string]
+    - [onObjectCollisionEnter, void, Automatically called when an Object collides with another Object., /events/#onobjectcollisionenter]:
+      - [object, Object]
+      - [info, table]:
+        - [collision_object, Object]
+        - [contact_points, table, '{Vector, ...}']
+        - [relative_velocity, Vector]
+    - [onObjectCollisionStay, void, Automatically called when an Object is touching another Object., /events/#onobjectcollisionstay]:
+      - [object, Object]
+      - [info, table]:
+        - [collision_object, Object]
+        - [contact_points, table, '{Vector, ...}']
+        - [relative_velocity, Vector]
+    - [onObjectCollisionExit, void, Automatically called when an Object stops touching another Object., /events/#onobjectcollisionexit]:
+      - [object, Object]
+      - [info, table]:
+        - [collision_object, Object]
+        - [contact_points, table, '{Vector, ...}']
+        - [relative_velocity, Vector]
+    - [onObjectDestroy, void, Automatically called when an Object is destroyed., /events/#onobjectdestroy]:
+      - [object, Object]
+    - [onObjectDrop, void, Automatically called when an Object is dropped., /events/#onobjectdrop]:
+      - [player_color, string]
+      - [object, Object]
+    - [onObjectEnterContainer, void, 'Automatically called when an Object enters any container(Deck, Bag, Chip Stack, etc).', /events/#onobjectentercontainer]:
+      - [container, Object]
+      - [object, Object]
+    - [onObjectEnterScriptingZone, void, Automatically called when an Object enters a Scripting Zone., /events/#onobjectenterscriptingzone]:
+      - [zone, Object]
+      - [object, Object]
+    - [onObjectEnterZone, void, Automatically called when an Object enters any Zone., /events/#onobjectenterzone]:
+      - [zone, Object]
+      - [object, Object]
+    - [onObjectHover, void, Called when a player hovers their pointer over an object., /events/#onobjecthover]:
+      - [player_color, string]
+      - [object, Object]
+    - [onObjectLeaveContainer, void, 'Automatically called when an Object leaves any container(Deck, Bag, Chip Stack, etc).', /events/#onobjectleavecontainer]:
+      - [container, Object]
+      - [object, Object]
+    - [onObjectLeaveScriptingZone, void, Automatically called when an Object leaves a Scripting Zone., /events/#onobjectleavescriptingzone]:
+      - [zone, Object]
+      - [object, Object]
+    - [onObjectLeaveZone, void, Automatically called when an Object leaves any Zone., /events/#onobjectleavezone]:
+      - [zone, Object]
+      - [object, Object]
+    - [onObjectLoopingEffect, void, 'Automatically called when an asset Object''s loop is started.', /events/#onobjectloopingeffect]:
+      - [object, Object]
+      - [index, int]
+    - [onObjectNumberTyped, void, Called when a player hovers their pointer over an object and types a number., /events/#onobjectnumbertyped]:
+      - [object, Object]
+      - [player_color, string]
+      - [number_typed, int]
+    - [onObjectPeek, void, Automatically called when an Object is peeked., /events/#onobjectpeek]:
+      - [object, Object]
+      - [player_color, string]
+    - [onObjectPickUp, void, Automatically called when an Object is picked up., /events/#onobjectpickup]:
+      - [player_color, string]
+      - [object, Object]
+    - [onObjectRandomize, void, Automatically called when an asset Object is randomized by player_color., /events/#onobjectrandomize]:
+      - [object, Object]
+      - [player_color, string]
+    - [tryObjectRandomize, bool, 'Called when a player attempts to randomize an Object. Return false to prevent the Object being randomized.', /events/#tryobjectrandomize]:
+      - [object, Object]
+      - [player_color, string]
+    - [onObjectRotate, void, Automatically called after a player rotates an object., /events/#onobjectrotate]:
+      - [object, Object]
+      - [spin, float]
+      - [flip, float]
+      - [player_color, string]
+      - [old_spin, float]
+      - [old_flip, float]
+    - [tryObjectRotate, bool, Automatically called when a player attempts to rotate an object.  If this function returns false the rotation will be cancelled., /events/#tryobjectrotate]:
+      - [object, Object]
+      - [spin, float]
+      - [flip, float]
+      - [player_color, string]
+      - [old_spin, float]
+      - [old_flip, float]
+    - [onObjectSearchStart, void, Automatically called when player_color starts searching asset object., /events/#onobjectsearchstart]:
+      - [object, Object]
+      - [player_color, string]
+    - [onObjectSearchEnd, void, Automatically called when player_color stops searching asset object., /events/#onobjectsearchend]:
+      - [object, Object]
+      - [player_color, string]
+    - [onObjectSpawn, void, Automatically called when an Object is spawned., /events/#onobjectspawn]:
+      - [object, Object]
+    - [onObjectStateChange, void, Called when an object changes state., /events/#onobjectstatechanged]:
+      - [object, Object]
+      - [old_guid, string]
+    - [onObjectTriggerEffect, void, Automatically called when an asset Object is triggered., /events/#onobjecttriggereffect]:
+      - [object, Object]
+      - [index, int]
+    - [onPlayerAction, bool, 'Called when a player attempts to perform an action. Return false to prevent the action''s default behavior.', /events/#onplayeraction]:
+      - [player, Player]
+      - [action, Action]
+      - [targets, table]
+    - [onPlayerChangeColor, void, Automatically called when a Player changes color., /events/#onplayerchangecolor]:
+      - [player_color, string]
+    - [onPlayerChangeTeam, void, Automatically called when a Player changes team., /events/#onplayerchangeteam]:
+      - [player_color, string]
+      - [team, string]
+    - [onPlayerChatTyping, void, Automatically called when a Player starts or stops typing., /events/#onplayerchattyping]
+    - [onPlayerConnect, void, Automatically called when a Player connects., /events/#onplayerconnect]:
+      - [player_id, int]
+    - [onPlayerDisconnect, void, Automatically called when a Player disconnects., /events/#onplayerdisconnect]:
+      - [player_id, int]
+    - [onPlayerPing, void, Automatically called when a player pings the table., /events/#onplayerping]:
+      - [player_color, string]
+      - [position, Vector]
+      - [object, Object]
+    - [onPlayerTurn, void, 'Automatically called at the end of a Player''s turn.', /events/#onplayerturn]:
+      - [next_player, Player]
+      - [prev_player, Player]
+    - [onSave, void, 'Automatically called when the game saves (including auto-save for Rewinding).', /events/#onsave]
+    - [onScriptingButtonDown, void, Automatically called when a player presses down one of the scripting button hotkeys., /events/#onscriptingbuttondown]:
+      - [index, int]
+      - [player_color, string]
+    - [onScriptingButtonUp, void, Automatically called when a player releases one of the scripting button hotkeys., /events/#onscriptingbuttonup]:
+      - [index, int]
+      - [player_color, string]
+    - [onUpdate, void, Automatically called once every frame., /events/#onupdate]
+    - [onZoneGroupSort, void, 'Called when a group is sorted in LayoutZone zone.  Return the table sorted how you want, or false to use the zone''s default sort.', /events/#onzonegroupsort]:
+      - [zone, Object]
+      - [group, table]
+      - [reversed, bool]
+
+Grid:
+  properties:
+    - [type, int, 'The type of the grid. 1 = Rectangles, 2 = Horizontal hexes, 3 = Vertical hexes.', /grid/#type]
+    - [show_lines, bool, 'Visibility of the grid lines.', /grid/#show_lines]
+    - [color, Color, 'Color of the grid lines.', /grid/#color]
+    - [opacity, float, 'Opacity of the grid lines.', /grid/#opacity]
+    - [thick_lines, bool, 'Thickness of the grid lines. false = Thin, true = Thick.', /grid/#thick_lines]
+    - [snapping, int, 'Method of snapping objects to the grid. 1 = Off, 2 = Lines, 3 = Center, 4 = Both.', /grid/#snapping]
+    - [offsetX, float, 'X offset of the grid origin.', /grid/#offsetx]
+    - [offsetY, float, 'Y offset of the grid origin.', /grid/#offsety]
+    - [sizeX, float, 'Width of the grid cells.', /grid/#sizex]
+    - [sizeY, float, 'Height of the grid cells.', /grid/#sizey]
+
+Hands:
+  properties:
+    - [enable, bool, 'Whether hand zones are enabled i.e. hold objects.', /hands/#enable]
+    - [disable_unused, bool, 'Whether hands zones belonging to a color without a seated player should be disabled.', /hands/#disable_unused]
+    - [hiding, int, 'Determines which hand contents are hidden from which players.', /hands/#hiding]
+
   functions:
-    - [eval, any, Returns the evaluation of s., 'http://www.moonsharp.org/additions.html']:
-      - [s, string]
-    - [prepare, any, Returns a prepared expression object which can be passed to dynamic.eval for faster execution., 'http://www.moonsharp.org/additions.html']:
-      - [s, string]
-bit32:
+    - [getHands, table, Returns a table of all Hand Zone Objects in the game., /hands/#gethands]
+
+Info:
+  properties:
+    - [complexity, string, 'The complexity of the current game/mod.', /info/#complexity]
+    - [name, string, 'Name of the current game/mod.', /info/#name]
+    - [number_of_players, table, 'The number of players the current game/mod allows.', /info/#number_of_players]
+    - [playing_time, table, 'The amount of time the current game/mod takes.', /info/#playing_time]
+    - [tags, table, 'The tags associated with the current game/mod.', /info/#tags]
+    - [type, string, 'The category of the current mod.', /info/#type]
+
+JSON:
   functions:
-    - [arshift, int, Returns the number x shifted disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.arshift']:
-      - [x, int]
-      - [disp, int]
-    - [band, int, Returns the bitwise and of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.band']:
-      - [..., any]
-    - [bnot, int, Returns the bitwise not of x., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bnot']:
-      - [x, int]
-    - [bor, int, Returns the bitwise or of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bor']:
-      - [..., any]
-    - [btest, bool, Returns a bool signaling whether the bitwise and of its operands is different from zero., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.btest']:
-      - [..., any]
-    - [bxor, int, Returns the bitwise xor of its operands., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.bxor']:
-      - [..., any]
-    - [extract, int, 'Returns the unsigned number formed by the bits field to field + width - 1 from n.', 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.extract']:
-      - [n, int]
-      - [field, int]
-      - [width, int]
-    - [lrotate, int, Returns the number x rotated disp bits to the left., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lrotate']:
-      - [x, int]
-      - [disp, int]
-    - [lshift, int, Returns the number x shifted disp bits to the left., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.lshift']:
-      - [x, int]
-      - [disp, int]
-    - [replace, int, 'Returns a copy of n with the bits field to field + width - 1 replaced by the value v.', 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.replace']:
-      - [n, int]
-      - [v, int]
-      - [field, int]
-      - [width, int]
-    - [rrotate, int, Returns the number x rotated disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rrotate']:
-      - [x, int]
-      - [disp, int]
-    - [rshift, int, Returns the number x shifted disp bits to the right., 'https://www.lua.org/manual/5.2/manual.html#pdf-bit32.rshift']:
-      - [x, int]
-      - [disp, int]
+    - [decode, any, 'Decodes a valid JSON string into a Lua string, number, or table.', /json/#decode]:
+      - [json_string, string]
+    - [encode, string, 'Encodes a Lua string, number, or table into a valid JSON string. This will not work with Object references.', /json/#encode]:
+      - [variable, any]
+    - [encode_pretty, string, 'Encodes a Lua string, number, or table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.', /json/#encode_pretty]:
+      - [variable, any]
+
+Lighting:
+  properties:
+    - [ambient_type, int, 'The source of the ambient light. 1 = Background, 2 = Gradient.', /lighting/#ambient_type]
+    - [ambient_intensity, float, 'The strength of the ambient light either from the background or gradient. Range is 0-4.', /lighting/#ambient_intensity]
+    - [light_intensity, float, 'The strength of the directional light shining down in the scene. Range is 0-4.', /lighting/#light_intensity]
+    - [lut_contribution, float, 'How much the LUT contributes to the light.', /lighting/#lut_contribution]
+    - [lut_index, int, 'The LUT index of the light.', /lighting/#lut_index]
+    - [lut_url, string, 'The LUT URL for the light.', /lighting/#lut_url]
+    - [reflection_intensity, float, 'The strength of the reflections from the background. Range is 0-1.', /lighting/#reflection_intensity]
+
+  functions:
+    - [apply, bool, Applies all changed made to the Lighting class. This must be called for these changes to take affect., /lighting/#apply]
+    - [getAmbientEquatorColor, Color, Returns the Color of the gradient equator., /lighting/#getambientequatorcolor]
+    - [getAmbientGroundColor, Color, Returns the Color of the gradient ground., /lighting/#getambientgroundcolor]
+    - [getAmbientSkyColor, Color, Returns the Color of the gradient sky., /lighting/#getambientskycolor]
+    - [getLightColor, Color, Returns the Color of the directional light., /lighting/#getlightcolor]
+    - [setAmbientEquatorColor, bool, Sets the Color of the gradient equator., /lighting/#setambientequatorcolor]:
+      - [color, Color]
+    - [setAmbientGroundColor, bool, Sets the Color of the ambient ground., /lighting/#setambientgroundcolor]:
+      - [color, Color]
+    - [setAmbientSkyColor, bool, Sets the Color of the gradient sky., /lighting/#setambientskycolor]:
+      - [color, Color]
+    - [setLightColor, bool, Sets the Color of the directional light., /lighting/#setlightcolor]:
+      - [color, Color]
+
+Material:
+  properties:
+    - [game_object, GameObject, The GameObject the Material is attached to., /components/material/#game_object]
+    - [shader, string, The name of the Shader used by the Material., /components/material/#shader]
+
+  functions:
+    - [get, any, Obtains the value of a given Variable on the Material., /components/material/#get]:
+      - [name, string]
+    - [getVars, table, Returns a table mapping Var names to their type., /components/material/#getVars]
+    - [set, bool, Sets the Var of the specified `name` to the provided `value`., /components/material/#set]:
+      - [name, string]
+      - [value, any]
+
 math:
   constants:
     - [huge, float, 'The value HUGE_VAL, a value larger than or equal to any other numerical value.', 'https://www.lua.org/manual/5.2/manual.html#pdf-math.huge']
     - [pi, float, The value of p., 'https://www.lua.org/manual/5.2/manual.html#pdf-math.pi']
+
   functions:
     - [abs, float, Returns the absolute value of x., 'https://www.lua.org/manual/5.2/manual.html#pdf-math.abs']:
       - [x, float]
@@ -150,207 +699,7 @@ math:
       - [x, float]
     - [tanh, float, Returns the hyperbolic tangent of x., 'https://www.lua.org/manual/5.2/manual.html#pdf-math.tanh']:
       - [x, float]
-string:
-  functions:
-    - [byte, int, 'Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j].', 'https://www.lua.org/manual/5.2/manual.html#pdf-string.byte']:
-      - [s, string]
-      - [i, int]
-      - [j, int]
-    - [char, string, Returns a string comprised of the integer char codes converted to chars and concatenated., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.char']:
-      - [c, int]
-    - [dump, string, Returns a string containing a binary representation of the given function., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.dump']:
-      - [f, function]
-    - [find, int, 'Returns the start and end indices of pattern in string, or nil.', 'https://www.lua.org/manual/5.2/manual.html#pdf-string.find']:
-      - [s, string]
-      - [pattern, string]
-      - [init, int]
-      - [plain, bool]
-    - [format, string, Returns a formatted version of its variable number of arguments following the description given in its first argument., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.format']:
-      - [formatstring, string]
-      - [..., any]
-    - [gmatch, function, Returns an iterator function that returns the next captures from pattern over the string s., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gmatch']:
-      - [s, string]
-      - [pattern, string]
-    - [gsub, string, Returns a string from pattern matched to s replaced with repl for n occurences., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gsub']:
-      - [s, string]
-      - [pattern, string]
-      - [repl, string]
-      - [n, int]
-    - [len, int, Returns the length of the string., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.len']:
-      - [s, string]
-    - [lower, string, Returns the string converted to lower case., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.lower']:
-      - [s, string]
-    - [match, captures, Returns the captures from pattern matched to s., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.match']:
-      - [s, string]
-      - [pattern, string]
-      - [init, int]
-    - [rep, captures, Returns a string that is the concatenation of n copies of the string s separated by the string sep., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.rep']:
-      - [s, string]
-      - [n, int]
-      - [sep, string]
-    - [reverse, string, Returns the reverse of string., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.reverse']:
-      - [s, string]
-    - [sub, string, Returns the substring of s that starts at i and continues until j., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.sub']:
-      - [s, string]
-      - [i, int]
-      - [j, int]
-    - [unicode, int, 'Returns the unicode numerical codes of the characters s[i], s[i+1], ..., s[j].', 'http://www.moonsharp.org/additions.html']:
-      - [s, string]
-      - [i, int]
-      - [j, int]
-    - [upper, string, Returns the string converted to upper case., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.upper']:
-      - [s, string]
-table:
-  functions:
-    - [concat, string, Returns a string of items i to j in list joined by sep., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.concat']:
-      - [list, table]
-      - [sep, string]
-      - [i, int]
-      - [j, int]
-    - [insert, any, Inserts element value at position pos in list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.insert']:
-      - [list, table]
-      - [pos, int]
-      - [value, any]
-    - [pack, table, 'Returns a new table with all parameters stored into keys 1, 2, etc. and with a field "n" with the total number of parameters.', 'https://www.lua.org/manual/5.2/manual.html#pdf-table.pack']:
-      - [..., any]
-    - [remove, any, Removes (and returns) item pos from list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.remove']:
-      - [list, table]
-      - [pos, int]
-    - [sort, bool, Sorts list in place. Uses compare function comp if specified., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.sort']:
-      - [list, table]
-      - [comp, function]
-    - [unpack, string, Returns elemeents i to j from list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack']:
-      - [list, table]
-      - [i, int]
-      - [j, int]
-Turns:
-  properties:
-    - [enable, bool, Enable/disable the turns system., /turns/#member-variables]
-    - [type, int, 'If the turn order is automatic or custom. 1=auto, 2=custom.', /turns/#member-variables]
-    - [order, table, 'A table of strings, representing the player turn order.', /turns/#member-variables]
-    - [reverse_order, bool, Enable/disable reversing turn rotation direction., /turns/#member-variables]
-    - [skip_empty_hands, bool, Enable/disable skipping empty hands., /turns/#member-variables]
-    - [disable_interactations, bool, Enable/disable the blocking of players ability to interact with Objects when it is not their turn., /turns/#member-variables]
-    - [pass_turns, bool, 'Enable/disable a player''s ability to pass their turn to another.', /turns/#member-variables]
-    - [turn_color, string, 'The color of the Player who''s turn it is.', /turns/#member-variables]
-  functions:
-    - [getNextTurnColor, string, Returns the Player Color string of the next player in the turn order., /turns/#functions]
-    - [getPreviousTurnColor, string, Returns the Player Color string of the previous player in the turn order., /turns/#functions]
-UI:
-  properties:
-    - [loading, bool, Is true if the UI is still loading on this object., /ui/#member-variables]
-  functions:
-    - [getAttribute, any, Obtains the value of a specified attribute of a UI element. Returns typically a string or number., /ui/#getattribute]:
-      - [id, string]
-      - [attribute, string]
-    - [getAttributes, table, Returns the attributes and their values of a UI element that have been set by the user., /ui/#getattributes]:
-      - [id, string]
-    - [getValue, bool, Gets the value of a UI element., /ui/#getvalue]:
-      - [id, string]
-    - [hide, bool, Hides the given UI element., /ui/#hide]:
-      - [id, string]
-    - [setAttribute, bool, Sets the value of a specified attribute of a UI element., /ui/#setattribute]:
-      - [id, string]
-      - [attribute, string]
-      - [value, any]
-    - [setAttributes, bool, Updates the value of the supplied attributes of a UI element., /ui/#setattributes]:
-      - [id, string]
-      - [data, table]
-    - [setValue, bool, Updates the value of a UI element., /ui/#setvalue]:
-      - [id, string]
-      - [value, string]
-    - [show, bool, Shows the given UI element., /ui/#show]:
-      - [id, string]
-    - [setXml, bool, 'Replaces the run-time UI with the XML string.', /ui/#setxml]:
-      - [xml, string]
-      - [assets, table]
-    - [setXmlTable, bool, 'Replaces the run-time UI with an XML string which is generated from a table of data.', /ui/#setxmltable]:
-      - [xmltable, table]
-      - [assets, table]
-    - [setCustomAssets, bool, Sets the UI ASSETS (like custom images) for global or an Object., /ui/#setcustomassets]:
-      - [assets, table]
-    - [getXml, string, 'Returns the run-time UI''s XML in string format.', /ui/#getxml]
-    - [getXmlTable, table, 'Returns the run-time UI''s XML formatted as a Lua table.', /ui/#getxmltable]
-    - [getCustomAssets, table, Returns information on all custom assets uploaded to the UI ASSETS pane., /ui/#getcustomassets]
-coroutine:
-  functions:
-    - [create, thread, 'Creates a new coroutine, with body f.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.create']:
-      - [f, function]
-    - [resume, table, Starts or continues the execution of coroutine co., 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.resume']:
-      - [co, coroutine]
-    - [running, table, 'Returns the running coroutine plus a bool, true when the running coroutine is the main one.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.running']
-    - [status, string, 'Returns the status of coroutine co, as a string.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.status']:
-      - [co, coroutine]
-    - [wrap, table, 'Creates a new coroutine, with body f.', 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.wrap']:
-      - [f, function]
-    - [yield, void, Suspends the execution of the calling coroutine., 'https://www.lua.org/manual/5.2/manual.html#pdf-coroutine.yield']:
-      - [value, int]
-Color:
-  constants:
-    - [Black, Color, The Color of the Black player., /color/]
-    - [Blue, Color, The Color of the Blue player., /color/]
-    - [Brown, Color, The Color of the Brown player., /color/]
-    - [Green, Color, The Color of the Green player., /color/]
-    - [Orange, Color, The Color of the Orange player., /color/]
-    - [Pink, Color, The Color of the Pink player., /color/]
-    - [Purple, Color, The Color of the Purple player., /color/]
-    - [Red, Color, The Color of the Red player., /color/]
-    - [Teal, Color, The Color of the Teal player., /color/]
-    - [White, Color, The Color of the White player., /color/]
-    - [Yellow, Color, The Color of the Yellow player., /color/]
-  properties:
-    - [list, table, table of all named colors., /color/#list]
-  functions:
-    - [add, bool, Add a color to the table of all named colors., /color/#add]:
-      - [name, string]
-      - [color, Color]
-    - [fromHex, Color, 'Returns a new Color from a given hex string (#RRGGBBAA).  "#" and "AA" are optional.', /color/#fromhex]:
-      - [hex, string]
-    - [fromString, Color, 'Returns a new Color from a given player color string ("Red", "White", etc.).', /color/#fromstring]:
-      - [player_color, string]
-    - [new, Color, Returns a new Color., /color/#new]:
-      - [r, float]
-      - [g, float]
-      - [b, float]
-      - [a, float]
-Clock:
-  properties:
-    - [paused, bool, 'If the Clock''s timer is paused. Setting this value will pause or resume the timer.', /behavior/clock/#paused]
-  functions:
-    - [getValue, int, Returns the current value in stopwatch or timer mode as the number of seconds., /behavior/clock/#getvalue]
-    - [pauseStart, bool, Toggle function for pausing and resuming a stopwatch or timer on the Clock., /behavior/clock/#pausestart]
-    - [setValue, bool, Switches the clock to timer mode and sets the timer to the given value in seconds., /behavior/clock/#setvalue]:
-      - [seconds, int]
-    - [startStopwatch, bool, Switches the Clock to stopwatch mode and begins the stopwatch from 0., /behavior/clock/#startstopwatch]
-    - [showCurrentTime, bool, Switches the Clock back to displaying the current time., /behavior/clock/#showcurrenttime]
-Counter:
-  functions:
-    - [clear, bool, Resets the Counter value back to 0., /behavior/counter/#clear]
-    - [decrement, bool, 'Decrements the Counter''s value by 1.', /behavior/counter/#decrement]
-    - [getValue, int, Returns the current value of the Counter., /behavior/counter/#getvalue]
-    - [increment, bool, 'Increments the Counter''s value by 1.', /behavior/counter/#increment]
-    - [setValue, bool, Sets the current value of the Counter., /behavior/counter/#setvalue]:
-      - [seconds, int]
-Lighting:
-  properties:
-    - [ambient_type, int, 'The source of the ambient light. 1 = Background, 2 = Gradient.', /lighting/#ambient_type]
-    - [ambient_intensity, float, 'The strength of the ambient light either from the background or gradient. Range is 0-4.', /lighting/#ambient_intensity]
-    - [light_intensity, float, 'The strength of the directional light shining down in the scene. Range is 0-4.', /lighting/#light_intensity]
-    - [reflection_intensity, float, 'The strength of the reflections from the background. Range is 0-1.', /lighting/#reflection_intensity]
-  functions:
-    - [apply, bool, Applies all changed made to the Lighting class. This must be called for these changes to take affect., /lighting/#apply]
-    - [getAmbientEquatorColor, Color, Returns the Color of the gradient equator., /lighting/#getambientequatorcolor]
-    - [getAmbientGroundColor, Color, Returns the Color of the gradient ground., /lighting/#getambientgroundcolor]
-    - [getAmbientSkyColor, Color, Returns the Color of the gradient sky., /lighting/#getambientskycolor]
-    - [getLightColor, Color, Returns the Color of the directional light., /lighting/#getlightcolor]
-    - [setAmbientEquatorColor, bool, Sets the Color of the gradient equator., /lighting/#setambientequatorcolor]:
-      - [color, Color]
-    - [setAmbientGroundColor, bool, Sets the Color of the ambient ground., /lighting/#setambientgroundcolor]:
-      - [color, Color]
-    - [setAmbientSkyColor, bool, Sets the Color of the gradient sky., /lighting/#setambientskycolor]:
-      - [color, Color]
-    - [setLightColor, bool, Sets the Color of the directional light., /lighting/#setlightcolor]:
-      - [color, Color]
+
 MusicPlayer:
   properties:
     - [repeat_track, bool, If the current audio clip should be repeated., /musicplayer/#repeattrack]
@@ -358,6 +707,7 @@ MusicPlayer:
     - [playlistIndex, int, 'Current index of the playlist, or -1 if nothing is playing.', /musicplayer/#playlistindex]
     - [loaded, bool, If the all the players have loaded the current audio clip., /musicplayer/#loaded]
     - [player_status, string, 'Status of the music player, one of: "Stop", "Play", "Loading", "Ready".', /musicplayer/#playerstatus]
+
   functions:
     - [play, bool, 'Plays currently loaded audioclip. Returns true if the music player is playing, otherwise returns false.', /musicplayer/#play]
     - [pause, bool, 'Pauses currently playing audioclip. Returns true if the music player is paused, otherwise returns false.', /musicplayer/#pause]
@@ -381,6 +731,7 @@ MusicPlayer:
         - items:
           - [string, url]
           - [string, title]
+
 Notes:
   functions:
     - [addNotebookTab, int, Adds a new Tab to the Notebook and returns the index of the newly added Tab., /base/#addnotebooktab]:
@@ -406,276 +757,10 @@ Notes:
       - [index, int]
     - [setNotes, bool, 'Sets the current on-screen notes. BBCOde is allowed for styling.', /base/#setnotes]:
       - [notes, string]
-os:
-  functions:
-    - [clock, int, Returns an approximation of the amount in seconds of CPU time used by the program., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock']
-    - [date, table, Returns a string or a table containing date and time., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date']
-    - [difftime, int, Returns the number of seconds from time t1 to time t2., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime']:
-      - [t2, time]
-      - [t1, time]
-    - [time, table, 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.', 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time']
-Physics:
-  properties:
-    - [play_area, float, 'The size of the play area (0.0 - 1.0).', /physics/#play_area]
-  functions:
-    - [getGravity, Vector, Returns the gravity Vector., /physics/#getgravity]
-    - [setGravity, bool, Sets the gravity Vector., /physics/#setgravity]:
-      - [vector, Vector]
-PlayerColors:
-  constants:
-    - [Black, Player, The Black player., /player/instance/]
-    - [Blue, Player, The Blue player., /player/instance/]
-    - [Brown, Player, The Brown player., /player/instance/]
-    - [Green, Player, The Green player., /player/instance/]
-    - [Orange, Player, The Orange player., /player/instance/]
-    - [Pink, Player, The Pink player., /player/instance/]
-    - [Purple, Player, The Purple player., /player/instance/]
-    - [Red, Player, The Red player., /player/instance/]
-    - [Teal, Player, The Teal player., /player/instance/]
-    - [White, Player, The White player., /player/instance/]
-    - [Yellow, Player, The Yellow player., /player/instance/]
-  functions:
-    - [getAvailableColors, table, Returns valid seats colors at current table., /player/manager/#getavailablecolors]
-    - [getColors, table, Returns all possible seats colors., /player/manager/#getavailablecolors]
-    - [getPlayers, table, Returns a table of all Players., /player/manager/#getplayers]
-    - [getSpectators, table, Returns a table of spectator Players., /player/manager/#getspectators]
-Player:
-  properties:
-    - [admin, bool, 'Is the player currently promoted or hosting the game? Read only.', /player/instance/#admin]
-    - [blindfolded, bool, 'Is the player blindfolded?', /player/instance/#blindfolded]
-    - [color, string, 'The player''s color. Read only.', /player/instance/#color]
-    - [host, bool, 'Is the player the host?.', /player/instance/#host]
-    - [lift_height, float, 'The player''s lift height from 0 to 1.', /player/instance/#lift_height]
-    - [promoted, bool, 'Is the player currently promoted? Read only.', /player/instance/#promoted]
-    - [seated, float, 'Is the player currently seated at the table? Read only.', /player/instance/#seated]
-    - [steam_id, float, 'The player''s Steam ID. Read only.', /player/instance/#steam_id]
-    - [steam_name, string, 'The player''s Steam name. Read only.', /player/instance/#steam_name]
-    - [team, string, 'The player''s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.', /player/instance/#team]
-  functions:
-    - [attachCameraToObject, bool, 'Makes a player''s camera follow an Object.', /player/instance/#attachcameratoobject]:
-      - [attachment, table]:
-        - [Object, object]
-        - [Vector, offset, '[x=0, y=0, z=0]']
-    - [broadcast, bool, Broadcasts a message to the player. This also sends a message to the top center of the screen., /player/instance/#broadcast]:
-      - [message, string]
-    - [broadcast, bool, Broadcasts a message to the player with Color. This also sends a message to the top center of the screen., /player/instance/#broadcast]:
-      - [message, string]
-      - [color, string]
-    - [changeColor, bool, 'Changes the player''s color.', /player/instance/#changecolor]:
-      - [new_color, string]
-    - [getHandCount, int, Returns the number of hands that exist for this player color., /player/instance/#gethandcount]
-    - [getHandObjects, table, 'Returns a list of all the Cards and Mahjong Tiles in the player''s hand. Specify index for additional hands.', /player/instance/#gethandobjects]:
-      - [index, int]
-    - [getHandTransform, table, 'Returns the Transform of the player''s hand.', /player/instance/#gethandtransform]:
-      - [hand_index, int]
-      - return:
-        - [position, Vector, '(World position)']
-        - [rotation, Vector, '(World rotation)']
-        - [scale, Vector, '(Local scale)']
-        - [forward, Vector, '(Forward direction)']
-        - [right, Vector, '(Right direction)']
-        - [up, Vector, '(Up direction)']
-    - [getPointerPosition, Vector, 'Returns the position of the given player color''s pointer.', /player/instance/#getpointerposition]
-    - [getPointerRotation, table, 'Returns the y-axis rotation of the given player color''s pointer in degrees.', /player/instance/#getpointerrotation]
-    - [getHoldingObjects, table, Returns a Lua table representing a list of all the Objects currently held by the player., /player/instance/#getholdingobjects]
-    - [getHoverObject, table, Returns the object that this player is hovering their pointer over., /player/instance/#gethoverobject]
-    - [getSelectedObjects, table, Returns a Lua table representing a list of all the Objects currently selected by the player., /player/instance/#getpointerrotation]
-    - [kick, bool, Kicks the player from the game., /player/instance/#kick]
-    - [lookAt, bool, 'Moves the Player''s camera to look at a specific point.', /player/instance/#lookat]:
-      - [parameters, table]:
-        - [position, Vector, (required)]
-        - [pitch, float]
-        - [yaw, float]
-        - [distance, float]
-    - [mute, bool, Mutes or unmutes the player., /player/instance/#mute]
-    - [pingTable, bool, Emulates the player using the ping tool at the given position., /player/instance/#pingtable]:
-      - [position, Vector]
-    - [print, bool, Prints a message to the player., /player/instance/#print]:
-      - [message, string]
-    - [print, bool, Prints a message to the player with Color., /player/instance/#print]:
-      - [message, string]
-      - [color, string]
-    - [promote, bool, Promotes or demotes the player., /player/instance/#promote]
-    - [setHandTransform, bool, 'Sets the Transform of the player''s hand.', /player/instance/#sethandtransform]:
-      - [transform, table]:
-        - [position, Vector]
-        - [rotation, Vector]
-        - [scale, Vector]
-        - [forward, Vector]
-        - [right, Vector]
-        - [up, Vector]
-      - [hand_index, int]
-    - [setUITheme, bool, 'Sets the player''s UI theme (use "Export" in theme editor to get string).', /player/instance/#setuitheme]:
-      - [theme, string]
-    - [showHotkeyConfig, bool, Displays the hotkey assignment UI., /player/instance/#showhotkeyconfig]
-JSON:
-  functions:
-    - [decode, any, 'Decodes a valid JSON string into a Lua string, number, or table.', /json/#decode]:
-      - [json_string, string]
-    - [encode, string, 'Encodes a Lua string, number, or table into a valid JSON string. This will not work with Object references.', /json/#encode]:
-      - [variable, any]
-    - [encode_pretty, string, 'Encodes a Lua string, number, or table into a valid JSON string formatted with indents (Human readable). This will not work with Object references.', /json/#encode_pretty]:
-      - [variable, any]
-Time:
-  properties:
-    - [time, float, The current game time in seconds., /time/#time]
-    - [delta_time, float, Time in seconds since the last frame., /time/#deltatime]
-    - [fixed_time, float, The game time of the last fixedUpdate., /time/#fixedtime]
-    - [fixed_delta_time, float, Duration of fixed update in seconds., /time/#fixeddeltatime]
-    - [frame_count, int, Total number of frames since the scene began., /time/#framecount]
-Vector:
-  functions:
-    - [new, Vector, Returns a new Vector., /vector/#new]:
-      - [x, float]
-      - [y, float]
-      - [z, float]
-    - [max, Vector, Returns a new Vector with the max component of each parameter., /vector/#max]:
-      - [v1, Vector]
-      - [v2, Vector]
-    - [min, Vector, Returns a new Vector with the min component of each parameter., /vector/#min]:
-      - [v1, Vector]
-      - [v2, Vector]
-    - [between, Vector, Returns a new Vector pointing from v1 to v2., /vector/#between]:
-      - [v1, Vector]
-      - [v2, Vector]
-WebRequest:
-  functions:
-    - [get, WebRequest, Get data in text from the url. Callback function is supplied the WebRequest., /webrequest/manager/#get]:
-      - [url, string]
-      - [callback_function, function]
-      - return:
-        - [download_progress, bool, '(0.0 - 1.0)']
-        - [error, string]
-        - [is_error, bool]
-        - [is_done, bool]
-        - [text, string]
-        - [upload_progress, bool, '(0.0 - 1.0)']
-        - [url, string]
-    - [post, WebRequest, Post the form to the url. Callback function is supplied the WebRequest., /webrequest/manager/#post]:
-      - [url, string]
-      - [form, table]
-      - [callback_function, function]
-      - return:
-        - [download_progress, bool, '(0.0 - 1.0)']
-        - [error, string]
-        - [is_error, bool]
-        - [is_done, bool]
-        - [text, string]
-        - [upload_progress, bool, '(0.0 - 1.0)']
-        - [url, string]
-    - [put, WebRequest, Put the data to the url. Callback function is supplied the WebRequest., /webrequest/manager/#put]:
-      - [url, string]
-      - [data, string]
-      - [callback_function, function]
-      - return:
-        - [download_progress, bool, '(0.0 - 1.0)']
-        - [error, string]
-        - [is_error, bool]
-        - [is_done, bool]
-        - [text, string]
-        - [upload_progress, bool, '(0.0 - 1.0)']
-        - [url, string]
-RPGFigurine:
-  functions:
-    - [attack, bool, Plays a random attack animation., /behavior/rpgfigurine/#attack]
-    - [changeMode, bool, 'Changes the RPG Figurine''s current mode.', /behavior/rpgfigurine/#changemode]
-    - [die, bool, Plays the death animation. Call die() again to reset the RPG Figurine., /behavior/rpgfigurine/#die]
-  events:
-    - [onAttack, void, 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.', /behavior/rpgfigurine/#onattack]:
-      - [hit_objects, table]
-    - [onHit, void, 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.', /behavior/rpgfigurine/#onhit]:
-      - [attacker, Object]
-TextTool:
-  functions:
-    - [getFontColor, Color, 'Returns the current font color as a Lua table keyed as table["r"], table["g"], and table["b"].', /behavior/texttool/#getfontcolor]
-    - [getFontSize, int, Returns the current font size., /behavior/texttool/#getfontsize]
-    - [getValue, string, Returns the current text., /behavior/texttool/#getvalue]
-    - [setFontColor, bool, 'Sets the current font color. The Lua table parameter should be keyed as table["r"], table["g"], and table["b"].', /behavior/texttool/#setfontcolor]:
-      - [color, Color]
-    - [setFontSize, bool, Sets the current font size., /behavior/texttool/#setfontsize]:
-      - [font_size, int]
-    - [setValue, bool, Sets the current text., /behavior/texttool/#setvalue]:
-      - [text, string]
-Wait:
-  functions:
-    - [condition, int, Activates a function when a given function returns true or activates a different function if a timeout occurs., /base/#condition]:
-      - [func, function]
-      - [condition, function]
-      - [timeout, float]
-      - [timeout_func, function]
-    - [frames, int, Activates a function after a set number of frames., /base/#frames]:
-      - [func, function]
-      - [frame_count, int]
-    - [stop, bool, Stops a currently running Wait function., /base/#stop]:
-      - [id, int]
-    - [time, int, 'Activates a function after a set amount of time has passed, repeats given amount of times.', /base/#time]:
-      - [func, function]
-      - [time, float]
-      - [repetitions, int]
-LayoutZone:
-  functions:
-    - [getOptions, table, Returns the LayoutZone options., /behavior/layoutzone/#getoptions]
-    - [layout, bool, Lays out the zone., /behavior/layoutzone/#layout]
-    - [setOptions, table, Sets the LayoutZone options., /behavior/layoutzone/#setoptions]:
-      - [options, table]:
-        - items:
-          - [direction, int]
-          - [meld_direction, int]
-          - [new_object_facing, int]
-          - [trigger_for_face_up, bool]
-          - [trigger_for_face_down, bool]
-          - [trigger_for_non_cards, bool]
-          - [allow_swapping, bool]
-          - [max_objects_per_new_group, int]
-          - [max_objects_per_group, int]
-          - [meld_sort, int]
-          - [meld_reverse_sort, bool]
-          - [meld_sort_existing, bool]
-          - [sticky_cards, bool]
-          - [horizontal_spread, float]
-          - [vertical_spread, float]
-          - [horizontal_group_padding, float]
-          - [vertical_group_padding, float]
-          - [split_added_decks, bool]
-          - [combine_into_decks, bool]
-          - [cards_per_deck, int]
-          - [alternate_directions, bool]
-          - [randomize, bool]
-          - [instant_refill, bool]
-          - [manual_only, bool]
-Zone: # Zone contains all specific Zone behaviours combined together (right now that's just LayoutZone)
-  functions:
-    - [getOptions, table, Returns the LayoutZone options., /behavior/layoutzone/#getoptions]
-    - [layout, bool, Lays out the zone., /behavior/layoutzone/#layout]
-    - [setOptions, table, Sets the LayoutZone options., /behavior/layoutzone/#setoptions]:
-      - [options, table]:
-        - items:
-          - [direction, int]
-          - [meld_direction, int]
-          - [new_object_facing, int]
-          - [trigger_for_face_up, bool]
-          - [trigger_for_face_down, bool]
-          - [trigger_for_non_cards, bool]
-          - [allow_swapping, bool]
-          - [max_objects_per_new_group, int]
-          - [max_objects_per_group, int]
-          - [meld_sort, int]
-          - [meld_reverse_sort, bool]
-          - [meld_sort_existing, bool]
-          - [sticky_cards, bool]
-          - [horizontal_spread, float]
-          - [vertical_spread, float]
-          - [horizontal_group_padding, float]
-          - [vertical_group_padding, float]
-          - [split_added_decks, bool]
-          - [combine_into_decks, bool]
-          - [cards_per_deck, int]
-          - [alternate_directions, bool]
-          - [randomize, bool]
-          - [instant_refill, bool]
-          - [manual_only, bool]
+
 Object:
   properties:
+    - [alt_view_angle, Vector, 'When non-zero, the Alt view will use the specified Euler angle to look at the object.', /object/#alt_view_angle]
     - [angular_drag, float, 'The Object''s angular drag.', /object/#angular_drag]
     - [AssetBundle, AssetBundle, 'A reference to the AssetBundle class attached to this Object, or nil. Read only.', /object/#assetbundle]
     - [auto_raise, bool, 'Should this Object automatically raise above other Objects when held?', /object/#auto_raise]
@@ -683,18 +768,32 @@ Object:
     - [Clock, Clock, A reference to the Clock class attached to this Object. Read only., /object/#clock]
     - [Counter, Counter, A reference to the Counter class attached to this Object. Read only., /object/#counter]
     - [drag, float, 'The Object''s drag.', /object/#drag]
+    - [drag_selectable, bool, 'Whether the Object may be selected with the drag-selection box.', /object/#drag_selectable]
     - [dynamic_friction, float, 'The Object''s dynamic friction.', /object/#dynamic_friction]
+    - [gizmo_selectable, bool, 'Whether the Object may be selected using the gizmo.', /object/#gizmo_selectable]
     - [grid_projection, bool, Should the grid project onto this object., /object/#grid_projection]
     - [guid, string, 'The Object''s guid. This is the same as the getGUID function. Read only.', /object/#guid]
     - [held_by_color, string, The color of the Player currently holding the Object. Read only., /object/#held_by_color]
+    - [held_flip_index, int, '0-23 value. Changes when a Player hits flip or alt + rotate.', /object/#held_flip_index]
+    - [held_position_offset, Vector, 'Position offset from pointer', /object/#held_position_offset]
+    - [held_reduce_force, bool, 'When the Object collides with something while moving this is automatically enabled and reduces the movement force.', /object/#held_reduce_force]
+    - [held_rotation_offset, Vector, 'Rotation offset from pointer.', /object/#held_rotation_offset]
     - [hide_when_face_down, bool, 'Hides the face of the object if it is face-down.', /object/#hide_when_face_down]
+    - [held_spin_index, int, '0-23 value. Changes when a Player rotates the Object.', /object/#held_spin_index]
+    - [hide_when_face_down, bool, 'Hide the Object when face-down, as if it were in a hand zone.', /object/#hide_when_face_down]
     - [ignore_fog_of_war, bool, 'If true then the object is always visible inside fog-of-war.', /object/#ignore_fog_of_war]
     - [interactable, bool, 'Can players interact with this Object? If false, only Lua Scripts can interact with this Object.', /object/#interactable]
     - [is_face_down, bool, 'True if the object is roughly face-down.', /object/#is_face_down]
     - [LayoutZone, LayoutZone, 'Access the object''s LayoutZone behaviour if it has one.', /behavior/layoutzone/]
     - [loading_custom, bool, Indicates if the assets of a custom element are being loaded., /object/#loading_custom]
+    - [locked, bool, If the object is frozen in place (preventing physics interactions)., /object/#locked]
     - [mass, float, 'The Object''s mass.', /object/#mass]
+    - [max_typed_number, int, 'Determines the maximum number of digits which a user may type whilst hovering over the object.', /object/#max_typed_number]
+    - [measure_movement, bool, Measure Tool will automatically be used when moving the Object., /object/#measure_movement]
+    - [memo, string, 'A string where you may persist user-data associated with the object.', /object/#memo]
     - [name, string, 'The Object''s formated name or nickname if applicable. Read only.', /object/#name]
+    - [pick_up_position, Vector, 'The position of the Object when it was picked up. Read only.', /object/#pick_up_position]
+    - [pick_up_rotation, Vector, 'The rotation of the Object when it was picked up. Read only.', /object/#pick_up_rotation]
     - [remainder, Object, 'If takeObject has left only one item in this container, this will refer to that item.', /object/#remainder]
     - [resting, bool, Returns true if this Object is not moving. Read only., /object/#resting]
     - [RPGFigurine, RPGFigurine, A reference to the RPGFigurine class attached to this Object. Read only., /object/#rpgfigurine]
@@ -703,15 +802,19 @@ Object:
     - [spawning, bool, Indicates if any object is currently in the process of spawning., /object/#spawning]
     - [static_friction, float, 'The Object''s static friction.', /object/#static_friction]
     - [sticky, bool, 'Should Objects on top of this Object stick to this Object when this Object is picked up?', /object/#sticky]
-    - [tag, string, The tag of the Object representing its type. Read only., /object/#tag]
     - [tooltip, bool, Should Object show tooltips when hovering over it., /object/#tooltip]
+    - [type, string, 'The Object''s type. Read Only.', /object/#type]
     - [TextTool, TextTool, A reference to the TextTool class attached to this Object. Read only., /object/#texttool]
     - [use_gravity, bool, 'Does gravity affect this Object?', /object/#use_gravity]
     - [use_grid, bool, 'Should this Object snap to grid points?', /object/#use_grid]
     - [use_hands, bool, 'Should this Object go into player hands?', /object/#use_hands]
     - [use_rotation_value_flip, bool, When true the object will flip between its rotation values on a flip action., /object/#use_rotation_value_flip]
     - [use_snap_points, bool, 'Should this Object snap to snap points?', /object/#use_snap_points]
+    - [value, int, 'A numeric value associated with the object, which when non-zero, will be displayed when hovering over the object.', /object/#value]
+
   functions:
+    - [addAttachment, bool, The Object supplied as param is destroyed and becomes a dummy Object child., /object/#addattachment]:
+      - [object, Object]
     - [addContextMenuItem, bool, Add a context menu item onto the object., /object/#addcontextmenuitem]:
       - [label, string]
       - [f, function]
@@ -726,6 +829,10 @@ Object:
     - [addForce, bool, Adds a force vector to the Object., /object/#addforce]:
       - [force_vector, Vector]
       - [force_type, int]
+    - [addTag, bool, Adds a tag to the Object., /object/#addtag]:
+      - [tag, string]
+    - [addToPlayerSelection, bool, 'Add object to player''s selection', /object/#addtoplayerselection]:
+      - [player_color, string]
     - [addTorque, bool, Adds a torque vector to the Object., /object/#addtorque]:
       - [torque_vector, Vector]
       - [force_type, int]
@@ -791,6 +898,9 @@ Object:
       - [offset, Vector]
       - [flip, bool]
       - [player_color, string]
+    - [destroyAttachment, bool, Destroys an attachment with the given index., /object/#destroyattachment]:
+      - [index, int]
+    - [destroyAttachments, bool, Destroys all attachments., /object/#destroyattachments]
     - [destruct, bool, Destroys this Object. Mainly so you can call self.destruct()., /object/#destruct]
     - [drop, bool, If held the object will be dropped., /object/#drop]
     - [editButton, bool, Edits a 3D UI button on this Object based on its index., /object/#editbutton]:
@@ -828,6 +938,16 @@ Object:
         - [tab, int, '(1 = None, 2 = Select Next, 3 = Indent)']
     - [flip, bool, Flips this Object., /object/#flip]
     - [getAngularVelocity, table, Returns the current angular velocity vector of the Object., /object/#getangularvelocity]
+    - [getAttachments, table, Returns a table in the same format as getObjects() for containers., /object/#getattachments]:
+      - return:
+        - items:
+          - [name, string]
+          - [description, string]
+          - [guid, string]
+          - [index, int]
+          - [lua_script, string]
+          - [lua_script_state, string]
+    - [getTags, table, Returns the tags attached to the Object., /object/#gettags]
     - [getBounds, table, Returns the world space axis aligned Bounds of the Object., /object/#getbounds]
     - [getBoundsNormalized, table, Returns the world space axis aligned Bounds of the Object at zero rotation., /object/#getboundsnormalized]
     - [getButtons, table, Gets a list of all the 3D UI buttons on this Object., /object/#getbuttons]:
@@ -846,7 +966,18 @@ Object:
           - [color, Color]
           - [font_color, Color]
     - [getColorTint, Color, Returns the color tint for this Object., /object/#getcolortint]
-    - [getComponentVar, var, Get the current value of a component of an object., /object/#getcomponentvar]:
+    - [getChild, GameObject, Returns a child GameObject matching the specified name., /object/#getchild]:
+      - [name, string]
+    - [getChildren, table, Returns a table of all child GameObjects., /object/#getchildren]
+    - [getComponent, Component, Get the named component of an object., /object/#getcomponent]:
+      - [name, string]
+    - [getComponentInChildren, Component, Get the named component of an object or its children., /object/#getcomponentinchildren]:
+      - [name, string]
+    - [getComponents, table, Get all components of an object. `name` is optional., /object/#getcomponents]:
+      - [name, string]
+    - [getComponentsInChildren, table, Get all components of an object or its children. `name` is optional., /object/#getcomponentsinchildren]:
+      - [name, string]
+    - [getComponentVar, any, Get the current value of a component of an object., /object/#getcomponentvar]:
       - [component_name, string]
       - [variable_name, string]
     - [getCustomObject, table, Returns the custom parameters on a Custom Object., /object/#getcustomobject]:
@@ -870,6 +1001,13 @@ Object:
         - [cast_shadows, bool, '(Does this Custom Mesh cast shadows?)']
         - [assetbundle, string, '(AssetBundle URL for this Custom AssetBundle.)']
         - [assetbundle_secondary, string, '(Secondary AssetBundle URL for this Custom AssetBundle.)']
+    - [getData, table, 'Returns a table data structure representation of the object. Works with spawnObjectData.', /object/#getdata]:
+      - return:
+        - [data, table]
+        - [position, Vector]
+        - [rotation, Vector]
+        - [scale, Vector]
+        - [callback_function, function]
     - [getDecals, table, 'Returns a table of sub-tables, each sub-table representing one decal.', /object/#getdecals]:
       - return:
         - items:
@@ -885,24 +1023,6 @@ Object:
         - [color, string]
         - [range, float]
     - [getGMNotes, string, Returns the GM notes attached to this Object., /object/#getgmnotes]
-    - [getJoints, table, Returns information on any joints attached from this Object., /object/#getjoints]:
-      - return:
-        - items:
-          - [type, string, '(One of: "Fixed", "Hinge" [H], "Spring" [S])']
-          - [joint_object_guid, string, '(GUID of attached object)']
-          - [collision, bool, '(Is collision enabled?)']
-          - [break_force, float, '(Force required to break joint)']
-          - [break_torque, float, '(Torque required to break joint)']
-          - [axis, Vector, '([H] Axis of rotation)']
-          - [anchor, Vector, '([H] Position of anchor)']
-          - [connector_anchor, Vector, '([H] Position on connected Object)']
-          - [motor_force, float, '([H] Option A: Force of rotation)']
-          - [motor_velocity, float, '([H] Option B: Velocity of rotaton)']
-          - [motor_free_spin, bool, '(If enabled the motor will only accelerate but never slow down)']
-          - [spring, float, '(Force used to keep objects together)']
-          - [damper, float, '(Force used to dampen spring)']
-          - [max_distance, float, '(Maximum distance objects may be apart)']
-          - [min_distance, float, '(Minimum distance objects may be apart)']
     - [getGUID, string, Returns the GUID that belongs to this Object., /object/#getguid]
     - [getInputs, table, Gets a list of all the 3D UI inputs on this Object., /object/#getinputs]:
       - return:
@@ -924,14 +1044,34 @@ Object:
           - [value, string]
           - [validation, int, '(1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name)']
           - [tab, int, '(1 = None, 2 = Select Next, 3 = Indent)']
+    - [getJoints, table, Returns information on any joints attached from this Object., /object/#getjoints]:
+      - return:
+        - items:
+          - [type, string, '(One of: "Fixed", "Hinge" [H], "Spring" [S])']
+          - [joint_object_guid, string, '(GUID of attached object)']
+          - [collision, bool, '(Is collision enabled?)']
+          - [break_force, float, '(Force required to break joint)']
+          - [break_torque, float, '(Torque required to break joint)']
+          - [axis, Vector, '([H] Axis of rotation)']
+          - [anchor, Vector, '([H] Position of anchor)']
+          - [connector_anchor, Vector, '([H] Position on connected Object)']
+          - [motor_force, float, '([H] Option A: Force of rotation)']
+          - [motor_velocity, float, '([H] Option B: Velocity of rotaton)']
+          - [motor_free_spin, bool, '(If enabled the motor will only accelerate but never slow down)']
+          - [spring, float, '(Force used to keep objects together)']
+          - [damper, float, '(Force used to dampen spring)']
+          - [max_distance, float, '(Maximum distance objects may be apart)']
+          - [min_distance, float, '(Minimum distance objects may be apart)']
     - [getJSON, string, Returns a serialization of the JSON string which represents this item., /object/#get-functions]:
       - [indented, bool]
+    - [getLock, bool, Get the lock status of this object., /object/#getlock]
     - [getLoopingEffectIndex, int, Returns the index of the currently looping effect., /behavior/assetbundle/#getloopingeffectindex]
     - [getLoopingEffects, table, 'Returns a table with the keys "index" and "name" for each looping effect.', /behavior/assetbundle/#getloopingeffects]
-    - [getLock, bool, Get the lock status of this object., /object/#getlock]
     - [getLuaScript, string, Returns the Lua script for this Object., /object/#getluascript]
+    - [getMaterials, table, Get all materials of an object., /object/#getmaterials]
+    - [getMaterialsInChildren, table, Get all materials of an object or its children., /object/#getcomponentsinchildren]
     - [getName, string, Returns the nickname for this Object., /object/#getname]
-    - [getObjects, table, 'Bag or Deck: Returns all the Objects inside of this container.', /object/#getobjects]:
+    - [getObjects, table, 'Bag or Deck: Returns all the Objects inside of this container.', /object/#getobjects-containers]:
       - return:
         - items:
           - [name, string]
@@ -940,13 +1080,16 @@ Object:
           - [index, int]
           - [lua_script, string]
           - [lua_script_state, string]
-    - [getObjects, table, 'Zone: Returns all the Objects inside of this zone.', /object/#getobjects]:
+    - [getObjects, table, 'Zone: Returns all the Objects inside of this zone.', /object/#getobjects-zones]:
+      - [ignore_tags, bool]
       - return:
         - items:
           - [object, Object]
     - [getPosition, table, Gets the position for this Object., /object/#getposition]
+    - [getPositionSmooth, table, Gets the current smooth-move target position for this Object., /object/#getpositionsmooth]
     - [getQuantity, int, Returns the number of Objects in a stack., /object/#getquantity]
     - [getRotation, table, Gets the rotation of this Object in degrees., /object/#getrotation]
+    - [getRotationSmooth, table, Gets the current smooth-move target rotation for this Object., /object/#getrotationsmooth]
     - [getRotationValue, int, Returns the rotation value for this Object., /object/#getrotationvalue]
     - [getRotationValues, table, 'Returns the rotation values for this Object. List of tables with Keys: "value" and "rotation".', /object/#getrotationvalues]:
       - return:
@@ -954,6 +1097,7 @@ Object:
           - [value, int]
           - [rotation, Vector]
     - [getScale, table, Gets the scale for this Object., /object/#getscale]
+    - [getSelectingPlayers, table, Returns a table of the Players currently selecting the Object., /object/#getselectingplayers]
     - [getSnapPoints, table, Returns the snap points attached to the Object., /object/#getsnappoints]:
       - return:
         - items:
@@ -988,11 +1132,17 @@ Object:
           - [rotation, Vector]
     - [getVelocity, table, Returns the current velocity vector of the Object., /object/#getvelocity]
     - [getZones, table, Returns all the Zones which the object is currently inside., /object/#getzones]
+    - [hasAnyTag, bool, Returns whether the Object has any tag attached to it., /object/#hasanytag]
+    - [hasMatchingTag, bool, Returns whether the Object and the specified other Object share at least one tag., /object/#hasmatchingtag]:
+      - [object, Object]
+    - [hasTag, bool, Returns whether the Object has the specified tag attached., /object/#hastag]:
+      - [tag, string]
     - [highlightOff, bool, Stop highlighting this object., /object/#highlightoff]
     - [highlightOn, bool, Highlight this object with color for an optional duration. Color values are between 0 and 1., /object/#highlighton]:
       - [color, Color]
       - [duration, float]
     - [isSmoothMoving, bool, Is the object smoothly moving from our smooth functions., /object/#issmoothmoving]
+    - [isDestroyed, bool, Returns true if the Object is (or will be) destroyed., /object/#isdestroyed]
     - [jointTo, bool, Joints objects together., /object/#jointto]:
       - [join, table]:
         - [type, string, '(required - "Fixed", "Hinge", or "Spring")']
@@ -1025,10 +1175,17 @@ Object:
     - [registerCollisions, bool, 'Registers object to be checked for collisions: required for onObjectCollisionEnter etc.', /object/#registercollisions]:
       - [include_stay_events, bool]
     - [reload, table, Reloads this object by destroying and spawning it place. Returns the newly spawned object. Very useful if using setCustomObject()., /object/#reload]
+    - [removeAttachment, Object, Removes a child with the given index. Use getAttachments() to find out the index property., /object/#removeattachment]:
+      - [index, int]
+    - [removeAttachments, table, Detaches the children of this Object. Returns a table of object references., /object/#removeattachments]
     - [removeButton, bool, Removes a 3D UI button from this Object by its index., /object/#removebutton]:
       - [index, int]
     - [removeInput, bool, Removes a 3D UI text input from this Object by its index., /object/#removeinput]:
       - [index, int]
+    - [removeFromPlayerSelection, bool, 'Remove object from player''s selection', /object/#removefromplayerselection]:
+      - [player_color, string]
+    - [removeTag, bool, Removes the specified tag from the Object., /object/#removetag]:
+      - [tag, string]
     - [reset, bool, Resets this Object., /object/#reset]
     - [roll, bool, Rolls this Object. Works on Dice and Coins., /object/#roll]
     - [rotate, bool, Smoothly rotates this Object with the given offset in degrees., /object/#rotate]:
@@ -1104,6 +1261,8 @@ Object:
     - [setTable, bool, Sets a Lua table for this Object., /object/#settable]:
       - [table_name, string]
       - [lua_table, table]
+    - [setTags, bool, Replaces all tags on the Object with those specified., /object/#settags]:
+      - [tags, table]
     - [setValue, bool, Sets the value for this Object., /object/#setvalue]:
       - [value, any]
     - [setVar, bool, Sets a Lua variable for this Object., /object/#setvar]:
@@ -1122,6 +1281,8 @@ Object:
     - [shuffleStates, Object, Shuffles the States on this Object and returns reference to the new State., /object/#shufflestates]
     - [split, table, Splits a deck into the chosen number of stacks and returns created objects., /object/#split]:
       - [stacks, int]
+    - [spread, table, Spreads the cards of a deck out on the table., /object/#spread]:
+      - [distance, float]
     - [takeObject, Object, Takes an Object from this container., /object/#takeobject]:
       - [parameters, table]:
         - [position, Vector, '[container position, x+2]']
@@ -1136,24 +1297,11 @@ Object:
     - [translate, bool, Smoothly moves this Object from its current position to a given offset., /object/#translate]:
       - [position, Vector]
     - [unregisterCollisions, bool, 'Unregisters object to be checked for collisions: onObjectCollisionEnter etc. will no longer work.', /object/#unregistercollisions]
+
 ObjectEvents:
   events:
-    - [tryObjectEnter, void, Automatically called when an Object attempts to enter this container.  If this function returns false the object will not be allowed in., /events/#tryobjectenter]:
+    - [tryObjectEnter, bool, Automatically called when an Object attempts to enter this container.  If this function returns false the object will not be allowed in., /events/#tryobjectenter]:
       - [object, Object]
-    - [tryObjectRotate, void, Automatically called when a player attempts to rotate an object.  If this function returns false the rotation will be cancelled., /events/#tryobjectrotate]:
-      - [object, Object]
-      - [spin, float]
-      - [flip, float]
-      - [player_color, string]
-      - [old_spin, float]
-      - [old_flip, float]
-    - [onObjectRotate, void, Automatically called after a player rotates an object., /events/#onobjectrotate]:
-      - [object, Object]
-      - [spin, float]
-      - [flip, float]
-      - [player_color, string]
-      - [old_spin, float]
-      - [old_flip, float]
     - [onCollisionEnter, void, Automatically called when this Object collides with another Object., /events/#oncollisionenter]:
       - [info, table]:
         - [collision_object, Object]
@@ -1186,13 +1334,15 @@ ObjectEvents:
       - [player_color, string]
     - [onRandomize, void, Automatically called when this Object is randomized., /events/#onrandomze]:
       - [player_color, string]
-    - [tryRotate, void, Automatically called when a player attempts to rotate this object.  If this function returns false the rotation will be cancelled., /events/#tryrotate]:
+    - [tryRandomize, bool, 'Called when a player attempts to randomize the script-owner Object. Return false to prevent the randomization taking place.', /events/#tryrandomize]:
+      - [player_color, string]
+    - [onRotate, void, Automatically called after a player rotates this object., /events/#onrotate]:
       - [spin, float]
       - [flip, float]
       - [player_color, string]
       - [old_spin, float]
       - [old_flip, float]
-    - [onRotate, void, Automatically called after a player rotates this object., /events/#onrotate]:
+    - [tryRotate, bool, Automatically called when a player attempts to rotate this object.  If this function returns false the rotation will be cancelled., /events/#tryrotate]:
       - [spin, float]
       - [flip, float]
       - [player_color, string]
@@ -1204,239 +1354,492 @@ ObjectEvents:
       - [player_color, string]
     - [onStateChange, void, Called when this object appears because of a state change., /events/#onstatechanged]:
       - [old_guid, string]
-GlobalEvents:
-  events:
-    - [tryObjectEnterContainer, void, Automatically called when an Object attempts to enter any container.  If this function returns false the object will not be allowed in., /events/#tryobjectentercontainer]:
-      - [container, Object]
-      - [object, Object]
-    - [onChat, void, This function is called every time a player sends a chat message.  Return false to cancel that message., /events/#onchat]:
-      - [message, string]
-      - [player, Player]
-    - [onExternalMessage, bool, This function called when a message is received from the External Editor API., /externaleditorapi/]:
-      - [message, table]
-    - [onFixedUpdate, void, 'This function is called, if it exists in your script, every physics tick which happens 90 times a second.', /events/#onfixedupdate]
-    - [onLoad, void, Automatically called when a game save is finished loading every Object., /events/#onload]:
-      - [save_state, string]
-    - [onObjectCollisionEnter, void, Automatically called when an Object collides with another Object., /events/#onobjectcollisionenter]:
-      - [object, Object]
-      - [info, table]:
-        - [collision_object, Object]
-        - [contact_points, table, '{Vector, ...}']
-        - [relative_velocity, Vector]
-    - [onObjectCollisionStay, void, Automatically called when an Object is touching another Object., /events/#onobjectcollisionstay]:
-      - [object, Object]
-      - [info, table]:
-        - [collision_object, Object]
-        - [contact_points, table, '{Vector, ...}']
-        - [relative_velocity, Vector]
-    - [onObjectCollisionExit, void, Automatically called when an Object stops touching another Object., /events/#onobjectcollisionexit]:
-      - [object, Object]
-      - [info, table]:
-        - [collision_object, Object]
-        - [contact_points, table, '{Vector, ...}']
-        - [relative_velocity, Vector]
-    - [onObjectDestroy, void, Automatically called when an Object is destroyed., /events/#onobjectdestroy]:
-      - [object, Object]
-    - [onObjectDrop, void, Automatically called when an Object is dropped., /events/#onobjectdrop]:
-      - [player_color, string]
-      - [object, Object]
-    - [onObjectEnterContainer, void, 'Automatically called when an Object enters any container(Deck, Bag, Chip Stack, etc).', /events/#onobjectentercontainer]:
-      - [container, Object]
-      - [object, Object]
-    - [onObjectEnterScriptingZone, void, Automatically called when an Object enters a Scripting Zone., /events/#onobjectenterscriptingzone]:
-      - [zone, Object]
-      - [object, Object]
-    - [onObjectEnterZone, void, Automatically called when an Object enters any Zone., /events/#onobjectenterzone]:
-      - [zone, Object]
-      - [object, Object]
-    - [onObjectHover, void, Called when a player hovers their pointer over an object., /events/#onobjecthover]:
-      - [player_color, string]
-      - [object, Object]
-    - [onObjectLeaveContainer, void, 'Automatically called when an Object leaves any container(Deck, Bag, Chip Stack, etc).', /events/#onobjectleavecontainer]:
-      - [container, Object]
-      - [object, Object]
-    - [onObjectLeaveScriptingZone, void, Automatically called when an Object leaves a Scripting Zone., /events/#onobjectleavescriptingzone]:
-      - [zone, Object]
-      - [object, Object]
-    - [onObjectLeaveZone, void, Automatically called when an Object leaves any Zone., /events/#onobjectleavezone]:
-      - [zone, Object]
-      - [object, Object]
-    - [onObjectLoopingEffect, void, 'Automatically called when an asset Object''s loop is started.', /events/#onobjectloopingeffect]:
-      - [object, Object]
-      - [index, int]
-    - [onObjectNumberTyped, void, Called when a player hovers their pointer over an object and types a number., /events/#onobjectnumbertyped]:
-      - [object, Object]
-      - [player_color, string]
-      - [number_typed, int]
-    - [onObjectPeek, void, Automatically called when an Object is peeked., /events/#onobjectpeek]:
-      - [object, Object]
-      - [player_color, string]
-    - [onObjectPickUp, void, Automatically called when an Object is picked up., /events/#onobjectpickup]:
-      - [player_color, string]
-      - [object, Object]
-    - [onObjectRandomize, void, Automatically called when an asset Object is randomized by player_color., /events/#onobjectrandomize]:
-      - [object, Object]
-      - [player_color, string]
-    - [onObjectSearchStart, void, Automatically called when player_color starts searching asset object., /events/#onobjectsearchstart]:
-      - [object, Object]
-      - [player_color, string]
-    - [onObjectSearchEnd, void, Automatically called when player_color stops searching asset object., /events/#onobjectsearchend]:
-      - [object, Object]
-      - [player_color, string]
-    - [onObjectSpawn, void, Automatically called when an Object is spawned., /events/#onobjectspawn]:
-      - [object, Object]
-    - [onObjectStateChange, void, Called when an object changes state., /events/#onobjectstatechanged]:
-      - [object, Object]
-      - [old_guid, string]
-    - [onObjectTriggerEffect, void, Automatically called when an asset Object is triggered., /events/#onobjecttriggereffect]:
-      - [object, Object]
-      - [index, int]
-    - [onPlayerChangeColor, void, Automatically called when a Player changes color., /events/#onplayerchangecolor]:
-      - [player_color, string]
-    - [onPlayerChangeTeam, void, Automatically called when a Player changes team., /events/#onplayerchangeteam]:
-      - [player_color, string]
-      - [team, string]
-    - [onPlayerConnect, void, Automatically called when a Player connects., /events/#onplayerconnect]:
-      - [player_id, int]
-    - [onPlayerDisconnect, void, Automatically called when a Player disconnects., /events/#onplayerdisconnect]:
-      - [player_id, int]
-    - [onPlayerPing, void, Automatically called when a player pings the table., /events/#onplayerping]:
-      - [player_color, string]
-      - [position, Vector]
-    - [onPlayerTurnEnd, void, 'Automatically called at the end of a Player''s turn.', /events/#onplayerturnend]:
-      - [player_color_end, string]
-      - [player_color_next, string]
-    - [onPlayerTurnStart, void, 'Automatically called at the start of a Player''s turn.', /events/#onplayerturnstart]:
-      - [player_color_start, string]
-      - [player_color_prev, string]
-    - [onSave, void, 'Automatically called when the game saves (including auto-save for Rewinding).', /events/#onsave]
-    - [onScriptingButtonDown, void, Automatically called when a player presses down one of the scripting button hotkeys., /events/#onscriptingbuttondown]:
-      - [index, int]
-      - [player_color, string]
-    - [onScriptingButtonUp, void, Automatically called when a player releases one of the scripting button hotkeys., /events/#onscriptingbuttonup]:
-      - [index, int]
-      - [player_color, string]
-    - [onUpdate, void, Automatically called once every frame., /events/#onupdate]
-    - [onZoneGroupSort, void, 'Called when a group is sorted in LayoutZone zone.  Return the table sorted how you want, or false to use the zone''s default sort.', /events/#onzonegroupsort]:
-      - [zone, Object]
-      - [group, table]
-      - [reversed, bool]
-/:
-  constants:
-    - [bit32, class, The bit32 class., 'https://www.lua.org/manual/5.2/manual.html#6.7']
-    - [coroutine, class, The coroutine class., 'https://www.lua.org/manual/5.2/manual.html#6.2']
-    - [dynamic, class, The dynamic class., 'http://www.moonsharp.org/additions.html']
-    - [Global, class, A reference to the Global Script., /object/]
-    - [JSON, class, The JSON class., /json/]
-    - [Lighting, class, The Lighting class., /lighting/]
-    - [math, class, The math class., 'https://www.lua.org/manual/5.2/manual.html#6.6']
-    - [Notes, class, The Notes class., /notes/]
-    - [os, class, The os class., 'https://www.lua.org/manual/5.2/manual.html#6.9']
-    - [Physics, class, The Physics class., /physics/]
-    - [Player, class, The Player class., /player/manager/]
-    - [self, class, A reference to this Object., /object/]
-    - [string, class, The string class., 'https://www.lua.org/manual/5.2/manual.html#6.4']
-    - [table, class, The table class., 'https://www.lua.org/manual/5.2/manual.html#6.5']
-    - [Time, class, The Time class., /time/]
-    - [Turns, class, The Turns class., /turns/]
-    - [UI, class, The UI class., /ui/]
-    - [Wait, class, The Wait class., /wait/]
-    - [WebRequest, class, The WebRequest class., /webrequest/manager/]
+
+os:
   functions:
-    - [addContextMenuItem, bool, Add a global context menu item., /base/#addcontextmenuitem]:
-      - [label, string]
-      - [f, function]
-      - [keep_open, bool]
-      - [require_table, bool]
-    - [addHotkey, bool, 'Add a user-assignable hotkey.', /base/#addhotkey]:
-      - [label, string]
-      - [f, function]
-      - [trigger_on_key_up, bool]
-    - [broadcastToAll, bool, Prints a message to the screen and chat window on all connected clients., /base/#broadcasttoall]:
+    - [clock, int, Returns an approximation of the amount in seconds of CPU time used by the program., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.clock']
+    - [date, table, Returns a string or a table containing date and time., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.date']
+    - [difftime, int, Returns the number of seconds from time t1 to time t2., 'https://www.lua.org/manual/5.2/manual.html#pdf-os.difftime']:
+      - [t2, time]
+      - [t1, time]
+    - [time, table, 'Returns the current time when called without arguments, or a time representing the date and time specified by the given table.', 'https://www.lua.org/manual/5.2/manual.html#pdf-os.time']
+
+Physics:
+  properties:
+    - [play_area, float, 'The size of the play area (0.0 - 1.0).', /physics/#play_area]
+
+  functions:
+    - [getGravity, Vector, Returns the gravity Vector., /physics/#getgravity]
+    - [setGravity, bool, Sets the gravity Vector., /physics/#setgravity]:
+      - [vector, Vector]
+
+PlayerInstance:
+  properties:
+    - [admin, bool, 'Is the player currently promoted or hosting the game? Read only.', /player/instance/#admin]
+    - [blindfolded, bool, 'Is the player blindfolded?', /player/instance/#blindfolded]
+    - [color, string, 'The player''s color. Read only.', /player/instance/#color]
+    - [host, bool, 'Is the player the host?.', /player/instance/#host]
+    - [lift_height, float, 'The player''s lift height from 0 to 1.', /player/instance/#lift_height]
+    - [promoted, bool, 'Is the player currently promoted? Read only.', /player/instance/#promoted]
+    - [seated, float, 'Is the player currently seated at the table? Read only.', /player/instance/#seated]
+    - [steam_id, float, 'The player''s Steam ID. Read only.', /player/instance/#steam_id]
+    - [steam_name, string, 'The player''s Steam name. Read only.', /player/instance/#steam_name]
+    - [team, string, 'The player''s team. Team names: "None", "Clubs", "Diamonds", "Hearts", "Spades". Read only.', /player/instance/#team]
+
+  functions:
+    - [attachCameraToObject, bool, 'Makes a player''s camera follow an Object.', /player/instance/#attachcameratoobject]:
+      - [attachment, table]:
+        - [Object, object]
+        - [Vector, offset, '[x=0, y=0, z=0]']
+    - [broadcast, bool, Broadcasts a message to the player. This also sends a message to the top center of the screen., /player/instance/#broadcast]:
       - [message, string]
-      - [text_color, Color]
-    - [broadcastToColor, bool, Prints a private message to the screen and chat window to the player matching the player color., /base/#broadcasttocolor]:
+    - [broadcast, bool, Broadcasts a message to the player with Color. This also sends a message to the top center of the screen., /player/instance/#broadcast]:
       - [message, string]
-      - [player_color, string]
-      - [text_color, Color]
-    - [clearContextMenu, bool, Clears add global context menu items., /base/#clearcontextmenu]
-    - [clearHotkeys, bool, Clears user assignable hotkeys., /base/#clearhotkeys]
-    - [clearPixelPaint, bool, Clears all pixel paint., /base/#clearpixelpaint]
-    - [clearVectorPaint, bool, Clears all vector paint., /base/#clearvectorpaint]
-    - [color, Color, 'Creates a Color table from rgb[a] values (alpha is optional).', /object/#color]:
-      - [red, float]
-      - [green, float]
-      - [blue, float]
-      - [alpha, float]
-    - [copy, bool, Copies a list of Objects., /base/#copy]:
+      - [color, string]
+    - [changeColor, bool, 'Changes the player''s color.', /player/instance/#changecolor]:
+      - [new_color, string]
+    - [clearSelectedObjects, bool, 'Clears the player''s selection.', /player/instance/#clearselectedobjects]
+    - [copy, bool, 'Triggers the player''s Copy action for the specified objects', /player/instance/#copy]:
       - [objects, table]
-    - [destroyObject, bool, Destroys an Object., /base/#destroyobject]:
-      - [obj, Object]
-    - [flipTable, bool, Flip the table in a fit of rage., /base/#fliptable]
-    - [getAllObjects, table, Returns a table of all the spawned Objects in the game., /base/#getallobjects]
-    - [getObjectFromGUID, Object, 'Gets a reference to an Object from a GUID. Will return nil if the Object doesn''t exist.', /base/#getobjectfromguid]:
-      - [guid, string]
-    - [getSeatedPlayers, table, Returns an indexed Lua table of all the seated Player colors., /base/#getseatedplayers]
-    - [log, bool, 'Outputs a message to the system console. Specify a tag to identify it by class or subject, and label to prefix the value.', /base/#log]:
-      - [message, any]
-      - [tag, string]
-      - [label, string]
-    - [logString, string, 'Returns the string which "log" would output.', /base/#logstring]:
-      - [message, any]
-      - [tag, string]
-      - [label, string]
-    - [logStyle, bool, 'Sets the style options for the specified tag: the color it is displayed in and any prefix or postfix text.', /base/#logstyle]:
-      - [tag, string]
-      - [color, Color]
-      - [prefix, string]
-      - [postfix, string]
-    - [group, Object, Groups objects together into returned Object., /base/#group]:
-      - [objects, table]
-    - [paste, table, Pastes copied Objects and returns a table of references to the new Objects., /base/#paste]:
+    - [getHandCount, int, Returns the number of hands that exist for this player color., /player/instance/#gethandcount]
+    - [getHandObjects, table, 'Returns a list of all the Cards and Mahjong Tiles in the player''s hand. Specify index for additional hands.', /player/instance/#gethandobjects]:
+      - [index, int]
+    - [getHandTransform, table, 'Returns the Transform of the player''s hand.', /player/instance/#gethandtransform]:
+      - [hand_index, int]
+      - return:
+        - [position, Vector, '(World position)']
+        - [rotation, Vector, '(World rotation)']
+        - [scale, Vector, '(Local scale)']
+        - [forward, Vector, '(Forward direction)']
+        - [right, Vector, '(Right direction)']
+        - [up, Vector, '(Up direction)']
+    - [getPointerPosition, Vector, 'Returns the position of the given player color''s pointer.', /player/instance/#getpointerposition]
+    - [getPointerRotation, table, 'Returns the y-axis rotation of the given player color''s pointer in degrees.', /player/instance/#getpointerrotation]
+    - [getHoldingObjects, table, Returns a Lua table representing a list of all the Objects currently held by the player., /player/instance/#getholdingobjects]
+    - [getHoverObject, table, Returns the object that this player is hovering their pointer over., /player/instance/#gethoverobject]
+    - [getSelectedObjects, table, Returns a Lua table representing a list of all the Objects currently selected by the player., /player/instance/#getpointerrotation]
+    - [kick, bool, Kicks the player from the game., /player/instance/#kick]
+    - [lookAt, bool, 'Moves the Player''s camera to look at a specific point.', /player/instance/#lookat]:
       - [parameters, table]:
-        - [position, Vector, '[x=0, y=3, z=0]']
-        - [snap_to_grid, bool, '[false]']
-    - [print, void, Prints a message to the chat window only on the host., /base/#print]:
+        - [position, Vector, (required)]
+        - [pitch, float]
+        - [yaw, float]
+        - [distance, float]
+    - [mute, bool, Mutes or unmutes the player., /player/instance/#mute]
+    - [paste, bool, 'Triggers the player''s Paste action at the specified position', /player/instance/#paste]:
+      - [position, Vector]
+    - [pingTable, bool, Emulates the player using the ping tool at the given position., /player/instance/#pingtable]:
+      - [position, Vector]
+    - [print, bool, Prints a message to the player., /player/instance/#print]:
       - [message, string]
-    - [printToAll, bool, Prints a message to the chat window on all connected clients., /base/#printtoall]:
+    - [print, bool, Prints a message to the player with Color., /player/instance/#print]:
       - [message, string]
-      - [text_color, Color]
-    - [printToColor, bool, Prints a message to the chat window of a specific Player., /base/#printtocolor]:
-      - [message, string]
-      - [player_color, string]
-      - [text_color, Color]
-    - [sendExternalMessage, bool, Sends table to whatever is connected to the External Editor API., /externaleditorapi/]:
-      - [table, table]
-    - [spawnObject, Object, Spawns an Object and returns a reference to it., /base/#spawnobject]:
-      - [parameters, table]:
-        - [type, string]
-        - [position, Vector, '[x=0, y=3, z=0]']
-        - [rotation, Vector, '[x=0, y=0, z=0]']
-        - [scale, Vector, '[x=1, y=1, z=1]']
-        - [callback_function, function]
-        - [sound, bool]
-        - [params, table]
-        - [snap_to_grid, bool]
-    - [spawnObjectJSON, Object, Spawns an Object using a JSON string and returns a reference to it., /base/#spawnobjectjson]:
-      - [parameters, table]:
-        - [json, string]
-        - [position, Vector, '[x=0, y=3, z=0]']
-        - [rotation, Vector, '[x=0, y=0, z=0]']
-        - [scale, Vector, '[x=1, y=1, z=1]']
-        - [callback_function, string]
-        - [sound, bool]
-        - [params, table]
-        - [snap_to_grid, bool]
-    - [startLuaCoroutine, bool, Starts a Lua function as a coroutine., /base/#startluacoroutine]:
-      - [func_owner, Object]
-      - [func_name, string]
-    - [stringColorToRGB, table, Converts a color string (player colors) to its RGB values., /base/#stringcolortorgb]:
-      - [player_color, string]
-    - [tonumber, number, 'When called with no base, tonumber tries to convert its argument to a number.', 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber']:
+      - [color, string]
+    - [promote, bool, Promotes or demotes the player., /player/instance/#promote]
+    - [setHandTransform, bool, 'Sets the Transform of the player''s hand.', /player/instance/#sethandtransform]:
+      - [transform, table]:
+        - [position, Vector]
+        - [rotation, Vector]
+        - [scale, Vector]
+        - [forward, Vector]
+        - [right, Vector]
+        - [up, Vector]
+      - [hand_index, int]
+    - [setUITheme, bool, 'Sets the player''s UI theme (use "Export" in theme editor to get string).', /player/instance/#setuitheme]:
+      - [theme, string]
+    - [showHotkeyConfig, bool, Displays the hotkey assignment UI., /player/instance/#showhotkeyconfig]
+    - [showInfoDialog, bool, Displays text to the player., /player/instance/#showinfodialog]:
+      - [info, string]
+    - [showConfirmDialog, bool, Displays text to the player and executes callback if they click OK., /player/instance/#showconfirmdialog]:
+      - [info, string]
+      - [callback_function, function]:
+        - [player_color, string]
+    - [showInputDialog, bool, Shows text input dialog to the player and executes callback if they click OK., /player/instance/#showinputdialog]:
+      - [description, string]
+      - [default_value, string]
+      - [callback_function, function]:
+        - [text, string]
+        - [player_color, string]
+    - [showMemoDialog, bool, Shows memo input dialog to the player and executes callback if they click OK., /player/instance/#showmemodialog]:
+      - [description, string]
+      - [default_value, string]
+      - [callback_function, function]:
+        - [text, string]
+        - [player_color, string]
+    - [showOptionsDialog, bool, Shows dropdown options dialog to the player and executes callback if they click OK., /player/instance/#showoptionsdialog]:
+      - [description, string]
+      - [options, table]
+      - [default_value, int]
+      - [callback_function, function]:
+        - [text, string]
+        - [index, int]
+        - [player_color, string]
+    - [showColorDialog, bool, Shows color input dialog to the player and executes callback if they click OK., /player/instance/#showmemodialog]:
+      - [default_color, Color]
+      - [callback_function, function]:
+        - [color, Color]
+        - [player_color, string]
+
+PlayerManager:
+  constants:
+    - [Action, class, Type of Action player is attempting., /events/#onplayeraction-actions]
+    - [Black, Player, The Black player., /player/instance/]
+    - [Blue, Player, The Blue player., /player/instance/]
+    - [Brown, Player, The Brown player., /player/instance/]
+    - [Green, Player, The Green player., /player/instance/]
+    - [Orange, Player, The Orange player., /player/instance/]
+    - [Pink, Player, The Pink player., /player/instance/]
+    - [Purple, Player, The Purple player., /player/instance/]
+    - [Red, Player, The Red player., /player/instance/]
+    - [Teal, Player, The Teal player., /player/instance/]
+    - [White, Player, The White player., /player/instance/]
+    - [Yellow, Player, The Yellow player., /player/instance/]
+
+  functions:
+    - [getAvailableColors, table, Returns valid seats colors at current table., /player/manager/#getavailablecolors]
+    - [getColors, table, Returns all possible seats colors., /player/manager/#getavailablecolors]
+    - [getPlayers, table, Returns a table of all Players., /player/manager/#getplayers]
+    - [getSpectators, table, Returns a table of spectator Players., /player/manager/#getspectators]
+
+RPGFigurine:
+  functions:
+    - [attack, bool, Plays a random attack animation., /behavior/rpgfigurine/#attack]
+    - [changeMode, bool, 'Changes the RPG Figurine''s current mode.', /behavior/rpgfigurine/#changemode]
+    - [die, bool, Plays the death animation. Call die() again to reset the RPG Figurine., /behavior/rpgfigurine/#die]
+
+  events:
+    - [onAttack, void, 'This function is called, if it exists in your script, when this RPGFigurine attacks another RPGFigurine.', /behavior/rpgfigurine/#onattack]:
+      - [hit_objects, table]
+    - [onHit, void, 'This function is called, if it exists in your script, when this RPGFigurine is attacked by another RPGFigurine.', /behavior/rpgfigurine/#onhit]:
+      - [attacker, Object]
+
+string:
+  functions:
+    - [byte, int, 'Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j].', 'https://www.lua.org/manual/5.2/manual.html#pdf-string.byte']:
       - [s, string]
-    - [tostring, number, Receives a value of any type and converts it to a string in a reasonable format., 'https://www.lua.org/manual/5.2/manual.html#pdf-tostring']:
-      - [x, any]
-    - [vector, Vector, 'Creates a Vector table from x, y, z values.', /object/#vector]:
+      - [i, int]
+      - [j, int]
+    - [char, string, Returns a string comprised of the integer char codes converted to chars and concatenated., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.char']:
+      - [c, int]
+    - [dump, string, Returns a string containing a binary representation of the given function., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.dump']:
+      - [f, function]
+    - [find, int, 'Returns the start and end indices of pattern in string, or nil.', 'https://www.lua.org/manual/5.2/manual.html#pdf-string.find']:
+      - [s, string]
+      - [pattern, string]
+      - [init, int]
+      - [plain, bool]
+    - [format, string, Returns a formatted version of its variable number of arguments following the description given in its first argument., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.format']:
+      - [formatstring, string]
+      - [..., any]
+    - [gmatch, function, Returns an iterator function that returns the next captures from pattern over the string s., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gmatch']:
+      - [s, string]
+      - [pattern, string]
+    - [gsub, string, Returns a string from pattern matched to s replaced with repl for n occurences., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.gsub']:
+      - [s, string]
+      - [pattern, string]
+      - [repl, string]
+      - [n, int]
+    - [len, int, Returns the length of the string., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.len']:
+      - [s, string]
+    - [lower, string, Returns the string converted to lower case., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.lower']:
+      - [s, string]
+    - [match, captures, Returns the captures from pattern matched to s., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.match']:
+      - [s, string]
+      - [pattern, string]
+      - [init, int]
+    - [rep, captures, Returns a string that is the concatenation of n copies of the string s separated by the string sep., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.rep']:
+      - [s, string]
+      - [n, int]
+      - [sep, string]
+    - [reverse, string, Returns the reverse of string., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.reverse']:
+      - [s, string]
+    - [sub, string, Returns the substring of s that starts at i and continues until j., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.sub']:
+      - [s, string]
+      - [i, int]
+      - [j, int]
+    - [unicode, int, 'Returns the unicode numerical codes of the characters s[i], s[i+1], ..., s[j].', 'http://www.moonsharp.org/additions.html']:
+      - [s, string]
+      - [i, int]
+      - [j, int]
+    - [upper, string, Returns the string converted to upper case., 'https://www.lua.org/manual/5.2/manual.html#pdf-string.upper']:
+      - [s, string]
+
+table:
+  functions:
+    - [concat, string, Returns a string of items i to j in list joined by sep., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.concat']:
+      - [list, table]
+      - [sep, string]
+      - [i, int]
+      - [j, int]
+    - [insert, any, Inserts element value at position pos in list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.insert']:
+      - [list, table]
+      - [pos, int]
+      - [value, any]
+    - [pack, table, 'Returns a new table with all parameters stored into keys 1, 2, etc. and with a field "n" with the total number of parameters.', 'https://www.lua.org/manual/5.2/manual.html#pdf-table.pack']:
+      - [..., any]
+    - [remove, any, Removes (and returns) item pos from list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.remove']:
+      - [list, table]
+      - [pos, int]
+    - [sort, bool, Sorts list in place. Uses compare function comp if specified., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.sort']:
+      - [list, table]
+      - [comp, function]
+    - [unpack, string, Returns elemeents i to j from list., 'https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack']:
+      - [list, table]
+      - [i, int]
+      - [j, int]
+
+Tables:
+  functions:
+    - [getCustomURL, string, 'Returns the image URL of the current Custom Table, or nil if the current table is not a Custom Table.', /tables/#getcustomurl]
+    - [getTable, string, 'Returns the current Table''s name i.e. equivalent to getTableObject().name.', /tables/#gettable]
+    - [getTableObject, Object, 'Returns the current Table object.', /tables/#gettableobject]
+    - [setCustomURL, bool, 'Sets the image URL for the current Custom Table. Has no effect if the current Table is not a Custom Table.', /tables/#setcustomurl]:
+      - [url, string]
+    - [setTable, bool, 'Replaces the current Table with the Table matching the specified name.', /tables/#settable]:
+      - [name, string]
+
+TextTool:
+  functions:
+    - [getFontColor, Color, 'Returns the current font color as a Lua table keyed as table["r"], table["g"], and table["b"].', /behavior/texttool/#getfontcolor]
+    - [getFontSize, int, Returns the current font size., /behavior/texttool/#getfontsize]
+    - [getValue, string, Returns the current text., /behavior/texttool/#getvalue]
+    - [setFontColor, bool, 'Sets the current font color. The Lua table parameter should be keyed as table["r"], table["g"], and table["b"].', /behavior/texttool/#setfontcolor]:
+      - [color, Color]
+    - [setFontSize, bool, Sets the current font size., /behavior/texttool/#setfontsize]:
+      - [font_size, int]
+    - [setValue, bool, Sets the current text., /behavior/texttool/#setvalue]:
+      - [text, string]
+
+Time:
+  properties:
+    - [time, float, The current game time in seconds., /time/#time]
+    - [delta_time, float, Time in seconds since the last frame., /time/#deltatime]
+    - [fixed_time, float, The game time of the last fixedUpdate., /time/#fixedtime]
+    - [fixed_delta_time, float, Duration of fixed update in seconds., /time/#fixeddeltatime]
+    - [frame_count, int, Total number of frames since the scene began., /time/#framecount]
+
+Turns:
+  properties:
+    - [enable, bool, Enable/disable the turns system., /turns/#member-variables]
+    - [type, int, 'If the turn order is automatic or custom. 1=auto, 2=custom.', /turns/#member-variables]
+    - [order, table, 'A table of strings, representing the player turn order.', /turns/#member-variables]
+    - [reverse_order, bool, Enable/disable reversing turn rotation direction., /turns/#member-variables]
+    - [skip_empty_hands, bool, Enable/disable skipping empty hands., /turns/#member-variables]
+    - [disable_interactations, bool, Enable/disable the blocking of players ability to interact with Objects when it is not their turn., /turns/#member-variables]
+    - [pass_turns, bool, 'Enable/disable a player''s ability to pass their turn to another.', /turns/#member-variables]
+    - [turn_color, string, 'The color of the Player who''s turn it is.', /turns/#member-variables]
+
+  functions:
+    - [getNextTurnColor, string, Returns the Player Color string of the next player in the turn order., /turns/#functions]
+    - [getPreviousTurnColor, string, Returns the Player Color string of the previous player in the turn order., /turns/#functions]
+
+UI:
+  properties:
+    - [loading, bool, Is true if the UI is still loading on this object., /ui/#member-variables]
+
+  functions:
+    - [getAttribute, any, Obtains the value of a specified attribute of a UI element. Returns typically a string or number., /ui/#getattribute]:
+      - [id, string]
+      - [attribute, string]
+    - [getAttributes, table, Returns the attributes and their values of a UI element that have been set by the user., /ui/#getattributes]:
+      - [id, string]
+    - [getValue, bool, Gets the value of a UI element., /ui/#getvalue]:
+      - [id, string]
+    - [hide, bool, Hides the given UI element., /ui/#hide]:
+      - [id, string]
+    - [setAttribute, bool, Sets the value of a specified attribute of a UI element., /ui/#setattribute]:
+      - [id, string]
+      - [attribute, string]
+      - [value, any]
+    - [setAttributes, bool, Updates the value of the supplied attributes of a UI element., /ui/#setattributes]:
+      - [id, string]
+      - [data, table]
+    - [setValue, bool, Updates the value of a UI element., /ui/#setvalue]:
+      - [id, string]
+      - [value, string]
+    - [show, bool, Shows the given UI element., /ui/#show]:
+      - [id, string]
+    - [setXml, bool, 'Replaces the run-time UI with the XML string.', /ui/#setxml]:
+      - [xml, string]
+      - [assets, table]
+    - [setXmlTable, bool, 'Replaces the run-time UI with an XML string which is generated from a table of data.', /ui/#setxmltable]:
+      - [xmltable, table]
+      - [assets, table]
+    - [setCustomAssets, bool, Sets the UI ASSETS (like custom images) for global or an Object., /ui/#setcustomassets]:
+      - [assets, table]
+    - [getXml, string, 'Returns the run-time UI''s XML in string format.', /ui/#getxml]
+    - [getXmlTable, table, 'Returns the run-time UI''s XML formatted as a Lua table.', /ui/#getxmltable]
+    - [getCustomAssets, table, Returns information on all custom assets uploaded to the UI ASSETS pane., /ui/#getcustomassets]
+
+Vector:
+  functions:
+    - [new, Vector, Returns a new Vector., /vector/#new]:
       - [x, float]
       - [y, float]
       - [z, float]
+    - [max, Vector, Returns a new Vector with the max component of each parameter., /vector/#max]:
+      - [v1, Vector]
+      - [v2, Vector]
+    - [min, Vector, Returns a new Vector with the min component of each parameter., /vector/#min]:
+      - [v1, Vector]
+      - [v2, Vector]
+    - [between, Vector, Returns a new Vector pointing from v1 to v2., /vector/#between]:
+      - [v1, Vector]
+      - [v2, Vector]
+
+Wait:
+  functions:
+    - [condition, int, Activates a function when a given function returns true or activates a different function if a timeout occurs., /base/#condition]:
+      - [func, function]
+      - [condition, function]
+      - [timeout, float]
+      - [timeout_func, function]
+    - [frames, int, Activates a function after a set number of frames., /base/#frames]:
+      - [func, function]
+      - [frame_count, int]
+    - [stop, bool, Stops a currently running Wait function., /base/#stop]:
+      - [id, int]
+    - [time, int, 'Activates a function after a set amount of time has passed, repeats given amount of times.', /base/#time]:
+      - [func, function]
+      - [time, float]
+      - [repetitions, int]
+
+WebRequest:
+  functions:
+    - [custom, WebRequest, 'Performs a HTTP request using the specified method, data and headers.', /webrequest/manager/#custom]:
+      - [url, string]
+      - [method, string]
+      - [download, bool]
+      - [data, string]
+      - [headers, table]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+    - [delete, WebRequest, Performs a HTTP DELETE request., /webrequest/manager/#delete]:
+      - [url, string]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+    - [get, WebRequest, Get data in text from the url. Callback function is supplied the WebRequest., /webrequest/manager/#get]:
+      - [url, string]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+    - [head, WebRequest, Performs a HTTP HEAD request., /webrequest/manager/#head]:
+      - [url, string]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+    - [post, WebRequest, Post the form to the url. Callback function is supplied the WebRequest., /webrequest/manager/#post]:
+      - [url, string]
+      - [form, table]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+    - [put, WebRequest, Put the data to the url. Callback function is supplied the WebRequest., /webrequest/manager/#put]:
+      - [url, string]
+      - [data, string]
+      - [callback_function, function]
+      - return:
+        - [download_progress, bool, '(0.0 - 1.0)']
+        - [error, string]
+        - [is_error, bool]
+        - [is_done, bool]
+        - [text, string]
+        - [upload_progress, bool, '(0.0 - 1.0)']
+        - [url, string]
+
+Zone: # Zone contains all specific Zone behaviours combined together (right now that's just LayoutZone)
+
+  functions:
+    - [getOptions, table, Returns the LayoutZone options., /behavior/layoutzone/#getoptions]
+    - [layout, bool, Lays out the zone., /behavior/layoutzone/#layout]
+    - [setOptions, table, Sets the LayoutZone options., /behavior/layoutzone/#setoptions]:
+      - [options, table]:
+        - items:
+          - [direction, int]
+          - [meld_direction, int]
+          - [new_object_facing, int]
+          - [trigger_for_face_up, bool]
+          - [trigger_for_face_down, bool]
+          - [trigger_for_non_cards, bool]
+          - [allow_swapping, bool]
+          - [max_objects_per_new_group, int]
+          - [max_objects_per_group, int]
+          - [meld_sort, int]
+          - [meld_reverse_sort, bool]
+          - [meld_sort_existing, bool]
+          - [sticky_cards, bool]
+          - [horizontal_spread, float]
+          - [vertical_spread, float]
+          - [horizontal_group_padding, float]
+          - [vertical_group_padding, float]
+          - [split_added_decks, bool]
+          - [combine_into_decks, bool]
+          - [cards_per_deck, int]
+          - [alternate_directions, bool]
+          - [randomize, bool]
+          - [instant_refill, bool]
+          - [manual_only, bool]
+
+LayoutZone:
+  functions:
+    - [getOptions, table, Returns the LayoutZone options., /behavior/layoutzone/#getoptions]
+    - [layout, bool, Lays out the zone., /behavior/layoutzone/#layout]
+    - [setOptions, table, Sets the LayoutZone options., /behavior/layoutzone/#setoptions]:
+      - [options, table]:
+        - items:
+          - [direction, int]
+          - [meld_direction, int]
+          - [new_object_facing, int]
+          - [trigger_for_face_up, bool]
+          - [trigger_for_face_down, bool]
+          - [trigger_for_non_cards, bool]
+          - [allow_swapping, bool]
+          - [max_objects_per_new_group, int]
+          - [max_objects_per_group, int]
+          - [meld_sort, int]
+          - [meld_reverse_sort, bool]
+          - [meld_sort_existing, bool]
+          - [sticky_cards, bool]
+          - [horizontal_spread, float]
+          - [vertical_spread, float]
+          - [horizontal_group_padding, float]
+          - [vertical_group_padding, float]
+          - [split_added_decks, bool]
+          - [combine_into_decks, bool]
+          - [cards_per_deck, int]
+          - [alternate_directions, bool]
+          - [randomize, bool]
+          - [instant_refill, bool]
+          - [manual_only, bool]

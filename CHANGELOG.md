@@ -1,3 +1,6 @@
+## 13.2.0
+* Updated autocomplete snippets for API changes up to v13.2
+
 ## 13.1.1
 * Added autocomplete snippets for API changes up to v13.1
 
