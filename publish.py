@@ -11,12 +11,12 @@ if len(sys.argv) < 2:
 version = sys.argv[1]
 if version.lower()[0] == 'v':
     version = version[1:]
-if not re.match(r'[0-9]+\.[0-9]+\.[0-9]', version):
-    print(msg)
+if not re.match(r'[0-9]+\.[0-9]+\.[0-9]+', version):
+    print(msg, "but got", version)
     sys.exit(1)
 
 package_json = ''.join([x for x in open('package.json')])
-package_version = re.search(r'"version": "([0-9]+\.[0-9]+\.[0-9])",', package_json)
+package_version = re.search(r'"version": "([0-9]+\.[0-9]+\.[0-9]+)",', package_json)
 if not package_version:
     print ("Could not find version in package.json")
     sys.exit(1)
