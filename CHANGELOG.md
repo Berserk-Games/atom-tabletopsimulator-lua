@@ -1,3 +1,9 @@
+## 13.2.0
+* Updated autocomplete snippets for API changes up to v13.2
+
+## 13.1.1
+* Added autocomplete snippets for API changes up to v13.1
+
 ## 12.4.3
 * Fixed confirm dialogs broken by Atom update.
 * If you get an error when you try to Get Lua Scripts you need to update Atom.
