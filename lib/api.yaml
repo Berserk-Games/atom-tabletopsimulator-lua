@@ -2,7 +2,7 @@
 #   This will create `provider.coffee` and `api.json`.
 
 header:
-  version: 13.2.1.1
+  version: 14.0.3.1
   behaviors:
     - AssetBundle
     - Book
@@ -49,6 +49,7 @@ header:
       - [label, string]
       - [f, function]
       - [trigger_on_key_up, bool]
+    - [allowRewindStore, void, Clears the block on storing rewind states., /base/#allowrewindstore]
     - [broadcastToAll, bool, Prints a message to the screen and chat window on all connected clients., /base/#broadcasttoall]:
       - [message, string]
       - [text_color, Color]
@@ -56,6 +57,20 @@ header:
       - [message, string]
       - [player_color, string]
       - [text_color, Color]
+    - [chooseInHand, table, Starts or queues a hand selection mode, /base/#chooseinhand]:
+      - [label, string]
+      - [min_selection_count, int]
+      - [max_selection_count, int]
+      - [prompt, string]
+      - [player_colors, table]
+    - [chooseInHandOrCancel, table, Starts or queues a hand selection mode with additional Cancel button, /base/#chooseinhandorcancel]:
+      - [label, string]
+      - [min_selection_count, int]
+      - [max_selection_count, int]
+      - [prompt, string]
+      - [player_colors, table]
+    - [clearChooseInHand, table, Clears the current hand selection mode, /base/#clearchooseinhand]:
+      - [player_colors, table]
     - [clearContextMenu, bool, Clears add global context menu items., /base/#clearcontextmenu]
     - [clearHotkeys, bool, Clears user assignable hotkeys., /base/#clearhotkeys]
     - [clearPixelPaint, bool, Clears all pixel paint., /base/#clearpixelpaint]
@@ -67,6 +82,8 @@ header:
       - [alpha, float]
     - [copy, bool, Copies a list of Objects., /base/#copy]:
       - [objects, table]
+    - [currentChooseInHand, string, Returns the label of the current hand selection mode, /base/#currentchooseinhand]:
+      - [player_color, string]
     - [destroyObject, bool, Destroys an Object., /base/#destroyobject]:
       - [obj, Object]
     - [flipTable, bool, Flip the table in a fit of rage., /base/#fliptable]
@@ -142,6 +159,9 @@ header:
     - [startLuaCoroutine, bool, Starts a Lua function as a coroutine., /base/#startluacoroutine]:
       - [func_owner, Object]
       - [func_name, string]
+    - [storeRewindState, void, Stores a rewind state and optionally blocks any further rewind states being created., /base/#storerewindstate]:
+      - [and_then, function]
+      - [block_further_stores, bool]
     - [stringColorToRGB, table, Converts a color string (player colors) to its RGB values., /base/#stringcolortorgb]:
       - [player_color, string]
     - [tonumber, number, 'When called with no base, tonumber tries to convert its argument to a number.', 'https://www.lua.org/manual/5.2/manual.html#pdf-tonumber']:
@@ -516,9 +536,13 @@ GlobalEvents:
       - [player_color, string]
     - [onObjectSpawn, void, Automatically called when an Object is spawned., /events/#onobjectspawn]:
       - [object, Object]
-    - [onObjectStateChange, void, Called when an object changes state., /events/#onobjectstatechanged]:
+    - [onObjectStateChange, void, Called when an object changes state., /events/#onobjectstatechange]:
       - [object, Object]
       - [old_guid, string]
+    - [tryObjectStateChange, void, Called when an object is about to change state; return false to prevent the change, /events/#tryobjectstatechange]:
+      - [object, Object]
+      - [new_state_index, int]
+      - [player_color, string]
     - [onObjectTriggerEffect, void, Automatically called when an asset Object is triggered., /events/#onobjecttriggereffect]:
       - [object, Object]
       - [index, int]
@@ -536,6 +560,11 @@ GlobalEvents:
       - [player_id, int]
     - [onPlayerDisconnect, void, Automatically called when a Player disconnects., /events/#onplayerdisconnect]:
       - [player_id, int]
+    - [onPlayerHandChoice, void, Automatically called when a player makes a choice in hand selection mode., /events/#onplayerhandchoice]:
+      - [player_color, string]
+      - [label, string]
+      - [objects, table]
+      - [was_confirmed, bool]
     - [onPlayerPing, void, Automatically called when a player pings the table., /events/#onplayerping]:
       - [player_color, string]
       - [position, Vector]
@@ -894,6 +923,7 @@ Object:
       - [number, int]
       - [player_color, string]
       - [hand_index, int]
+      - [from_bottom, bool]
     - [dealToColorWithOffset, Object, Deals a Card to a player with an offset from their hand., /object/#dealtocolorwithoffset]:
       - [offset, Vector]
       - [flip, bool]
@@ -1160,6 +1190,7 @@ Object:
         - [damper, float, '[0.2]']
         - [max_distance, float]
         - [min_distance, float]
+    - [moveToHandStash, void, Moves card in hand into the player's hand stash, /object/#movetohandstash]
     - [playLoopingEffect, void, Starts playing a looping effect. Index starts at 0., /behavior/assetbundle/#playloopingeffect]:
       - [index, int]
     - [playTriggerEffect, void, Starts playing a trigger effect. Index starts at 0., /behavior/assetbundle/#playtriggereffect]:
@@ -1170,6 +1201,7 @@ Object:
       - [vector, Vector]
     - [putObject, Object, 'Add this object to the current object. Works for stacking chips, decks, and bags.', /object/#putobject]:
       - [object, Object]
+      - [index, int]
     - [randomize, bool, 'Same as pressing the "R" key on an Object. Shuffles deck/bag, rolls dice/coin, lifts any other object up in the air.', /object/#randomize]
     - [randomize, bool, 'Same as pressing the "R" key on an Object. Triggers onObjectRandomize as if specified player hit it.', /object/#randomize]:
       - [player, string]
@@ -1353,8 +1385,11 @@ ObjectEvents:
       - [player_color, string]
     - [onSearchEnd, void, Automatically called when player_color stops searching this object., /events/#onsearchend]:
       - [player_color, string]
-    - [onStateChange, void, Called when this object appears because of a state change., /events/#onstatechanged]:
+    - [onStateChange, void, Called when this object appears because of a state change., /events/#onstatechange]:
       - [old_guid, string]
+    - [tryStateChange, void, Called when this object is about to change state; return false to prevent the change., /events/#trystatechange]:
+      - [new_state_index, int]
+      - [player_color, string]
 
 os:
   functions:
@@ -1402,6 +1437,7 @@ PlayerInstance:
     - [clearSelectedObjects, bool, 'Clears the player''s selection.', /player/instance/#clearselectedobjects]
     - [copy, bool, 'Triggers the player''s Copy action for the specified objects', /player/instance/#copy]:
       - [objects, table]
+    - [drawHandStash, void, Draws all cards in players hand stash into their hand, /player/instance/#drawhandstash]
     - [getHandCount, int, Returns the number of hands that exist for this player color., /player/instance/#gethandcount]
     - [getHandObjects, table, 'Returns a list of all the Cards and Mahjong Tiles in the player''s hand. Specify index for additional hands.', /player/instance/#gethandobjects]:
       - [index, int]
@@ -1437,6 +1473,9 @@ PlayerInstance:
       - [message, string]
       - [color, string]
     - [promote, bool, Promotes or demotes the player., /player/instance/#promote]
+    - [setHandStashLocation, void, Sets the location of the player's hand stash within their primary hand zone, /player/instance/#sethandstashlocation]:
+      - [position, Vector]
+      - [rotation_index, int]
     - [setHandTransform, bool, 'Sets the Transform of the player''s hand.', /player/instance/#sethandtransform]:
       - [transform, table]:
         - [position, Vector]
@@ -1633,6 +1672,7 @@ Turns:
   functions:
     - [getNextTurnColor, string, Returns the Player Color string of the next player in the turn order., /turns/#functions]
     - [getPreviousTurnColor, string, Returns the Player Color string of the previous player in the turn order., /turns/#functions]
+    - [getTurnOrder, table, Returns the current turn order., /turns/#functions]
 
 UI:
   properties:
@@ -1690,6 +1730,11 @@ Vector:
 
 Wait:
   functions:
+    - [collect, table, Creates a collect_table that can be used to track the progress across a specific task for multiple entities., /wait/#collect]:
+      - [expected_ids, table]
+      - [on_finished, function]
+      - [on_add, function]
+      - [on_error, function]
     - [condition, int, Activates a function when a given function returns true or activates a different function if a timeout occurs., /base/#condition]:
       - [func, function]
       - [condition, function]
