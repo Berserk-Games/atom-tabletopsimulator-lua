@@ -1,4 +1,4 @@
-# After editting this file you must run `generate_from_api.py`:
+# After editing this file you must run `generate_from_api.py`:
 #   This will create `provider.coffee` and `api.json`.
 
 header:
