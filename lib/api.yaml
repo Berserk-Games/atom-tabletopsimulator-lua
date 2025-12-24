@@ -2,7 +2,7 @@
 #   This will create `provider.coffee` and `api.json`.
 
 header:
-  version: 14.0.3.1
+  version: 14.0.3.2
   behaviors:
     - AssetBundle
     - Book
@@ -1670,6 +1670,7 @@ Turns:
     - [turn_color, string, 'The color of the Player who''s turn it is.', /turns/#member-variables]
 
   functions:
+    - [endTurn, bool, Ends the current turn., /turns/#functions]
     - [getNextTurnColor, string, Returns the Player Color string of the next player in the turn order., /turns/#functions]
     - [getPreviousTurnColor, string, Returns the Player Color string of the previous player in the turn order., /turns/#functions]
     - [getTurnOrder, table, Returns the current turn order., /turns/#functions]
