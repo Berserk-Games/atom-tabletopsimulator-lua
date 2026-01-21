@@ -9,7 +9,8 @@
     "tabletop simulator",
     "tabletopsimulator",
     "lua"
-  ],
+  
+ {  
   "repository": "https://github.com/Knils/atom-tabletopsimulator-lua",
   "license": "MIT",
   "engines": {
